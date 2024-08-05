@@ -85,3 +85,30 @@ model TwoFactorConfirmation {
 
   @@unique([userId])
 }
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+}
+
+model Brand {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  image       String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  brand       Brand      @relation(fields: [brandId], references: [id])
+  brandId     Int
+  model       String
+  // cartItems   CartItem[]
+  // orderItems  OrderItem[]
+}

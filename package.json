@@ -7,15 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "kill": "kill -9 $(lsof -ti:3000)"
+    "kill": "kill -9 $(lsof -ti:3000)",
+    "seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.4.2",
+    "@faker-js/faker": "^8.4.1",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.17.0",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.51.21",
+    "@tanstack/react-table": "^8.20.1",
     "@trpc/client": "11.0.0-rc.477",
     "@trpc/next": "11.0.0-rc.477",
     "@trpc/react-query": "11.0.0-rc.477",
@@ -44,6 +50,7 @@
     "postcss": "^8.4.40",
     "prisma": "^5.17.0",
     "tailwindcss": "^3.4.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0"
   }

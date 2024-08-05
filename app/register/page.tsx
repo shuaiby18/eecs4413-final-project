@@ -29,7 +29,6 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { trpc } from "@/server/client";
 
-
 export default function Register() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition()

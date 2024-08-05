@@ -4,7 +4,8 @@
 
 1. Clone to repo.
 2. Fill in .env.local and rename it to .env
-3. Start project using "npm run dev"
+3. run the seed command 'npm run seed'
+4. Start project using "npm run dev"
 
 # Tools used: 
 
@@ -20,11 +21,11 @@
 - [X] Register (sign up), Sign in, sign out
     - [X] Register (Yusuf)
     - [X] Sign in (Yusuf)
-    - [] Sign out
+    - [X] Sign out
 
 ### Customer Side
-- [] List catalogue items
-- [] Sort items by prices, names
+- [X] List catalogue items
+- [X] Sort items by prices, names
 - [] Filter catalog items by categories, brand, model
 - [] View details (description, brand, price etc) of a product
 - [] Add items to shopping cart

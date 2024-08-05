@@ -1,7 +1,5 @@
-import { z } from "zod"
-import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { router, publicProcedure } from '../trpc';
 import { RegisterSchema, LoginSchema } from "@/lib/schemas/user";
-import { AuthError } from "next-auth";
 
 import { prisma } from "@/lib/db"
 
