@@ -5,13 +5,14 @@ import { faker } from '@faker-js/faker';
 const prisma = new PrismaClient()
 
 async function main() {
+  // Clear existing data
   await prisma.user.deleteMany({})
   await prisma.product.deleteMany({})
   await prisma.category.deleteMany({})
   await prisma.brand.deleteMany({})
 
+  // Create an owner user
   const hashedPassword = await bcrypt.hash("owner123", 10);
-
   const owner = await prisma.user.create({
     data: {
       email: 'owner@gmail.com',
@@ -19,62 +20,38 @@ async function main() {
     },
   })
 
-  const category = await prisma.category.createManyAndReturn({
+  // Create categories
+  const categories = await prisma.category.createManyAndReturn({
     data: [
       { name: 'Large' },
       { name: 'Small' },
     ],
   })
 
-  const brand = await prisma.brand.createManyAndReturn({
+  // Create brands
+  const brands = await prisma.brand.createManyAndReturn({
     data: [
       { name: 'Nike' },
       { name: 'Adidas' },
     ]
   })
 
-  await prisma.product.createMany({
-    data: [
-      {
-        name: faker.commerce.productName(),
-        image: "https://avatars.githubusercontent.com/kafka",
-        description: faker.commerce.productDescription(),
-        price: parseFloat(faker.commerce.price()),
-        categoryId: category[0].id,
-        brandId: brand[0].id,
-        model: "Shirt"
-      },
-      {
-        name: faker.commerce.productName(),
-        image: "https://avatars.githubusercontent.com/kafka",
-        description: faker.commerce.productDescription(),
-        price: parseFloat(faker.commerce.price()),
-        categoryId: category[1].id,
-        brandId: brand[1].id,
-        model: "Sweater"
-      },
-      {
-        name: faker.commerce.productName(),
-        image: "https://avatars.githubusercontent.com/kafka",
-        description: faker.commerce.productDescription(),
-        price: parseFloat(faker.commerce.price()),
-        categoryId: category[0].id,
-        brandId: brand[0].id,
-        model: "Pants"
-      },
-      {
-        name: faker.commerce.productName(),
-        image: "https://avatars.githubusercontent.com/kafka",
-        description: faker.commerce.productDescription(),
-        price: parseFloat(faker.commerce.price()),
-        categoryId: category[1].id,
-        brandId: brand[1].id,
-        model: "Hoodie"
-      }
-    ]
-  })
+  // Create 20 products
+  const productsData = Array.from({ length: 20 }).map(() => ({
+    name: faker.commerce.productName(),
+    image: faker.image.imageUrl(64, 64, 'product', true),  // Dynamic product images
+    description: faker.commerce.productDescription(),
+    price: parseFloat(faker.commerce.price()),
+    categoryId: faker.helpers.arrayElement(categories).id,
+    brandId: faker.helpers.arrayElement(brands).id,
+    model: faker.helpers.arrayElement(['Shirt', 'Sweater', 'Pants', 'Hoodie']),
+  }));
 
+  await prisma.product.createMany({
+    data: productsData,
+  })
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect()
