@@ -2,37 +2,27 @@
 
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { RegisterSchema } from "@/lib/schemas/user"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterSchema } from "@/lib/schemas/user";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { trpc } from "@/server/client";
 
 export default function Register() {
     const router = useRouter();
-    const [isPending, startTransition] = useTransition()
-    let register = trpc.user.register.useMutation()
+    const [isPending, startTransition] = useTransition();
+    const register = trpc.user.register.useMutation();
     
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
@@ -41,45 +31,47 @@ export default function Register() {
             password: "",
             passwordConfirmation: "",
         },
-    })
+    });
 
     async function onSubmit(values: z.infer<typeof RegisterSchema>) {
         startTransition(async () => {
-           let result = await register.mutateAsync({
+           const result = await register.mutateAsync({
                 email: values.email,
                 password: values.password,
                 passwordConfirmation: values.passwordConfirmation
-            })
+            });
 
             if (result.status === 201) {
                 router.push("/login");
-              }
-        })         
+            }
+        });         
     }
 
     return (
-        <Card className="w-full max-w-sm">
-            <CardHeader>
-                <CardTitle className="text-2xl">Login</CardTitle>
-                <CardDescription>
-                    Sign up using your email and password.
-                </CardDescription>
-            </CardHeader>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <CardContent className="grid gap-4">
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+            {/* Title */}
+            <h1 className="text-4xl font-bold text-center mb-10">
+                EECS 4413 Project
+            </h1>
+
+            {/* Signup Card */}
+            <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+                <h1 className="text-3xl font-semibold text-center mb-6">Sign up</h1>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel className="font-semibold">E-mail address</FormLabel>
                                     <FormControl>
                                         <Input 
-                                            placeholder="yusufahmed123@gmail.com" 
+                                            placeholder="you@example.com" 
                                             type="email" 
                                             disabled={isPending}
                                             {...field} 
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -91,13 +83,14 @@ export default function Register() {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel className="font-semibold">Password</FormLabel>
                                     <FormControl>
                                         <Input 
-                                            type="password"
+                                            type="password" 
                                             disabled={isPending}
                                             required 
                                             {...field} 
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -109,25 +102,41 @@ export default function Register() {
                             name="passwordConfirmation"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Confirmation Password</FormLabel>
+                                    <FormLabel className="font-semibold">Confirm Password</FormLabel>
                                     <FormControl>
                                         <Input 
                                             type="password" 
                                             disabled={isPending}
                                             required 
                                             {...field} 
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </CardContent>
-                    <CardFooter>
-                        <Button type="submit">Submit</Button>
-                    </CardFooter>
-                </form>
-            </Form>
-        </Card>
-    )
+                        <div className="space-y-4">
+                            <Button 
+                                type="submit" 
+                                className="w-full bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500"
+                            >
+                                Sign Up
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+                <hr className="my-6"/>
+                <div className="text-center">
+                    <p className="text-sm text-gray-600">Already have an account?</p>
+                    <Button 
+                        onClick={() => router.push('/login')} 
+                        className="w-full mt-2 bg-gray-200 text-black py-2 rounded hover:bg-gray-300"
+                    >
+                        Sign in
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
 }

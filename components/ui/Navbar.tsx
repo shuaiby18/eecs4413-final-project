@@ -12,6 +12,10 @@ export default function Navbar() {
     router.push('/searchResults');  // Navigate to the search results page
   };
 
+  const handleSignIn = () => {
+    router.push('/login');  // Navigate to the login page
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="flex justify-between items-center p-2 pl-4">
@@ -36,7 +40,7 @@ export default function Navbar() {
             <span className="text-xs text-gray-600">Cart</span>
           </div>
           <div className="flex flex-col items-center">
-            <button className="p-2 rounded">
+            <button className="p-2 rounded" onClick={handleSignIn}>
               <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
             </button>
             <span className="text-xs text-gray-600">Sign-In</span>
