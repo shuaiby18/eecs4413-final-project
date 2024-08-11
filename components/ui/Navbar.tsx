@@ -8,12 +8,17 @@ import { useState } from "react";  // Import useState
 
 export default function Navbar() {
   const router = useRouter();
-  const pathname = usePathname();  // Get the current pathname
-  const { data: session } = useSession();  // Get session data
-  const [isMenuOpen, setIsMenuOpen] = useState(false);  // State to handle dropdown menu visibility
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
 
   const handleSearch = () => {
-    router.push('/searchResults');
+    if (searchQuery.trim() !== "") {
+      router.push(`/searchResults?query=${encodeURIComponent(searchQuery)}`);
+    } else {
+      router.push(`/searchResults`);
+    }
   };
 
   const handleSignIn = () => {
@@ -21,12 +26,16 @@ export default function Navbar() {
       const callbackUrl = pathname;
       router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     } else {
-      setIsMenuOpen(!isMenuOpen);  // Toggle the dropdown menu when signed in
+      setIsMenuOpen(!isMenuOpen);
     }
   };
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });  // Sign out and redirect to home page
+    signOut({ callbackUrl: '/' });
+  };
+
+  const handleViewAllProducts = () => {
+    router.push('/searchResults'); // Navigate to searchResults without a query parameter
   };
 
   return (
@@ -41,6 +50,11 @@ export default function Navbar() {
               type="text"
               placeholder="Search for your product"
               className="p-2 border border-gray-300 rounded w-3/4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch(); // Handle enter key
+              }}
             />
             <button className="p-2 rounded" onClick={handleSearch}>
               <FontAwesomeIcon icon={faSearch} className="text-gray-500 h-6 w-6" />
@@ -76,6 +90,7 @@ export default function Navbar() {
         </div>
       </div>
       <div className="flex justify-start items-center space-x-8 bg-gray-100 p-2 pl-4">
+        <button className="text-gray-600 hover:text-gray-900" onClick={handleViewAllProducts}>View All Products</button>
         <button className="text-gray-600 hover:text-gray-900">Category 1</button>
         <button className="text-gray-600 hover:text-gray-900">Category 2</button>
         <button className="text-gray-600 hover:text-gray-900">Category 3</button>

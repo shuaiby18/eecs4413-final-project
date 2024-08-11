@@ -1,34 +1,15 @@
 "use client"
 
 import { trpc } from "@/server/client";
-import { useMemo, useState } from "react";
-import {
-  useReactTable,
-  ColumnDef,
-  getCoreRowModel,
-  getSortedRowModel,
-  flexRender,
-  SortingState,
-  SortingFn
-} from "@tanstack/react-table";
-
-import Navbar from "@/components/ui/Navbar"; // Import the reusable Navbar component
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from 'next/navigation'; // Import useSearchParams
+import Navbar from "@/components/ui/Navbar";
 
 // Custom sorting function for numeric values
-const numericSort: SortingFn<any> = (rowA, rowB, columnId) => {
+const numericSort = (rowA, rowB, columnId) => {
   const valueA = parseFloat(rowA.getValue(columnId));
   const valueB = parseFloat(rowB.getValue(columnId));
-  let result;
-
-  if (valueA > valueB) {
-    result = 1;
-  } else if (valueA < valueB) {
-    result = -1;
-  } else {
-    result = 0;
-  }
-
-  return result;
+  return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
 };
 
 // Filter Component
@@ -71,8 +52,17 @@ function Filters() {
 }
 
 export default function Home() {
-  // get all products
+  const searchParams = useSearchParams(); // Get the search params
+  const query = searchParams.get('query'); // Get the 'query' parameter
   let { data: dataAll } = trpc.product.getAll.useQuery();
+
+  // Filter products based on the search query
+  const filteredProducts = useMemo(() => {
+    if (!query) return dataAll;
+    return dataAll?.filter(product => 
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [query, dataAll]);
 
   return (
     <main className="flex min-h-screen pt-32">
@@ -86,7 +76,7 @@ export default function Home() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-4 gap-6 p-4 flex-grow" style={{ marginLeft: "16rem" }}>
-        {dataAll?.map((product, index) => (
+        {filteredProducts?.map((product, index) => (
           <div key={index} className="bg-white shadow rounded-lg p-4 flex flex-col justify-between h-full">
             <div>
               <img
