@@ -12,7 +12,7 @@ import {
   SortingFn
 } from "@tanstack/react-table";
 
-import Navbar from "@/components/ui/Navbar";  // Import the reusable Navbar component
+import Navbar from "@/components/ui/Navbar"; // Import the reusable Navbar component
 
 // Custom sorting function for numeric values
 const numericSort: SortingFn<any> = (rowA, rowB, columnId) => {
@@ -34,7 +34,7 @@ const numericSort: SortingFn<any> = (rowA, rowB, columnId) => {
 // Filter Component
 function Filters() {
   return (
-    <div className="bg-white shadow rounded-lg p-4 w-64">
+    <div className="bg-white shadow rounded-lg p-4 w-64 fixed top-32 left-4">
       <h2 className="text-lg font-semibold mb-4">Filters</h2>
       <div className="mb-4">
         <h3 className="text-md font-semibold">Category</h3>
@@ -80,22 +80,24 @@ export default function Home() {
       <Navbar />
 
       {/* Left Sidebar for Filters */}
-      <aside className="p-4">
+      <aside className="p-4" style={{ paddingTop: "0" }}>
         <Filters />
       </aside>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-4 gap-6 p-4 flex-grow">
+      <div className="grid grid-cols-4 gap-6 p-4 flex-grow" style={{ marginLeft: "16rem" }}>
         {dataAll?.map((product, index) => (
-          <div key={index} className="bg-white shadow rounded-lg p-4">
-            <img
-              src={product.image}
-              alt={product.description}
-              className="w-full h-40 object-cover rounded-md mb-4"
-            />
-            <h3 className="text-lg font-semibold">{product.name}</h3>
-            <p className="text-gray-500">${product.price}</p>
-            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
+          <div key={index} className="bg-white shadow rounded-lg p-4 flex flex-col justify-between h-full">
+            <div>
+              <img
+                src={product.image}
+                alt={product.description}
+                className="w-full h-40 object-cover rounded-md mb-4"
+              />
+              <h3 className="text-lg font-semibold">{product.name}</h3>
+              <p className="text-gray-500">${product.price}</p>
+            </div>
+            <button className="mt-auto bg-blue-500 text-white py-2 px-3 rounded">
               Add to Cart
             </button>
           </div>
