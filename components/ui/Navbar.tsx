@@ -2,25 +2,40 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faShoppingCart, faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { useRouter } from 'next/navigation';  // Import useRouter
+import { useRouter, usePathname } from 'next/navigation';  // Import useRouter and usePathname
+import { useSession, signOut } from "next-auth/react";  // Import useSession and signOut
+import { useState } from "react";  // Import useState
 
-// Navigation Bar Component
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();  // Get the current pathname
+  const { data: session } = useSession();  // Get session data
+  const [isMenuOpen, setIsMenuOpen] = useState(false);  // State to handle dropdown menu visibility
 
   const handleSearch = () => {
-    router.push('/searchResults');  // Navigate to the search results page
+    router.push('/searchResults');
   };
 
   const handleSignIn = () => {
-    router.push('/login');  // Navigate to the login page
+    if (!session) {
+      const callbackUrl = pathname;
+      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    } else {
+      setIsMenuOpen(!isMenuOpen);  // Toggle the dropdown menu when signed in
+    }
+  };
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });  // Sign out and redirect to home page
   };
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="flex justify-between items-center p-2 pl-4">
         <div className="flex items-center space-x-10 flex-grow">
-          <div className="text-xl font-semibold">EECS 4413 PROJECT</div>
+          <div className="text-xl font-semibold cursor-pointer" onClick={() => router.push('/')}>
+            EECS 4413 PROJECT
+          </div>
           <div className="flex-grow flex items-center space-x-2">
             <input
               type="text"
@@ -39,11 +54,24 @@ export default function Navbar() {
             </button>
             <span className="text-xs text-gray-600">Cart</span>
           </div>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center relative">
             <button className="p-2 rounded" onClick={handleSignIn}>
               <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
             </button>
-            <span className="text-xs text-gray-600">Sign-In</span>
+            <span className="text-xs text-gray-600 cursor-pointer">
+              {session ? "My Account" : "Sign-In"}
+            </span>
+            {/* Dropdown menu for sign out */}
+            {session && isMenuOpen && (
+              <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2">
+                <button
+                  onClick={handleSignOut}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
