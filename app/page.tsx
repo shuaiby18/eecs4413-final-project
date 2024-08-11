@@ -2,12 +2,18 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faShoppingCart, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';  // Import useRouter
 
 // Navigation Bar Component
 function Navbar() {
+  const router = useRouter();
+
+  const handleSearch = () => {
+    router.push('/searchResults');  // Navigate to the search results page
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-      {/* Adjusted padding for alignment */}
       <div className="flex justify-between items-center p-2 pl-4">
         <div className="flex items-center space-x-10 flex-grow">
           <div className="text-xl font-semibold">EECS 4413 PROJECT</div>
@@ -17,7 +23,7 @@ function Navbar() {
               placeholder="Search for your product"
               className="p-2 border border-gray-300 rounded w-3/4"
             />
-            <button className="p-2 rounded">
+            <button className="p-2 rounded" onClick={handleSearch}>
               <FontAwesomeIcon icon={faSearch} className="text-gray-500 h-6 w-6" />
             </button>
           </div>
