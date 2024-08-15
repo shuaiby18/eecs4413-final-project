@@ -23,7 +23,7 @@ function Model({ path }: { path: string }, ref: React.Ref<THREE.Group>) {
     const dist = maxDim / (2 * Math.tan(fov / 2));
 
     // Position the camera
-    camera.position.set(0, 0, dist * 1.5);
+    camera.position.set(0, 0, dist * 1.3);
     camera.lookAt(center);
 
     // Adjust the near and far planes of the camera

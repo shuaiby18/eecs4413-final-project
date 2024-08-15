@@ -45,15 +45,32 @@ function Filters() {
 
 export default function Home() {
   const models = [
-    { name: "Plane 8", path: "/models/model11.glb", price: 'N/A', user: { displayName: 'User8' } },
-    { name: "plane 1", path: "/models/model1.glb", price: 'N/A', user: { displayName: 'User1' } },
-    { name: "plane 2", path: "/models/model2.glb", price: 'N/A', user: { displayName: 'User2' } },
-    { name: "Plane 3", path: "/models/model3.glb", price: 'N/A', user: { displayName: 'User3' } },
-    { name: "Plane 4", path: "/models/model9.glb", price: 'N/A', user: { displayName: 'User4' } },
-    { name: "Plane 5", path: "/models/model8.glb", price: 'N/A', user: { displayName: 'User5' } },
-    { name: "Plane 6", path: "/models/model7.glb", price: 'N/A', user: { displayName: 'User6' } },
-    { name: "Plane 7", path: "/models/model10.glb", price: 'N/A', user: { displayName: 'User7' } },
-
+    // { name: "Plane 11", path: "/models/planes/planes-model11.glb", price: 'N/A', user: { displayName: 'User8' } },
+    // { name: "plane 1", path: "/models/planes/planes-model1.glb", price: 'N/A', user: { displayName: 'User1' } },
+    // { name: "plane 2", path: "/models/planes/planes-model2.glb", price: 'N/A', user: { displayName: 'User2' } },
+    // { name: "Plane 3", path: "/models/planes/planes-model3.glb", price: 'N/A', user: { displayName: 'User3' } },
+    // { name: "Plane 9", path: "/models/planes/planes-model9.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Plane 8", path: "/models/planes/planes-model8.glb", price: 'N/A', user: { displayName: 'User5' } },
+    // { name: "Plane 7", path: "/models/planes/planes-model7.glb", price: 'N/A', user: { displayName: 'User6' } },
+    // { name: "Plane 10", path: "/models/planes/planes-model10.glb", price: 'N/A', user: { displayName: 'User7' } },
+    { name: "Environment 1", path: "/models/environments/environment-model1.glb", price: 'N/A', user: { displayName: 'User9' } },
+    { name: "Environment 2", path: "/models/environments/environment-model2.glb", price: 'N/A', user: { displayName: 'User10' } },
+    { name: "Environment 3", path: "/models/environments/environment-model3.glb", price: 'N/A', user: { displayName: 'User11' } },
+    { name: "Environment 4", path: "/models/environments/environment-model4.glb", price: 'N/A', user: { displayName: 'User12' } },
+    { name: "Environment 5", path: "/models/environments/environment-model5.glb", price: 'N/A', user: { displayName: 'User13' } },
+    { name: "Environment 6", path: "/models/environments/environment-model6.glb", price: 'N/A', user: { displayName: 'User14' } },
+    { name: "Environment 7", path: "/models/environments/environment-model7.glb", price: 'N/A', user: { displayName: 'User14' } },
+    { name: "Environment 8", path: "/models/environments/environment-model8.glb", price: 'N/A', user: { displayName: 'User14' } },
+    { name: "Environment 9", path: "/models/environments/environment-model9.glb", price: 'N/A', user: { displayName: 'User14' } },
+    // { name: "Car 1", path: "/models/cars/cars-model1.glb", price: 'N/A', user: { displayName: 'User1' } },
+    // { name: "Car 2", path: "/models/cars/cars-model2.glb", price: 'N/A', user: { displayName: 'User2' } },
+    // { name: "Car 3", path: "/models/cars/cars-model3.glb", price: 'N/A', user: { displayName: 'User3' } },
+    // { name: "Car 4", path: "/models/cars/cars-model4.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Car 5", path: "/models/cars/cars-model5.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Car 6", path: "/models/cars/cars-model6.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Car 7", path: "/models/cars/cars-model7.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Car 8", path: "/models/cars/cars-model8.glb", price: 'N/A', user: { displayName: 'User4' } },
+    // { name: "Car 9", path: "/models/cars/cars-model9.glb", price: 'N/A', user: { displayName: 'User4' } },
 
   ];
   return (
