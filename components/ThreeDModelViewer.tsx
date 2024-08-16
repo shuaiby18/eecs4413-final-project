@@ -62,38 +62,38 @@ export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) 
       }}
     >
       {/* Ambient Light for subtle overall illumination */}
-      <ambientLight color={0xffffff} intensity={0.8} />
+      <ambientLight color={0xffffff} intensity={0.6} /> {/* Lowered slightly to make shadows more noticeable */}
 
       {/* SpotLight for strong shadow casting */}
       <spotLight
         color={0xffffff}
-        intensity={4} // Stronger spotlight
+        intensity={6} // Stronger spotlight for sharper shadows
         position={[10, 15, 10]} // Positioned at an angle to cast visible shadows
         angle={Math.PI / 6}
-        penumbra={0.5} // Softer edges for the shadows
+        penumbra={0.3} // Reduced penumbra for sharper shadows
         castShadow
-        shadow-bias={-0.001} // Small bias to prevent shadow acne
+        shadow-bias={-0.001}
         shadow-camera-near={8}
         shadow-camera-far={50}
-        shadow-mapSize-width={2048} // Higher resolution for sharper shadows
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={4096} // Higher resolution for even sharper shadows
+        shadow-mapSize-height={4096}
       />
 
       {/* Directional Light for broader shadow casting */}
       <directionalLight
         color={0xffffff}
-        intensity={4} // Stronger directional light to cast more visible shadows
-        position={[-10, 15, 10]} // Positioned from another angle
+        intensity={5} // Stronger directional light to make shadows even more visible
+        position={[-10, 20, 10]} // Positioned from another angle to cast different shadows
         castShadow
-        shadow-bias={-0.001} // Small bias to prevent shadow artifacts
+        shadow-bias={-0.001}
         shadow-camera-near={1}
         shadow-camera-far={50}
         shadow-camera-right={10}
         shadow-camera-left={-10}
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
-        shadow-mapSize-width={2048} // Higher resolution shadows
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={4096} // Higher resolution shadows for stronger definition
+        shadow-mapSize-height={4096}
       />
 
       <Suspense fallback={null}>
