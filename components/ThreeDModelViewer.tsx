@@ -55,25 +55,32 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
   const { camera } = useThree();
 
   useEffect(() => {
+    // Apply the rotation first
+    scene.rotation.y = THREE.MathUtils.degToRad(-30);   
+    scene.rotation.x = THREE.MathUtils.degToRad(10);
+  
+    // Now compute the bounding box after the rotation
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-
+  
+    // Re-center the scene
     scene.position.sub(center);
-
+  
+    // Calculate the new camera position
     const maxDim = Math.max(size.x, size.y, size.z);
     const fov = camera.fov * (Math.PI / 180);
     const dist = maxDim / (2 * Math.tan(fov / 2));
-
+  
     camera.position.set(0, 0, dist * 1.3);
     camera.lookAt(center);
-
+  
+    // Adjust the camera's near and far clipping planes
     camera.near = dist / 100;
     camera.far = dist * 100;
     camera.updateProjectionMatrix();
-
-    scene.rotation.y = THREE.MathUtils.degToRad(-30);
-
+  
+    // Play the first animation if it exists
     if (actions && animations.length > 0) {
       const firstAction = actions[Object.keys(actions)[0]];
       if (firstAction) {
@@ -81,7 +88,7 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
       }
     }
   }, [scene, camera, actions, animations]);
-
+  
   // Ensure all meshes in the model cast and receive shadows
   useEffect(() => {
     scene.traverse((child) => {
