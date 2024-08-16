@@ -3,6 +3,15 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 
+function createGradientBackground(dominantColor) {
+  // Generate a lighter version of the dominant color for the gradient
+  const colorArray = dominantColor.match(/\d+/g).map(Number);
+  const lighterColor = `rgba(${Math.min(colorArray[0] + 30, 255)}, ${Math.min(colorArray[1] + 30, 255)}, ${Math.min(colorArray[2] + 30, 255)}, 0.8)`;
+  
+  // Create a CSS gradient
+  return `linear-gradient(135deg, ${dominantColor}, ${lighterColor})`;
+}
+
 function getDominantColor(texture) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -79,7 +88,8 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
         // Check if the mesh has a texture, and calculate the dominant color if it does
         if (child.material && child.material.map) {
           const dominantColor = getDominantColor(child.material.map);
-          setBackgroundColor(dominantColor);
+          const gradient = createGradientBackground(dominantColor);
+          setBackgroundColor(gradient);
         }
       }
     });
@@ -99,7 +109,7 @@ export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) 
       style={{
         height: '100%',
         width: '100%',
-        backgroundColor: backgroundColor, // Dynamic background color
+        background: backgroundColor, // Dynamic gradient background
       }}
     >
       {/* Ambient Light for subtle overall illumination */}
