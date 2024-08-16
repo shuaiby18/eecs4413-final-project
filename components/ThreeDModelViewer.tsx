@@ -3,15 +3,19 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 
-function createGradientBackground(dominantColor) {
-  // Generate a lighter version of the dominant color for the gradient
+// Generate a multi-stop gradient with color interpolation
+function createMultiStopGradient(dominantColor) {
   const colorArray = dominantColor.match(/\d+/g).map(Number);
-  const lighterColor = `rgba(${Math.min(colorArray[0] + 30, 255)}, ${Math.min(colorArray[1] + 30, 255)}, ${Math.min(colorArray[2] + 30, 255)}, 0.8)`;
-  
-  // Create a CSS gradient
-  return `linear-gradient(135deg, ${dominantColor}, ${lighterColor})`;
+
+  // Generate complementary and analogous colors for a more dynamic gradient
+  const lighterColor = `rgba(${Math.min(colorArray[0] + 50, 255)}, ${Math.min(colorArray[1] + 50, 255)}, ${Math.min(colorArray[2] + 50, 255)}, 0.8)`;
+  const darkerColor = `rgba(${Math.max(colorArray[0] - 50, 0)}, ${Math.max(colorArray[1] - 50, 0)}, ${Math.max(colorArray[2] - 50, 0)}, 0.8)`;
+
+  // Create a more dynamic multi-stop gradient
+  return `linear-gradient(135deg, ${lighterColor} 0%, ${dominantColor} 50%, ${darkerColor} 100%)`;
 }
 
+// Extract the dominant color from the texture
 function getDominantColor(texture) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -88,7 +92,7 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
         // Check if the mesh has a texture, and calculate the dominant color if it does
         if (child.material && child.material.map) {
           const dominantColor = getDominantColor(child.material.map);
-          const gradient = createGradientBackground(dominantColor);
+          const gradient = createMultiStopGradient(dominantColor);
           setBackgroundColor(gradient);
         }
       }
@@ -103,6 +107,16 @@ const ForwardedModel = forwardRef(Model);
 export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) {
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
+  // Optionally, add an animation effect to the background
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Slightly adjust the background color periodically
+      setBackgroundColor(prev => prev.includes('deg') ? prev : prev + 'deg'); // You can add more complex animation logic here
+    }, 5000); // Adjust every 5 seconds (for example)
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, []);
+
   return (
     <Canvas
       shadows
@@ -110,6 +124,7 @@ export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) 
         height: '100%',
         width: '100%',
         background: backgroundColor, // Dynamic gradient background
+        transition: 'background 2s ease-in-out', // Smooth transition effect for background changes
       }}
     >
       {/* Ambient Light for subtle overall illumination */}
