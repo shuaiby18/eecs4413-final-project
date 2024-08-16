@@ -1,9 +1,42 @@
-import React, { Suspense, useEffect, useRef, forwardRef } from 'react';
+import React, { Suspense, useEffect, useState, useRef, forwardRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 
-function Model({ path }: { path: string }, ref: React.Ref<THREE.Group>) {
+function getDominantColor(texture) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = texture.image;
+
+  canvas.width = img.width;
+  canvas.height = img.height;
+
+  // Draw the texture to the canvas
+  ctx.drawImage(img, 0, 0);
+
+  // Get pixel data
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+  let r = 0, g = 0, b = 0;
+  let total = 0;
+
+  // Average the color of all pixels
+  for (let i = 0; i < data.length; i += 4) {
+    r += data[i];
+    g += data[i + 1];
+    b += data[i + 2];
+    total++;
+  }
+
+  // Calculate the average color
+  r = Math.floor(r / total);
+  g = Math.floor(g / total);
+  b = Math.floor(b / total);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor: (color: string) => void }, ref: React.Ref<THREE.Group>) {
   const { scene, animations } = useGLTF(path);
   const { actions } = useAnimations(animations, scene);
   const { camera } = useThree();
@@ -42,9 +75,15 @@ function Model({ path }: { path: string }, ref: React.Ref<THREE.Group>) {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+
+        // Check if the mesh has a texture, and calculate the dominant color if it does
+        if (child.material && child.material.map) {
+          const dominantColor = getDominantColor(child.material.map);
+          setBackgroundColor(dominantColor);
+        }
       }
     });
-  }, [scene]);
+  }, [scene, setBackgroundColor]);
 
   return <primitive ref={ref} object={scene} />;
 }
@@ -52,13 +91,15 @@ function Model({ path }: { path: string }, ref: React.Ref<THREE.Group>) {
 const ForwardedModel = forwardRef(Model);
 
 export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) {
+  const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
+
   return (
     <Canvas
       shadows
       style={{
         height: '100%',
         width: '100%',
-        backgroundColor: '#e0e0e0', // Neutral light gray background color
+        backgroundColor: backgroundColor, // Dynamic background color
       }}
     >
       {/* Ambient Light for subtle overall illumination */}
@@ -97,7 +138,7 @@ export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) 
       />
 
       <Suspense fallback={null}>
-        <ForwardedModel path={modelPath} />
+        <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} />
       </Suspense>
 
       <OrbitControls />
