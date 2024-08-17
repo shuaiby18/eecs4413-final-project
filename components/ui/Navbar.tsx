@@ -38,6 +38,10 @@ export default function Navbar() {
     router.push('/searchResults'); // Navigate to searchResults without a query parameter
   };
 
+  const handleCategoryClick = (category) => {
+    router.push(`/searchResults?category=${category}`);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="flex justify-between items-center p-2 pl-4">
@@ -91,14 +95,11 @@ export default function Navbar() {
       </div>
       <div className="flex justify-start items-center space-x-8 bg-gray-100 p-2 pl-4">
         <button className="text-gray-600 hover:text-gray-900" onClick={handleViewAllProducts}>View All Products</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 1</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 2</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 3</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 4</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 5</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 6</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 7</button>
-        <button className="text-gray-600 hover:text-gray-900">Category 8</button>
+        <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('animals')}>Animals</button>
+        <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('cars')}>Cars</button>
+        <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('characters')}>Characters</button>
+        <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('environments')}>Environments</button>
+        <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('planes')}>Planes</button>
       </div>
     </nav>
   );
