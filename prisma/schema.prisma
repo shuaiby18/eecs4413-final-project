@@ -18,6 +18,7 @@ model User {
   isTwoFactorEnabled Boolean   @default(false)
   accounts           Account[]
   Product            Product[]
+  cartItems     CartItem[]
 }
 
 model Account {
@@ -51,15 +52,19 @@ model Product {
   description String?
   author      String
   categoryId  Int
-  userId      String
-  path        String
-  category    Category @relation(fields: [categoryId], references: [id])
-  User        User     @relation(fields: [userId], references: [id])
-
-  @@index([categoryId])
+  brand       Brand      @relation(fields: [brandId], references: [id])
+  brandId     Int
+  model       String
+  cartItems   CartItem[]
+  // orderItems  OrderItem[]
 }
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-enum UserRole {
-  ADMIN
-  USER
+  @@unique([userId, productId]) // Ensure each product is only added once per user
 }
