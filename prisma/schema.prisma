@@ -29,6 +29,7 @@ model User {
   accounts      Account[]
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  cartItems     CartItem[]
 }
 
 model Account {
@@ -109,6 +110,16 @@ model Product {
   brand       Brand      @relation(fields: [brandId], references: [id])
   brandId     Int
   model       String
-  // cartItems   CartItem[]
+  cartItems   CartItem[]
   // orderItems  OrderItem[]
+}
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId]) // Ensure each product is only added once per user
 }
