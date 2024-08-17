@@ -38,7 +38,7 @@ export default function Cart() {
             <h1 className="text-4xl font-bold text-center mb-6">Shopping Cart</h1>
 
             {cartItems.length === 0 ? (
-                <p className="text-center text-gray-600">Your cart is empty.</p>
+                <p className="text-center text-gray-600">Your cart is empty hehe.</p>
             ) : (
                 <>
                     <div className="space-y-4">
