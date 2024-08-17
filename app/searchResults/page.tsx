@@ -147,7 +147,7 @@ export default function Home() {
             {/* Add to Cart Button */}
             <div className="p-2">
               <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
-                Add to Car
+                Add to Cart 
               </button>
             </div>
           </div>
