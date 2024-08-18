@@ -189,11 +189,11 @@ function HoverableModelCard({ model }) {
         style={{
           zIndex: 1, // Ensure the thumbnail stays on top until the model is loaded
           opacity: isModelLoaded ? 0 : 1, // Hide the thumbnail only after the model is loaded
-          transition: "opacity 0.5s ease", // Smooth transition for fading out the thumbnail
+          transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth transition for fading out and darkening on hover
           pointerEvents: isModelLoaded ? "none" : "auto", // Disable pointer events when the model is loaded
+          filter: isHovered ? "brightness(70%)" : "brightness(100%)", // Darken the thumbnail on hover
         }}
       />
     </div>
   );
 }
-
