@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useRef, forwardRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, useProgress} from '@react-three/drei';
 import * as THREE from 'three';
 
 // Generate a multi-stop gradient with color interpolation
@@ -117,6 +117,8 @@ const ForwardedModel = forwardRef(Model);
 export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPath: string, onModelLoad: () => void }) {
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
+  const { progress, active } = useProgress();
+
   // Optionally, add an animation effect to the background
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -128,55 +130,64 @@ export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPat
   }, []);
 
   return (
-    <Canvas
-      shadows
-      style={{
-        height: '100%',
-        width: '100%',
-        background: backgroundColor, // Dynamic gradient background
-        transition: 'background 2s ease-in-out', // Smooth transition effect for background changes
-      }}
-    >
-      {/* Ambient Light for subtle overall illumination */}
-      <ambientLight color={0xffffff} intensity={0.6} /> {/* Lowered slightly to make shadows more noticeable */}
+    <div style={{height: '100%', zIndex: 2 }}>
+      <Canvas
+        shadows
+        style={{
+          height: '100%',
+          width: '100%',
+          background: backgroundColor, // Dynamic gradient background
+          transition: 'background 2s ease-in-out', // Smooth transition effect for background changes
+        }}
+      >
+        {/* Ambient Light for subtle overall illumination */}
+        <ambientLight color={0xffffff} intensity={0.6} /> {/* Lowered slightly to make shadows more noticeable */}
 
-      {/* SpotLight for strong shadow casting */}
-      <spotLight
-        color={0xffffff}
-        intensity={6} // Stronger spotlight for sharper shadows
-        position={[10, 15, 10]} // Positioned at an angle to cast visible shadows
-        angle={Math.PI / 6}
-        penumbra={0.3} // Reduced penumbra for sharper shadows
-        castShadow
-        shadow-bias={-0.001}
-        shadow-camera-near={8}
-        shadow-camera-far={50}
-        shadow-mapSize-width={4096} // Higher resolution for even sharper shadows
-        shadow-mapSize-height={4096}
-      />
+        {/* SpotLight for strong shadow casting */}
+        <spotLight
+          color={0xffffff}
+          intensity={6} // Stronger spotlight for sharper shadows
+          position={[10, 15, 10]} // Positioned at an angle to cast visible shadows
+          angle={Math.PI / 6}
+          penumbra={0.3} // Reduced penumbra for sharper shadows
+          castShadow
+          shadow-bias={-0.001}
+          shadow-camera-near={8}
+          shadow-camera-far={50}
+          shadow-mapSize-width={4096} // Higher resolution for even sharper shadows
+          shadow-mapSize-height={4096}
+        />
 
-      {/* Directional Light for broader shadow casting */}
-      <directionalLight
-        color={0xffffff}
-        intensity={5} // Stronger directional light to make shadows even more visible
-        position={[-10, 20, 10]} // Positioned from another angle to cast different shadows
-        castShadow
-        shadow-bias={-0.001}
-        shadow-camera-near={1}
-        shadow-camera-far={50}
-        shadow-camera-right={10}
-        shadow-camera-left={-10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
-        shadow-mapSize-width={4096} // Higher resolution shadows for stronger definition
-        shadow-mapSize-height={4096}
-      />
+        {/* Directional Light for broader shadow casting */}
+        <directionalLight
+          color={0xffffff}
+          intensity={5} // Stronger directional light to make shadows even more visible
+          position={[-10, 20, 10]} // Positioned from another angle to cast different shadows
+          castShadow
+          shadow-bias={-0.001}
+          shadow-camera-near={1}
+          shadow-camera-far={50}
+          shadow-camera-right={10}
+          shadow-camera-left={-10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+          shadow-mapSize-width={4096} // Higher resolution shadows for stronger definition
+          shadow-mapSize-height={4096}
+        />
 
-      <Suspense fallback={null}>
-      <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} onModelLoad={onModelLoad} />
-      </Suspense>
+        <Suspense fallback={null}>
+        <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} onModelLoad={onModelLoad} />
+        </Suspense>
 
-      <OrbitControls />
-    </Canvas>
+        <OrbitControls />
+      </Canvas>
+
+      {progress < 100 && active && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10 }}>
+          <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#4caf50', transition: 'width 0.1s ease' }} />
+        </div>
+      )}
+
+    </div>
   );
 }

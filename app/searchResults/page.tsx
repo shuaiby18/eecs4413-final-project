@@ -161,22 +161,30 @@ function HoverableModelCard({ model }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    setIsModelLoaded(false); // Reset loaded state on hover
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setIsModelLoaded(false); // Ensure model resets when hover ends
+  };
+
   return (
     <div
       className="relative"
       style={{ height: "250px" }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsModelLoaded(false);
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Render 3D Model when hovered */}
       {isHovered && (
         <div className="absolute inset-0 w-full h-full">
           <ThreeDModelViewer
             modelPath={model.path}
-            onModelLoad={() => setIsModelLoaded(true)} // Set the model as loaded when it's fully rendered
+            isHovered={isHovered}
+            onModelLoad={() => setIsModelLoaded(true)} // Set model as loaded
           />
         </div>
       )}
@@ -187,11 +195,10 @@ function HoverableModelCard({ model }) {
         alt={model.name + " thumbnail"}
         className="absolute inset-0 w-full h-full object-cover"
         style={{
-          zIndex: 1, // Ensure the thumbnail stays on top until the model is loaded
-          opacity: isModelLoaded ? 0 : 1, // Hide the thumbnail only after the model is loaded
-          transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth transition for fading out and darkening on hover
-          pointerEvents: isModelLoaded ? "none" : "auto", // Disable pointer events when the model is loaded
-          filter: isHovered ? "brightness(70%)" : "brightness(100%)", // Darken the thumbnail on hover
+          zIndex: 1,
+          opacity: !isModelLoaded ? 1 : 0, // Keep thumbnail visible until model is fully loaded
+          filter: isHovered ? "brightness(70%)" : "brightness(100%)", // Darken thumbnail on hover
+          transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth fade-out and darkening
         }}
       />
     </div>
