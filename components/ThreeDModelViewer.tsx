@@ -49,7 +49,7 @@ function getDominantColor(texture) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor: (color: string) => void }, ref: React.Ref<THREE.Group>) {
+function Model({ path, setBackgroundColor, onModelLoad }: { path: string, setBackgroundColor: (color: string) => void, onModelLoad: () => void }, ref: React.Ref<THREE.Group>) {
   const { scene, animations } = useGLTF(path);
   const { actions } = useAnimations(animations, scene);
   const { camera } = useThree();
@@ -87,7 +87,10 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
         firstAction.play();
       }
     }
-  }, [scene, camera, actions, animations]);
+    if (onModelLoad) {
+      onModelLoad();
+    }
+  }, [scene, camera, actions, animations, onModelLoad]);
   
   // Ensure all meshes in the model cast and receive shadows
   useEffect(() => {
@@ -111,7 +114,7 @@ function Model({ path, setBackgroundColor }: { path: string, setBackgroundColor:
 
 const ForwardedModel = forwardRef(Model);
 
-export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) {
+export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPath: string, onModelLoad: () => void }) {
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
   // Optionally, add an animation effect to the background
@@ -170,7 +173,7 @@ export default function ThreeDModelViewer({ modelPath }: { modelPath: string }) 
       />
 
       <Suspense fallback={null}>
-        <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} />
+      <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} onModelLoad={onModelLoad} />
       </Suspense>
 
       <OrbitControls />

@@ -159,25 +159,41 @@ export default function Home() {
 
 function HoverableModelCard({ model }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isModelLoaded, setIsModelLoaded] = useState(false);
 
   return (
     <div
       className="relative"
       style={{ height: "250px" }}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsModelLoaded(false);
+      }}
     >
-      {isHovered ? (
-        <Suspense fallback={<div>Loading 3D Model...</div>}>
-          <ThreeDModelViewer modelPath={model.path} />
-        </Suspense>
-      ) : (
-        <img
-          src={model.thumbnail}
-          alt={model.name + " thumbnail"}
-          className="w-full h-full object-cover"
-        />
+      {/* Render 3D Model when hovered */}
+      {isHovered && (
+        <div className="absolute inset-0 w-full h-full">
+          <ThreeDModelViewer
+            modelPath={model.path}
+            onModelLoad={() => setIsModelLoaded(true)} // Set the model as loaded when it's fully rendered
+          />
+        </div>
       )}
+
+      {/* Always render the thumbnail */}
+      <img
+        src={model.thumbnail}
+        alt={model.name + " thumbnail"}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          zIndex: 1, // Ensure the thumbnail stays on top until the model is loaded
+          opacity: isModelLoaded ? 0 : 1, // Hide the thumbnail only after the model is loaded
+          transition: "opacity 0.5s ease", // Smooth transition for fading out the thumbnail
+          pointerEvents: isModelLoaded ? "none" : "auto", // Disable pointer events when the model is loaded
+        }}
+      />
     </div>
   );
 }
+
