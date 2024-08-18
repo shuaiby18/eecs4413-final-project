@@ -163,12 +163,11 @@ function HoverableModelCard({ model }) {
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    setIsModelLoaded(false); // Reset loaded state on hover
+    setIsModelLoaded(false); // Reset model load state on hover
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setIsModelLoaded(false); // Ensure model resets when hover ends
   };
 
   return (
@@ -196,8 +195,9 @@ function HoverableModelCard({ model }) {
         className="absolute inset-0 w-full h-full object-cover"
         style={{
           zIndex: 1,
-          opacity: !isModelLoaded ? 1 : 0, // Keep thumbnail visible until model is fully loaded
-          filter: isHovered ? "brightness(70%)" : "brightness(100%)", // Darken thumbnail on hover
+          pointerEvents: isModelLoaded ? 'none' : 'auto', // Disable pointer events when the model is loaded to allow interaction
+          opacity: !isModelLoaded || !isHovered ? 1 : 0, // Hide thumbnail when model is loaded and hovered
+          filter: isHovered && !isModelLoaded ? "brightness(70%)" : "brightness(100%)", // Darken thumbnail on hover until model loads
           transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth fade-out and darkening
         }}
       />
