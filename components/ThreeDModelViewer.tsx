@@ -114,11 +114,12 @@ function Model({ path, setBackgroundColor, onModelLoad }: { path: string, setBac
 
 const ForwardedModel = forwardRef(Model);
 
-export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPath: string, onModelLoad: () => void }) {
+export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }: { modelPath: string, isHovered: boolean, onModelLoad: () => void }) {
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
   const { progress, active } = useProgress();
   const [smoothProgress, setSmoothProgress] = useState(0); // Smooth progress state
+  const [isLoading, setIsLoading] = useState(false); // Manual loading state for controlling the bar
 
 
   // Optionally, add an animation effect to the background
@@ -131,6 +132,34 @@ export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPat
     return () => clearInterval(intervalId); // Clean up on unmount
   }, []);
 
+  // Reset the loading state every time the model is hovered over
+  useEffect(() => {
+    if (isHovered) {
+      setIsLoading(true);  // Show loading bar when hovered
+    }
+  }, [isHovered]);
+
+  // Smooth progress animation
+  useEffect(() => {
+    let rafId;
+    const animateProgress = () => {
+      setSmoothProgress((prev) => {
+        const diff = progress - prev;
+        return prev + diff * 0.1; // Smooth animation by taking 10% of the difference
+      });
+      rafId = requestAnimationFrame(animateProgress);
+    };
+    animateProgress();
+
+    return () => cancelAnimationFrame(rafId); // Clean up on unmount
+  }, [progress]);
+
+  // Hide loading bar when model is fully loaded
+  const handleModelLoad = () => {
+    setIsLoading(false);  // Model is loaded, stop showing the loading bar
+    onModelLoad();  // Trigger the callback to indicate the model is loaded
+  };
+    
   return (
     <div style={{height: '100%', zIndex: 2 }}>
       <Canvas
@@ -184,9 +213,9 @@ export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPat
         <OrbitControls />
       </Canvas>
 
-      {progress < 100 && active && (
+      {(isLoading || (progress < 100 && active)) && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10 }}>
-          <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#e81a0c', transition: 'width 0.1s ease' }} />
+          <div style={{ width: `${smoothProgress}%`, height: '100%', backgroundColor: '#e81a0c', transition: 'width 0.1s ease' }} />
         </div>
       )}
 
