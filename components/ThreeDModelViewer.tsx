@@ -118,6 +118,8 @@ export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPat
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
   const { progress, active } = useProgress();
+  const [smoothProgress, setSmoothProgress] = useState(0); // Smooth progress state
+
 
   // Optionally, add an animation effect to the background
   useEffect(() => {
@@ -184,7 +186,7 @@ export default function ThreeDModelViewer({ modelPath, onModelLoad }: { modelPat
 
       {progress < 100 && active && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10 }}>
-          <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#4caf50', transition: 'width 0.1s ease' }} />
+          <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#e81a0c', transition: 'width 0.1s ease' }} />
         </div>
       )}
 
