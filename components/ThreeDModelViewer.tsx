@@ -120,7 +120,6 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }:
   const { progress, active } = useProgress();
   const [smoothProgress, setSmoothProgress] = useState(0); // Smooth progress state
   const [isLoading, setIsLoading] = useState(false); // Manual loading state for controlling the bar
-  const [isBarVisible, setIsBarVisible] = useState(true); // State to control the visibility of the bar
 
 
   // Optionally, add an animation effect to the background
@@ -137,10 +136,8 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }:
   useEffect(() => {
     if (isHovered) {
       setIsLoading(true);  // Show loading bar when hovered
-      setIsBarVisible(true); // Ensure bar is visible again on hover
     }
   }, [isHovered]);
-  
 
   // Smooth progress animation
   useEffect(() => {
@@ -159,15 +156,10 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }:
 
   // Hide loading bar when model is fully loaded
   const handleModelLoad = () => {
-    setSmoothProgress(100); // Ensure progress bar reaches 100%
     setIsLoading(false);  // Model is loaded, stop showing the loading bar
-    setTimeout(() => {
-      setIsBarVisible(false); // Fade out the loading bar after a brief delay
-    }, 300);  // Adjust this timeout for the duration of the fade-out
     onModelLoad();  // Trigger the callback to indicate the model is loaded
   };
-  
-
+    
   return (
     <div style={{height: '100%', zIndex: 2 }}>
       <Canvas
@@ -215,14 +207,14 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }:
         />
 
         <Suspense fallback={null}>
-        <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} onModelLoad={handleModelLoad} />
+        <ForwardedModel path={modelPath} setBackgroundColor={setBackgroundColor} onModelLoad={onModelLoad} />
         </Suspense>
 
         <OrbitControls />
       </Canvas>
 
       {(isLoading || (progress < 100 && active)) && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10, opacity: isBarVisible ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10 }}>
           <div style={{ width: `${smoothProgress}%`, height: '100%', backgroundColor: '#e81a0c', transition: 'width 0.1s ease' }} />
         </div>
       )}
