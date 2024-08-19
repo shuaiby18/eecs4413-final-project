@@ -103,9 +103,15 @@ export default function ProductViewer() {
               {/* Full Screen Icon */}
               <FontAwesomeIcon
                 icon={faExpand}
-                onClick={toggleFullScreen}
+                onClick={() => toggleFullScreen(renderRef)}
                 className="absolute top-2 right-2 text-gray-700 hover:text-black cursor-pointer"
-                size="lg"
+                style={{
+                  fontSize: '24px', // Explicitly set the icon size
+                  width: '24px', // Define width and height explicitly
+                  height: '24px',
+                  transition: 'none', // Prevent any transition during load
+                  zIndex: 10, // Ensure it's on top
+                }}
               />
               <ThreeDModelViewer modelPath={selectedModel.path} style={{ width: "100%", height: "100%" }} />
             </div>
