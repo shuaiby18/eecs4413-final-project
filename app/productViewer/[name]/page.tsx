@@ -3,6 +3,9 @@
 import { useParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
+import { faExpand } from '@fortawesome/free-solid-svg-icons';
+import { useRef } from 'react'; // Import useRef
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Mock data for models (You should replace this with your actual data or fetch it)
 const models = [
@@ -58,8 +61,22 @@ const models = [
   { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "characters"},
 ];
 
+const toggleFullScreen = () => {
+  if (renderRef.current) {
+    if (renderRef.current.requestFullscreen) {
+      renderRef.current.requestFullscreen();
+    } else if (renderRef.current.webkitRequestFullscreen) { /* Safari */
+      renderRef.current.webkitRequestFullscreen();
+    } else if (renderRef.current.msRequestFullscreen) { /* IE11 */
+      renderRef.current.msRequestFullscreen();
+    }
+  }
+};
+
+
 export default function ProductViewer() {
   const { name } = useParams(); // Access the dynamic route parameter 'name'
+  const renderRef = useRef(null); // Reference for the render container
 
   // Normalize the name parameter from the URL (hyphenated, lowercase)
   const normalizedRouteName = name.toLowerCase().replace(/-/g, ' ');
@@ -81,10 +98,19 @@ export default function ProductViewer() {
         {/* Product Viewer */}
         <main className="w-full">
           <div className="grid grid-cols-2 gap-8">
-              {/* Product Image / 3D Render */}
-              <div style={{ width: "100%", height: "360px" }}>  {/* Set a specific height for the container */}
-                <ThreeDModelViewer modelPath={selectedModel.path} style={{ width: "100%", height: "100%" }} />
-              </div>
+            {/* Product Image / 3D Render */}
+            <div ref={renderRef} style={{ position: "relative", width: "100%", height: "360px" }}>
+              {/* Full Screen Icon */}
+              <FontAwesomeIcon
+                icon={faExpand}
+                onClick={toggleFullScreen}
+                className="absolute top-2 right-2 text-gray-700 hover:text-black cursor-pointer"
+                size="lg"
+              />
+              <ThreeDModelViewer modelPath={selectedModel.path} style={{ width: "100%", height: "100%" }} />
+            </div>
+
+            {/* Product Details */}
             <div className="space-y-6">
               <h2 className="text-3xl font-bold">{selectedModel.name}</h2>
               <p className="text-2xl font-semibold text-green-600">${selectedModel.price}</p>
