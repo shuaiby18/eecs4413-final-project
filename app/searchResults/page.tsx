@@ -4,6 +4,7 @@ import { useState, Suspense } from "react"; // Added Suspense to the import
 import { useSearchParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
+import Link from 'next/link'; // Import Link from Next.js
 
 // Define the type for a model
 type Model = {
@@ -139,9 +140,14 @@ export default function Home() {
             
             {/* Product Information */}
             <div className="p-2">
-              <h3 className="text-lg font-semibold">{model.name}</h3>
+              {/* Make product name a link */}
+              <h3 className="text-lg font-semibold">
+                <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s+/g, '-'))}`}>
+                  {model.name}
+                </Link>
+              </h3>
               <p className="text-gray-500">By {model.user.displayName}</p>
-              <p className="text-lg font-bold text-blue-500 mb-1">${model.price}</p>
+              <p className="text-lg font-bold mb-1">${model.price}</p>
             </div>
 
             {/* Add to Cart Button */}
