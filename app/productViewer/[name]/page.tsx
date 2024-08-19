@@ -61,20 +61,21 @@ const models = [
   { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "characters"},
 ];
 
-const toggleFullScreen = () => {
-  if (renderRef.current) {
-    if (renderRef.current.requestFullscreen) {
-      renderRef.current.requestFullscreen();
-    } else if (renderRef.current.webkitRequestFullscreen) { /* Safari */
-      renderRef.current.webkitRequestFullscreen();
-    } else if (renderRef.current.msRequestFullscreen) { /* IE11 */
-      renderRef.current.msRequestFullscreen();
-    }
-  }
-};
-
-
 export default function ProductViewer() {
+
+
+  const toggleFullScreen = () => {
+    if (renderRef.current) {
+      if (renderRef.current.requestFullscreen) {
+        renderRef.current.requestFullscreen();
+      } else if (renderRef.current.webkitRequestFullscreen) { /* Safari */
+        renderRef.current.webkitRequestFullscreen();
+      } else if (renderRef.current.msRequestFullscreen) { /* IE11 */
+        renderRef.current.msRequestFullscreen();
+      }
+    }
+  };
+
   const { name } = useParams(); // Access the dynamic route parameter 'name'
   const renderRef = useRef(null); // Reference for the render container
 
