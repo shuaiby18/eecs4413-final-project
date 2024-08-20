@@ -115,14 +115,23 @@ export default function ProductViewer() {
                 }}
               />
               <ThreeDModelViewer modelPath={selectedModel.path} style={{ width: "100%", height: "100%" }} />
+
+              {/* Author */}
+              <p className="text-md text-gray-500 mt-2">Model by: Generic Author</p>
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold">{selectedModel.name}</h2>
-              <p className="text-2xl font-semibold text-green-600">${selectedModel.price}</p>
-              <p className="text-md text-gray-700">{selectedModel.description}</p>
-              <div className="space-x-4">
+            <div className="flex flex-col justify-between h-full">
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold">{selectedModel.name}</h2>
+                <p className="text-2xl font-semibold text-green-600">${selectedModel.price}</p>
+                <p className="text-md text-gray-700">
+                  This is a beautifully crafted 3D model. Suitable for a variety of use cases such as games, simulations, or creative projects. The model is detailed and optimized for performance, ensuring a balance between visual fidelity and runtime efficiency.
+                </p>
+              </div>
+
+              {/* Buttons aligned at the bottom */}
+              <div className="mt-auto space-x-4">
                 <button className="bg-blue-500 text-white px-6 py-3 rounded shadow">
                   Buy Now
                 </button>
@@ -176,4 +185,5 @@ export default function ProductViewer() {
       </div>
     </div>
   );
+
 }
