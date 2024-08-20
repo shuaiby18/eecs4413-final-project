@@ -8,7 +8,6 @@ import { useRef, useState, useEffect} from 'react'; // Import useRef
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 
-// Mock data for models (You should replace this with your actual data or fetch it)
 const models = [
   { name: "Messerschmitt Bf-109 - Chicken Gun Plane", path: "/models/planes/planes-model1.glb", thumbnail: "/models/planes/planes-model1-thumbnail.png", price: 'N/A', author: { displayName: 'amogusstrikesback2' }, category: "planes", description: "This is a beautifully crafted 3D model. Suitable for a variety of use cases such as games, simulations, or creative projects. The model is detailed and optimized for performance, ensuring a balance between visual fidelity and runtime efficiency."},
   { name: "Chernovan Nemesis Plane", path: "/models/planes/planes-model2.glb", thumbnail: "/models/planes/planes-model2-thumbnail.png", price: 'N/A', author: { displayName: 'Swiss_Fox'}, category: "planes", description: "This is a beautifully crafted 3D model. Suitable for a variety of use cases such as games, simulations, or creative projects. The model is detailed and optimized for performance, ensuring a balance between visual fidelity and runtime efficiency." },
