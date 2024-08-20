@@ -131,12 +131,14 @@ export default function ProductViewer() {
   const { name } = useParams(); // Access the dynamic route parameter 'name'
   const renderRef = useRef(null); // Reference for the render container
 
-  // Normalize the name parameter from the URL (hyphenated, lowercase)
-  const normalizedRouteName = name.toLowerCase().replace(/-/g, ' ');
-
-  // Find the model that matches the selected product by converting hyphens back to spaces
-  const selectedModel = models.find((model) => model.name.toLowerCase() === normalizedRouteName);
-
+  // Normalize the name from the URL
+  const normalizedRouteName = decodeURIComponent(name)
+    .replace(/_/g, '-')  // Convert underscores back to dashes
+    .replace(/%20/g, ' ');  // Convert '%20' back to spaces
+  
+  // Find the model that matches the selected product
+  const selectedModel = models.find((model) => model.name.toLowerCase() === normalizedRouteName.toLowerCase());
+  
   if (!selectedModel) {
     return <div>Product not found</div>;
   }

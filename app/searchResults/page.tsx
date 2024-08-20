@@ -158,9 +158,10 @@ export default function Home() {
             <div className="p-2">
               {/* Make product name a link */}
               <h3 className="text-lg font-semibold">
-                <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s+/g, '-'))}`}>
-                  {model.name}
-                </Link>
+              <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`}>
+                {model.name}
+              </Link>
+
               </h3>
               <p className="text-gray-500">By {model.author.displayName}</p>
               <p className="text-lg font-bold mb-1">${model.price}</p>
