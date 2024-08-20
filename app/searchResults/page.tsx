@@ -147,36 +147,36 @@ export default function Home() {
         <Filters />
       </aside>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
-        {filteredModels.map((model, index) => (
-          <div key={index} className="bg-white shadow rounded-lg flex flex-col overflow-hidden">
-            {/* Hoverable Model Card */}
-            <HoverableModelCard model={model} />
-            
-            {/* Product Information */}
-            <div className="p-2">
-              {/* Make product name a link */}
-              <h3 className="text-lg font-semibold">
-              <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`}>
-                {model.name}
-              </Link>
+{/* Products Grid */}
+<div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
+  {filteredModels.map((model, index) => (
+    <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
+      {/* Hoverable Model Card */}
+      <HoverableModelCard model={model} />
 
-              </h3>
-              <p className="text-gray-500">By {model.author.displayName}</p>
-              <p className="text-lg font-bold mb-1">${model.price}</p>
-            </div>
-
-            {/* Add to Cart Button */}
-            <div className="p-2">
-              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
-                Add to Cart 
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* Product Information */}
+      <div className="p-2 flex-grow">
+        {/* Make product name a link */}
+        <h3 className="text-lg font-semibold">
+          <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`}>
+            {model.name}
+          </Link>
+        </h3>
+        <p className="text-gray-500">By {model.author.displayName}</p>
+        <p className="text-lg font-bold mb-1">${model.price}</p>
       </div>
-    </main>
+
+      {/* Add to Cart Button */}
+      <div className="p-2 mt-auto">
+        <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+</main>
+
   );
 }
 
