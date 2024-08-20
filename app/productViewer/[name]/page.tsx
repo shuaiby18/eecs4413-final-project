@@ -4,8 +4,9 @@ import { useParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { useRef, useState} from 'react'; // Import useRef
+import { useRef, useState, useEffect} from 'react'; // Import useRef
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 
 // Mock data for models (You should replace this with your actual data or fetch it)
 const models = [
@@ -206,7 +207,11 @@ export default function ProductViewer() {
                   <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden">
                     <HoverableModelCard model={model} />
                     <div className="p-4">
-                      <h4 className="text-lg font-semibold">{model.name}</h4>
+                      <h4 className="text-lg font-semibold">
+                        <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s+/g, '-'))}`}>
+                          {model.name}
+                        </Link>
+                      </h4>
                       <p className="text-green-600">${model.price}</p>
                       <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
                         Add to Cart
@@ -216,6 +221,8 @@ export default function ProductViewer() {
                 ))}
             </div>
           </section>
+
+
 
         </main>
       </div>
