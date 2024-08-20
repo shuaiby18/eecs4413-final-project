@@ -19,42 +19,58 @@ type Model = {
 };
 
 function Filters() {
+  const colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black"];
+  
   return (
-    <div className="bg-white shadow rounded-lg p-4 w-48 fixed top-32 left-4">
+    <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
       <h2 className="text-lg font-semibold mb-4">Filters</h2>
-      <div className="mb-4">
-        <h3 className="text-md font-semibold">Category</h3>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" />
-            Large
-          </label>
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" />
-            Small
-          </label>
-        </div>
-      </div>
-      <div className="mb-4">
-        <h3 className="text-md font-semibold">Brand</h3>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" />
-            Nike
-          </label>
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" />
-            Adidas
-          </label>
-        </div>
-      </div>
+
+      {/* Price Range */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Price Range</h3>
         <input type="range" min="0" max="1000" className="w-full" />
       </div>
+
+      {/* File Size */}
+      <div className="mb-4">
+        <h3 className="text-md font-semibold">File Size (MB)</h3>
+        <input type="range" min="0" max="500" className="w-full" />
+      </div>
+
+      {/* Polygon Count */}
+      <div className="mb-4">
+        <h3 className="text-md font-semibold">Polygon Count</h3>
+        <input type="range" min="0" max="50000" className="w-full" />
+      </div>
+
+      {/* Color */}
+      <div className="mb-4">
+        <h3 className="text-md font-semibold">Color</h3>
+        <div className="grid grid-cols-3 gap-2">
+          {colors.map((color) => (
+            <div
+              key={color}
+              className="w-8 h-8 cursor-pointer"
+              style={{
+                backgroundColor: color,
+                border: "2px solid #e2e8f0", // light gray border
+                transition: "border-color 0.3s ease",
+              }}
+              onClick={() => handleColorClick(color)} // Define function to handle color selection
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
+
+function handleColorClick(selectedColor) {
+  // Add logic to handle color selection here
+  console.log("Selected color:", selectedColor);
+}
+
+
 
 export default function Home() {
   const searchParams = useSearchParams();
