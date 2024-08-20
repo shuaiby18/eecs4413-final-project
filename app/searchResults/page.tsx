@@ -12,7 +12,7 @@ type Model = {
   path: string;
   thumbnail: string;
   price: string;
-  user: {
+  author: {
     displayName: string;
   };
   category: string; // Include category as part of the type
@@ -78,56 +78,56 @@ export default function Home() {
   const query = searchParams.get('query'); // Get the search query from the URL
 
   const models = [
-    { name: "Plane 1", path: "/models/planes/planes-model1.glb", thumbnail: "/models/planes/planes-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "planes" },
-    { name: "Plane 2", path: "/models/planes/planes-model2.glb", thumbnail: "/models/planes/planes-model2-thumbnail.png", price: 'N/A', user: { displayName: 'User2' }, category: "planes" },
-    { name: "Plane 3", path: "/models/planes/planes-model3.glb", thumbnail: "/models/planes/planes-model3-thumbnail.png", price: 'N/A', user: { displayName: 'User3' }, category: "planes"  },
-    { name: "Plane 4", path: "/models/planes/planes-model4.glb", thumbnail: "/models/planes/planes-model4-thumbnail.png", price: 'N/A', user: { displayName: 'User4' }, category: "planes" },
-    { name: "Plane 5", path: "/models/planes/planes-model5.glb", thumbnail: "/models/planes/planes-model5-thumbnail.png", price: 'N/A', user: { displayName: 'User5' }, category: "planes" },
-    { name: "Plane 6", path: "/models/planes/planes-model6.glb", thumbnail: "/models/planes/planes-model6-thumbnail.png", price: 'N/A', user: { displayName: 'User6' }, category: "planes" },
-    { name: "Plane 7", path: "/models/planes/planes-model7.glb", thumbnail: "/models/planes/planes-model7-thumbnail.png", price: 'N/A', user: { displayName: 'User7' }, category: "planes" },
-    { name: "Plane 8", path: "/models/planes/planes-model8.glb", thumbnail: "/models/planes/planes-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "planes" },
-    { name: "Plane 9", path: "/models/planes/planes-model9.glb", thumbnail: "/models/planes/planes-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "planes" },
+    { name: "Plane 1", path: "/models/planes/planes-model1.glb", thumbnail: "/models/planes/planes-model1-thumbnail.png", price: 'N/A', author: { displayName: 'author1' }, category: "planes" },
+    { name: "Plane 2", path: "/models/planes/planes-model2.glb", thumbnail: "/models/planes/planes-model2-thumbnail.png", price: 'N/A', author: { displayName: 'author2' }, category: "planes" },
+    { name: "Plane 3", path: "/models/planes/planes-model3.glb", thumbnail: "/models/planes/planes-model3-thumbnail.png", price: 'N/A', author: { displayName: 'author3' }, category: "planes"  },
+    { name: "Plane 4", path: "/models/planes/planes-model4.glb", thumbnail: "/models/planes/planes-model4-thumbnail.png", price: 'N/A', author: { displayName: 'author4' }, category: "planes" },
+    { name: "Plane 5", path: "/models/planes/planes-model5.glb", thumbnail: "/models/planes/planes-model5-thumbnail.png", price: 'N/A', author: { displayName: 'author5' }, category: "planes" },
+    { name: "Plane 6", path: "/models/planes/planes-model6.glb", thumbnail: "/models/planes/planes-model6-thumbnail.png", price: 'N/A', author: { displayName: 'author6' }, category: "planes" },
+    { name: "Plane 7", path: "/models/planes/planes-model7.glb", thumbnail: "/models/planes/planes-model7-thumbnail.png", price: 'N/A', author: { displayName: 'author7' }, category: "planes" },
+    { name: "Plane 8", path: "/models/planes/planes-model8.glb", thumbnail: "/models/planes/planes-model8-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "planes" },
+    { name: "Plane 9", path: "/models/planes/planes-model9.glb", thumbnail: "/models/planes/planes-model9-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "planes" },
 
-    { name: "Environment 1", path: "/models/environments/environment-model1.glb", thumbnail: "/models/environments/environment-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "environments"},
-    { name: "Environment 2", path: "/models/environments/environment-model2.glb", thumbnail: "/models/environments/environment-model2-thumbnail.png", price: 'N/A', user: { displayName: 'User2' }, category: "environments"},
-    { name: "Environment 3", path: "/models/environments/environment-model3.glb", thumbnail: "/models/environments/environment-model3-thumbnail.png", price: 'N/A', user: { displayName: 'User3' }, category: "environments"},
-    { name: "Environment 4", path: "/models/environments/environment-model4.glb", thumbnail: "/models/environments/environment-model4-thumbnail.png", price: 'N/A', user: { displayName: 'User4' }, category: "environments"},
-    { name: "Environment 5", path: "/models/environments/environment-model5.glb", thumbnail: "/models/environments/environment-model5-thumbnail.png", price: 'N/A', user: { displayName: 'User5' }, category: "environments"},
-    { name: "Environment 6", path: "/models/environments/environment-model6.glb", thumbnail: "/models/environments/environment-model6-thumbnail.png", price: 'N/A', user: { displayName: 'User6' }, category: "environments"},
-    { name: "Environment 7", path: "/models/environments/environment-model7.glb", thumbnail: "/models/environments/environment-model7-thumbnail.png", price: 'N/A', user: { displayName: 'User7' }, category: "environments"},
-    { name: "Environment 8", path: "/models/environments/environment-model8.glb", thumbnail: "/models/environments/environment-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "environments"},
-    { name: "Environment 9", path: "/models/environments/environment-model9.glb", thumbnail: "/models/environments/environment-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "environments"},
+    { name: "Environment 1", path: "/models/environments/environment-model1.glb", thumbnail: "/models/environments/environment-model1-thumbnail.png", price: 'N/A', author: { displayName: 'author1' }, category: "environments"},
+    { name: "Environment 2", path: "/models/environments/environment-model2.glb", thumbnail: "/models/environments/environment-model2-thumbnail.png", price: 'N/A', author: { displayName: 'author2' }, category: "environments"},
+    { name: "Environment 3", path: "/models/environments/environment-model3.glb", thumbnail: "/models/environments/environment-model3-thumbnail.png", price: 'N/A', author: { displayName: 'author3' }, category: "environments"},
+    { name: "Environment 4", path: "/models/environments/environment-model4.glb", thumbnail: "/models/environments/environment-model4-thumbnail.png", price: 'N/A', author: { displayName: 'author4' }, category: "environments"},
+    { name: "Environment 5", path: "/models/environments/environment-model5.glb", thumbnail: "/models/environments/environment-model5-thumbnail.png", price: 'N/A', author: { displayName: 'author5' }, category: "environments"},
+    { name: "Environment 6", path: "/models/environments/environment-model6.glb", thumbnail: "/models/environments/environment-model6-thumbnail.png", price: 'N/A', author: { displayName: 'author6' }, category: "environments"},
+    { name: "Environment 7", path: "/models/environments/environment-model7.glb", thumbnail: "/models/environments/environment-model7-thumbnail.png", price: 'N/A', author: { displayName: 'author7' }, category: "environments"},
+    { name: "Environment 8", path: "/models/environments/environment-model8.glb", thumbnail: "/models/environments/environment-model8-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "environments"},
+    { name: "Environment 9", path: "/models/environments/environment-model9.glb", thumbnail: "/models/environments/environment-model9-thumbnail.png", price: 'N/A', author: { displayName: 'author9' }, category: "environments"},
 
-    { name: "Car 1", path: "/models/cars/cars-model1.glb", thumbnail: "/models/cars/cars-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "cars"},
-    { name: "Car 2", path: "/models/cars/cars-model2.glb", thumbnail: "/models/cars/cars-model2-thumbnail.png", price: 'N/A', user: { displayName: 'User2' }, category: "cars"},
-    { name: "Car 3", path: "/models/cars/cars-model3.glb", thumbnail: "/models/cars/cars-model3-thumbnail.png", price: 'N/A', user: { displayName: 'User3' }, category: "cars" },
-    { name: "Car 4", path: "/models/cars/cars-model4.glb", thumbnail: "/models/cars/cars-model4-thumbnail.png", price: 'N/A', user: { displayName: 'User4' }, category: "cars" },
-    { name: "Car 5", path: "/models/cars/cars-model5.glb", thumbnail: "/models/cars/cars-model5-thumbnail.png", price: 'N/A', user: { displayName: 'User5' }, category: "cars" },
-    { name: "Car 6", path: "/models/cars/cars-model6.glb", thumbnail: "/models/cars/cars-model6-thumbnail.png", price: 'N/A', user: { displayName: 'User6' }, category: "cars" },
-    { name: "Car 7", path: "/models/cars/cars-model7.glb", thumbnail: "/models/cars/cars-model7-thumbnail.png", price: 'N/A', user: { displayName: 'User7' }, category: "cars" },
-    { name: "Car 8", path: "/models/cars/cars-model8.glb", thumbnail: "/models/cars/cars-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "cars" },
-    { name: "Car 9", path: "/models/cars/cars-model9.glb", thumbnail: "/models/cars/cars-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "cars" },
-    { name: "Car 10", path: "/models/cars/cars-model10.glb", thumbnail: "/models/cars/cars-model10-thumbnail.png", price: 'N/A', user: { displayName: 'User10' }, category: "cars" },
+    { name: "Car 1", path: "/models/cars/cars-model1.glb", thumbnail: "/models/cars/cars-model1-thumbnail.png", price: 'N/A', author: { displayName: 'author1' }, category: "cars"},
+    { name: "Car 2", path: "/models/cars/cars-model2.glb", thumbnail: "/models/cars/cars-model2-thumbnail.png", price: 'N/A', author: { displayName: 'author2' }, category: "cars"},
+    { name: "Car 3", path: "/models/cars/cars-model3.glb", thumbnail: "/models/cars/cars-model3-thumbnail.png", price: 'N/A', author: { displayName: 'author3' }, category: "cars" },
+    { name: "Car 4", path: "/models/cars/cars-model4.glb", thumbnail: "/models/cars/cars-model4-thumbnail.png", price: 'N/A', author: { displayName: 'author4' }, category: "cars" },
+    { name: "Car 5", path: "/models/cars/cars-model5.glb", thumbnail: "/models/cars/cars-model5-thumbnail.png", price: 'N/A', author: { displayName: 'author5' }, category: "cars" },
+    { name: "Car 6", path: "/models/cars/cars-model6.glb", thumbnail: "/models/cars/cars-model6-thumbnail.png", price: 'N/A', author: { displayName: 'author6' }, category: "cars" },
+    { name: "Car 7", path: "/models/cars/cars-model7.glb", thumbnail: "/models/cars/cars-model7-thumbnail.png", price: 'N/A', author: { displayName: 'author7' }, category: "cars" },
+    { name: "Car 8", path: "/models/cars/cars-model8.glb", thumbnail: "/models/cars/cars-model8-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "cars" },
+    { name: "Car 9", path: "/models/cars/cars-model9.glb", thumbnail: "/models/cars/cars-model9-thumbnail.png", price: 'N/A', author: { displayName: 'author9' }, category: "cars" },
+    { name: "Car 10", path: "/models/cars/cars-model10.glb", thumbnail: "/models/cars/cars-model10-thumbnail.png", price: 'N/A', author: { displayName: 'author10' }, category: "cars" },
 
-    { name: "Animal 1", path: "/models/animals/animals-model1.glb", thumbnail: "/models/animals/animals-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "animals"},
-    { name: "Animal 2", path: "/models/animals/animals-model2.glb", thumbnail: "/models/animals/animals-model2-thumbnail.png", price: 'N/A', user: { displayName: 'User2' }, category: "animals"},
-    { name: "Animal 3", path: "/models/animals/animals-model3.glb", thumbnail: "/models/animals/animals-model3-thumbnail.png", price: 'N/A', user: { displayName: 'User3' }, category: "animals"},
-    { name: "Animal 4", path: "/models/animals/animals-model4.glb", thumbnail: "/models/animals/animals-model4-thumbnail.png", price: 'N/A', user: { displayName: 'User4' }, category: "animals"},
-    { name: "Animal 5", path: "/models/animals/animals-model5.glb", thumbnail: "/models/animals/animals-model5-thumbnail.png", price: 'N/A', user: { displayName: 'User5' }, category: "animals"},
-    { name: "Animal 6", path: "/models/animals/animals-model6.glb", thumbnail: "/models/animals/animals-model6-thumbnail.png", price: 'N/A', user: { displayName: 'User6' }, category: "animals"},
-    { name: "Animal 7", path: "/models/animals/animals-model7.glb", thumbnail: "/models/animals/animals-model7-thumbnail.png", price: 'N/A', user: { displayName: 'User7' }, category: "animals"},
-    { name: "Animal 8", path: "/models/animals/animals-model8.glb", thumbnail: "/models/animals/animals-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "animals"},
-    { name: "Animal 9", path: "/models/animals/animals-model9.glb", thumbnail: "/models/animals/animals-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "animals"},
+    { name: "Animal 1", path: "/models/animals/animals-model1.glb", thumbnail: "/models/animals/animals-model1-thumbnail.png", price: 'N/A', author: { displayName: 'author1' }, category: "animals"},
+    { name: "Animal 2", path: "/models/animals/animals-model2.glb", thumbnail: "/models/animals/animals-model2-thumbnail.png", price: 'N/A', author: { displayName: 'author2' }, category: "animals"},
+    { name: "Animal 3", path: "/models/animals/animals-model3.glb", thumbnail: "/models/animals/animals-model3-thumbnail.png", price: 'N/A', author: { displayName: 'author3' }, category: "animals"},
+    { name: "Animal 4", path: "/models/animals/animals-model4.glb", thumbnail: "/models/animals/animals-model4-thumbnail.png", price: 'N/A', author: { displayName: 'author4' }, category: "animals"},
+    { name: "Animal 5", path: "/models/animals/animals-model5.glb", thumbnail: "/models/animals/animals-model5-thumbnail.png", price: 'N/A', author: { displayName: 'author5' }, category: "animals"},
+    { name: "Animal 6", path: "/models/animals/animals-model6.glb", thumbnail: "/models/animals/animals-model6-thumbnail.png", price: 'N/A', author: { displayName: 'author6' }, category: "animals"},
+    { name: "Animal 7", path: "/models/animals/animals-model7.glb", thumbnail: "/models/animals/animals-model7-thumbnail.png", price: 'N/A', author: { displayName: 'author7' }, category: "animals"},
+    { name: "Animal 8", path: "/models/animals/animals-model8.glb", thumbnail: "/models/animals/animals-model8-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "animals"},
+    { name: "Animal 9", path: "/models/animals/animals-model9.glb", thumbnail: "/models/animals/animals-model9-thumbnail.png", price: 'N/A', author: { displayName: 'author9' }, category: "animals"},
 
-    { name: "Character 1", path: "/models/characters/character-model1.glb", thumbnail: "/models/characters/character-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "characters"},
-    { name: "Character 2", path: "/models/characters/character-model2.glb", thumbnail: "/models/characters/character-model2-thumbnail.png", price: 'N/A', user: { displayName: 'User2' }, category: "characters"},
-    { name: "Character 3", path: "/models/characters/character-model3.glb", thumbnail: "/models/characters/character-model3-thumbnail.png", price: 'N/A', user: { displayName: 'User3' }, category: "characters"},
-    { name: "Character 4", path: "/models/characters/character-model4.glb", thumbnail: "/models/characters/character-model4-thumbnail.png", price: 'N/A', user: { displayName: 'User4' }, category: "characters"},
-    { name: "Character 5", path: "/models/characters/character-model5.glb", thumbnail: "/models/characters/character-model5-thumbnail.png", price: 'N/A', user: { displayName: 'User5' }, category: "characters"},
-    { name: "Character 6", path: "/models/characters/character-model6.glb", thumbnail: "/models/characters/character-model6-thumbnail.png", price: 'N/A', user: { displayName: 'User6' }, category: "characters"},
-    { name: "Character 7", path: "/models/characters/character-model7.glb", thumbnail: "/models/characters/character-model7-thumbnail.png", price: 'N/A', user: { displayName: 'User7' }, category: "characters"},
-    { name: "Character 8", path: "/models/characters/character-model8.glb", thumbnail: "/models/characters/character-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "characters"},
-    { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "characters"},
+    { name: "Character 1", path: "/models/characters/character-model1.glb", thumbnail: "/models/characters/character-model1-thumbnail.png", price: 'N/A', author: { displayName: 'author1' }, category: "characters"},
+    { name: "Character 2", path: "/models/characters/character-model2.glb", thumbnail: "/models/characters/character-model2-thumbnail.png", price: 'N/A', author: { displayName: 'author2' }, category: "characters"},
+    { name: "Character 3", path: "/models/characters/character-model3.glb", thumbnail: "/models/characters/character-model3-thumbnail.png", price: 'N/A', author: { displayName: 'author3' }, category: "characters"},
+    { name: "Character 4", path: "/models/characters/character-model4.glb", thumbnail: "/models/characters/character-model4-thumbnail.png", price: 'N/A', author: { displayName: 'author4' }, category: "characters"},
+    { name: "Character 5", path: "/models/characters/character-model5.glb", thumbnail: "/models/characters/character-model5-thumbnail.png", price: 'N/A', author: { displayName: 'author5' }, category: "characters"},
+    { name: "Character 6", path: "/models/characters/character-model6.glb", thumbnail: "/models/characters/character-model6-thumbnail.png", price: 'N/A', author: { displayName: 'author6' }, category: "characters"},
+    { name: "Character 7", path: "/models/characters/character-model7.glb", thumbnail: "/models/characters/character-model7-thumbnail.png", price: 'N/A', author: { displayName: 'author7' }, category: "characters"},
+    { name: "Character 8", path: "/models/characters/character-model8.glb", thumbnail: "/models/characters/character-model8-thumbnail.png", price: 'N/A', author: { displayName: 'author8' }, category: "characters"},
+    { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', author: { displayName: 'author9' }, category: "characters"},
   ];
 
   // Filter models based on category and search query
@@ -162,7 +162,7 @@ export default function Home() {
                   {model.name}
                 </Link>
               </h3>
-              <p className="text-gray-500">By {model.user.displayName}</p>
+              <p className="text-gray-500">By {model.author.displayName}</p>
               <p className="text-lg font-bold mb-1">${model.price}</p>
             </div>
 
