@@ -185,10 +185,10 @@ export default function ProductViewer() {
 
               {/* Buttons aligned at the bottom */}
               <div className="mt-auto space-x-4">
-                <button className="bg-blue-500 text-white px-6 py-3 rounded shadow">
+                <button className="bg-green-600 text-white px-6 py-3 rounded shadow">
                   Buy Now
                 </button>
-                <button className="bg-gray-300 px-6 py-3 rounded shadow">
+                <button className="bg-blue-500 px-6 py-3 rounded shadow">
                   Add to Cart
                 </button>
               </div>
@@ -213,7 +213,7 @@ export default function ProductViewer() {
                         </Link>
                       </h4>
                       <p className="text-green-600">${model.price}</p>
-                      <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
+                      <button className="bg-blue-500 mt-4 px-4 py-2 rounded w-full">
                         Add to Cart
                       </button>
                     </div>
