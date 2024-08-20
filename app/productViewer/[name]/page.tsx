@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { useRef } from 'react'; // Import useRef
+import { useRef, useState} from 'react'; // Import useRef
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Mock data for models (You should replace this with your actual data or fetch it)
@@ -60,6 +60,58 @@ const models = [
   { name: "Character 8", path: "/models/characters/character-model8.glb", thumbnail: "/models/characters/character-model8-thumbnail.png", price: 'N/A', user: { displayName: 'User8' }, category: "characters"},
   { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "characters"},
 ];
+
+
+
+function HoverableModelCard({ model }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isModelLoaded, setIsModelLoaded] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    setIsModelLoaded(false); // Reset model load state on hover
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  return (
+    <div
+      className="relative"
+      style={{ height: "250px" }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Render 3D Model when hovered */}
+      {isHovered && (
+        <div className="absolute inset-0 w-full h-full">
+          <ThreeDModelViewer
+            modelPath={model.path}
+            isHovered={isHovered}
+            onModelLoad={() => setIsModelLoaded(true)} // Set model as loaded
+          />
+        </div>
+      )}
+
+      {/* Always render the thumbnail */}
+      <img
+        src={model.thumbnail}
+        alt={model.name + " thumbnail"}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          zIndex: 1,
+          pointerEvents: isModelLoaded ? 'none' : 'auto', // Disable pointer events when the model is loaded to allow interaction
+          opacity: !isModelLoaded || !isHovered ? 1 : 0, // Hide thumbnail when model is loaded and hovered
+          filter: isHovered && !isModelLoaded ? "brightness(70%)" : "brightness(100%)", // Darken thumbnail on hover until model loads
+          transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth fade-out and darkening
+        }}
+      />
+    </div>
+  );
+}
+
+
 
 export default function ProductViewer() {
 
@@ -146,44 +198,29 @@ export default function ProductViewer() {
           <section className="mt-12">
             <h3 className="text-2xl font-semibold mb-6">Suggested Items</h3>
             <div className="grid grid-cols-3 gap-6">
-              {/* Item Card */}
-              <div className="bg-white shadow-lg p-4">
-                <div className="h-48 bg-gray-200 flex justify-center items-center">
-                  <span>Image</span>
-                </div>
-                <h4 className="mt-4 text-lg font-semibold">Item Name</h4>
-                <p className="text-green-600">$Price</p>
-                <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
-                  Add to Cart
-                </button>
-              </div>
-
-              <div className="bg-white shadow-lg p-4">
-                <div className="h-48 bg-gray-200 flex justify-center items-center">
-                  <span>Image</span>
-                </div>
-                <h4 className="mt-4 text-lg font-semibold">Item Name</h4>
-                <p className="text-green-600">$Price</p>
-                <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
-                  Add to Cart
-                </button>
-              </div>
-
-              <div className="bg-white shadow-lg p-4">
-                <div className="h-48 bg-gray-200 flex justify-center items-center">
-                  <span>Image</span>
-                </div>
-                <h4 className="mt-4 text-lg font-semibold">Item Name</h4>
-                <p className="text-green-600">$Price</p>
-                <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
-                  Add to Cart
-                </button>
-              </div>
+              {/* Filter models from the same category as the selected model */}
+              {models
+                .filter(model => model.category === selectedModel.category && model.name !== selectedModel.name)
+                .slice(0, 3) // Limit to 3 models
+                .map((model, index) => (
+                  <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <HoverableModelCard model={model} />
+                    <div className="p-4">
+                      <h4 className="text-lg font-semibold">{model.name}</h4>
+                      <p className="text-green-600">${model.price}</p>
+                      <button className="bg-gray-300 mt-4 px-4 py-2 rounded w-full">
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                ))}
             </div>
           </section>
+
         </main>
       </div>
     </div>
   );
+
 
 }
