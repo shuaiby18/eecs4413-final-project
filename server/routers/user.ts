@@ -1,5 +1,5 @@
 import { router, publicProcedure } from '../trpc';
-import { RegisterSchema, LoginSchema } from "@/lib/schemas/user";
+import { RegisterSchema, LoginSchema, UpdateSchema } from "@/lib/schemas/user";
 
 import { prisma } from "@/lib/db"
 
@@ -26,6 +26,30 @@ export const userRouter = router({
       await prisma.user.create({
         data: {
           email,
+          password: hashedPassword,
+        },
+      });
+
+      return { status: 201 }
+    }),
+
+    update: publicProcedure
+    .input(UpdateSchema)
+    .mutation(async (opts) => {
+      const {name, email, password } = opts.input;
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const existingUser = await getUserByEmail(email);
+
+      if (!existingUser) {
+        return { error: "User does not exist" };
+      }
+    
+      await prisma.user.update({
+        where: {id:existingUser.id}, 
+        data: {
+          name,
           password: hashedPassword,
         },
       });
