@@ -38,20 +38,25 @@ export const userRouter = router({
     .mutation(async (opts) => {
       const {name, email, password } = opts.input;
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      
 
       const existingUser = await getUserByEmail(email);
 
       if (!existingUser) {
+        
         return { error: "User does not exist" };
       }
-    
+      const data:{name:string,password?:string} =  { 
+        name,
+        
+      }
+      if (password){
+      const hashedPassword = await bcrypt.hash(password, 10);
+      data.password =  hashedPassword
+    }
       await prisma.user.update({
         where: {id:existingUser.id}, 
-        data: {
-          name,
-          password: hashedPassword,
-        },
+        data:data ,
       });
 
       return { status: 201 }

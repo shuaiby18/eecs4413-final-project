@@ -38,10 +38,10 @@ export const RegisterSchema = z
     }),
     password: z.string().min(6, {
       message: "Please enter a password with at least 6 characters, required",
-    }),
+    }).or(z.literal("")),
     passwordConfirmation: z.string().min(6, {
       message: "Please confirm your password, required.",
-    }),
+    }).or(z.literal("")),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords do not match.",
