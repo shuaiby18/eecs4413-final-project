@@ -5,6 +5,7 @@ import { faSearch, faShoppingCart, faUserCircle } from '@fortawesome/free-solid-
 import { useRouter, usePathname } from 'next/navigation';  // Import useRouter and usePathname
 import { useSession, signOut } from "next-auth/react";  // Import useSession and signOut
 import { useState } from "react";  // Import useState
+import Link from 'next/link';
 
 export default function Navbar() {
   const router = useRouter();
@@ -88,6 +89,12 @@ export default function Navbar() {
                 >
                   Sign Out
                 </button>
+                <Link
+                  href={"/profile"}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Profile
+                </Link>
               </div>
             )}
           </div>
