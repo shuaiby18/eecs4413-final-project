@@ -77,7 +77,7 @@ export default function Profilepage() {
   
         {/* Padding added below Navbar */}
         <div className="mt-4 w-full"></div> {/* Adds margin-top of 1rem (4 * 0.25rem) */}
-  <div className="w-full px-4 w-1/3" >
+  <div className="w-full px-4 md:w-1/3" >
         <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
