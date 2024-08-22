@@ -21,9 +21,9 @@ export default function Navbar() {
       router.push(`/searchResults`);
     }
   };
-
   const handleSignIn = () => {
     if (!session) {
+      
       const callbackUrl = pathname;
       router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     } else {
@@ -107,6 +107,8 @@ export default function Navbar() {
         <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('characters')}>Characters</button>
         <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('environments')}>Environments</button>
         <button className="text-gray-600 hover:text-gray-900" onClick={() => handleCategoryClick('planes')}>Planes</button>
+        <div className='flex-1'></div>
+        {session?.user?.role === "ADMIN" && <Link className="text-gray-600 hover:text-gray-900" href={"/admin"} >Admin</Link>}
       </div>
     </nav>
   );

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db"
 
 import bcrypt from "bcryptjs";
 import { getUserByEmail } from "@/lib/user";
+import { z } from 'zod';
  
 export const userRouter = router({
   ping: publicProcedure.query(() => {
@@ -61,6 +62,30 @@ export const userRouter = router({
 
       return { status: 201 }
     }),
+    getUsers:publicProcedure.query(async (options)=>{
+return await prisma.user.findMany({
+        select:{
+          id:true,
+          name:true,
+          email:true,
+          role:true,
+        },
+        orderBy:{
+          email:"asc"        }
+        
+      })
+    })
+    ,deleteUsers:publicProcedure.input(z.object({id:z.string()})).mutation(async(options)=>{
+      await prisma.user.delete({
+        where:{id:options.input.id}
+      })
+    })
+    ,promoteUsers:publicProcedure.input(z.object({id:z.string(),admin:z.boolean()})).mutation(async(options)=>{
+      await prisma.user.update({
+        where:{id:options.input.id},
+        data:{role:options.input.admin?"ADMIN":"USER"}
+      })
+    })
 });
  
 // Export type router type signature,
