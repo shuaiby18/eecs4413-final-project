@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense } from "react"; // Added Suspense to the import
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
 
@@ -59,6 +59,9 @@ export default function Home() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
   const query = searchParams.get('query'); // Get the search query from the URL
+  const router = useRouter();
+
+  const [cartItems, setCartItems] = useState<Model[]>([]);
 
   const models = [
     { name: "Plane 1", path: "/models/planes/planes-model1.glb", thumbnail: "/models/planes/planes-model1-thumbnail.png", price: 'N/A', user: { displayName: 'User1' }, category: "planes" },
@@ -120,6 +123,11 @@ export default function Home() {
     return matchesCategory && matchesQuery;
   });
 
+  const handleAddToCart = (model: Model) => {
+    setCartItems((prevItem) => [...prevItem, model]);
+    router.push("/cart");
+  };
+
   return (
     <main className="flex min-h-screen pt-32">
       {/* Navigation Bar */}
@@ -144,10 +152,12 @@ export default function Home() {
               <p className="text-lg font-bold text-blue-500 mb-1">${model.price}</p>
             </div>
 
+
             {/* Add to Cart Button */}
             <div className="p-2">
-              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
-                Add to Cart 
+              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full"
+               onClick = {() => handleAddToCart(model)} >
+               Add to Cart 
               </button>
             </div>
           </div>

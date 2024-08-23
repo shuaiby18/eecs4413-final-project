@@ -6,6 +6,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum UserRole {
+  USER
+  ADMIN
+}
 
 model User {
   id                 String    @id @default(cuid())
@@ -17,7 +21,7 @@ model User {
   role               UserRole  @default(USER)
   isTwoFactorEnabled Boolean   @default(false)
   accounts           Account[]
-  Product            Product[]
+  products           Product[] @relation("UserProducts") 
   cartItems     CartItem[]
 }
 
@@ -42,7 +46,7 @@ model Account {
 model Category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
-  products Product[]
+  products Product[] 
 }
 
 model Product {
@@ -57,7 +61,16 @@ model Product {
   model       String
   cartItems   CartItem[]
   // orderItems  OrderItem[]
+  category    Category @relation(fields: [categoryId], references: [id])
+  user        User[]   @relation("UserProducts") 
 }
+
+model Brand {
+  id    Int    @id @default(autoincrement())
+  name  String
+  products Product[]
+}
+
 model CartItem {
   id        Int     @id @default(autoincrement())
   quantity  Int
@@ -66,5 +79,5 @@ model CartItem {
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, productId]) // Ensure each product is only added once per user
+  @@unique([userId, productId]) 
 }

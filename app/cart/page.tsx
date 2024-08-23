@@ -15,32 +15,64 @@ type CartItem = {
 export default function Cart() {
     const router = useRouter();
     const [cartItems, setItems] = useState<CartItem[]>([]);
+    const [loading, setLoading] =useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery();
+
+    const addItemMutation = trpc.cart.addItem.useMutation({
+        onSuccess: () => {
+            refetch(); // Refetch the cart data after successful mutation
+        },
+        onError: (error) => {
+            console.error("Failed to add item", error);
+            setError("Failed to add item");
+        }
+    });
+
+    const removeItemMutation = trpc.cart.removeItem.useMutation({
+        onSuccess: () => {
+            refetch(); // Refetch the cart data after successful mutation
+        },
+        onError: (error) => {
+            console.error("Failed to remove item", error);
+            setError("Failed to remove item");
+        }
+    });
 
     useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await trpc.cart.getCart.useQuery();
-                if (response.data) {
-                    setItems(response.data.items);
-                }
-            } catch (error) {
-                console.error("Failed to fetch cart items", error);
-            }
-        };
+        if(isError){
+            setError("Failed to fetch cart data");
+            setLoading(false);
+            return;
+        }
+        if (cartData) {
+            setItems(cartData.items);
+        }
+        setLoading(false);
+    }, [cartData, isError]);
 
-        fetchItems();
-    }, []);
+    const addItem = async (itemId: string) => {
+        await addItemMutation.mutateAsync({ itemId });
+    };
+
+    const removeItem = async (itemId: string) => {
+        await removeItemMutation.mutateAsync({ itemId });
+    };
 
     const totalCost = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
     return (
         <div className="min-h-screen p-6 bg-gray-100">
-            <h1 className="text-4xl font-bold text-center mb-6">Shopping Cart</h1>
-
-            {cartItems.length === 0 ? (
-                <p className="text-center text-gray-600">Your cart is empty hehe.</p>
-            ) : (
-                <>
+        <h1 className="text-4xl font-bold text-center mb-6">Shopping Cart</h1>
+        {loading ? (
+            <p className="text-center text-gray-600">Loading...</p>
+        ) : error ? (
+            <p className="text-center text-red-600">{error}</p>
+        ) : cartItems.length === 0 ? (
+            <p className="text-center text-gray-600">Your cart is empty</p>
+        ) : (
+            <>
                     <div className="space-y-4">
                         {cartItems.map((item) => (
                             <div
@@ -57,6 +89,20 @@ export default function Cart() {
                                         <h2 className="text-lg font-semibold">{item.name}</h2>
                                         <p className="text-gray-500">Quantity: {item.quantity}</p>
                                         <p className="text-gray-500">Price: ${item.price.toFixed(2)}</p>
+                                        <div className="flex space-x-2 mt-2">
+                                            <button
+                                                onClick={() => addItem(item.id)}
+                                                className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                                            >
+                                                Add
+                                            </button>
+                                            <button
+                                                onClick={() => removeItem(item.id)}
+                                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <p className="text-lg font-semibold">
@@ -79,3 +125,4 @@ export default function Cart() {
         </div>
     );
 }
+
