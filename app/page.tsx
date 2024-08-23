@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Navbar from "@/components/ui/Navbar";
 
@@ -14,54 +14,124 @@ export default function HomePage() {
       {/* First Row */}
       <div className="grid grid-cols-3 gap-4 mb-4 w-full px-4">
         <div className="col-span-1 bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Deal 1</h2>
+          <h2 className="text-lg font-semibold">On Sale Right Now</h2>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            <div className="bg-white p-2 h-32">Item 1</div>
-            <div className="bg-white p-2 h-32">Item 2</div>
+            {/* Item 1: Plane 4 Thumbnail */}
+            <img
+              src="/models/planes/planes-model4-thumbnail.png"
+              alt="Plane 4 Thumbnail"
+              className="object-cover h-32 w-full"
+            />
+            {/* Item 2: Car 9 Thumbnail */}
+            <img
+              src="/models/cars/cars-model9-thumbnail.png"
+              alt="Car 9 Thumbnail"
+              className="object-cover h-32 w-full"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            {/* Item 3: Animal 5 Thumbnail */}
+            <img
+              src="/models/animals/animals-model5-thumbnail.png"
+              alt="Animal 5 Thumbnail"
+              className="object-cover h-32 w-full"
+            />
+            {/* Item 4: Environment 5 Thumbnail */}
+            <img
+              src="/models/environments/environment-model5-thumbnail.png"
+              alt="Environment 5 Thumbnail"
+              className="object-cover h-32 w-full"
+            />
           </div>
         </div>
+
+        {/* New Arrivals Section */}
         <div className="col-span-1 bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 1</h2>
+          <h2 className="text-lg font-semibold">New Arrivals</h2>
           <div className="grid grid-cols-1 gap-2 mt-2">
-            <div className="bg-white p-2 h-16">Subcategory 1</div>
-            <div className="bg-white p-2 h-16">Subcategory 2</div>
+            {/* Item 1: Car 10 Thumbnail */}
+            <img
+              src="/models/cars/cars-model10-thumbnail.png"
+              alt="Car 10 Thumbnail"
+              className="object-cover h-32 w-full"
+            />
+            {/* Item 2: Grey Rhino Thumbnail */}
+            <img
+              src="/models/animals/animals-model8-thumbnail.png"
+              alt="Grey Rhino Thumbnail"
+              className="object-cover h-32 w-full"
+            />
           </div>
         </div>
+
+        {/* Featured Artists Section */}
         <div className="col-span-1 bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 2</h2>
-          <div className="bg-white p-2 h-48">Content 1</div>
+          <h2 className="text-lg font-semibold">Featured Artists</h2>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="bg-white p-2 h-32 pl-4">Item 1</div>
+            <div className="bg-white p-2 h-32 col-start-2 row-start-2 pr-4">Item 4</div>
+          </div>
         </div>
       </div>
 
       {/* Second Row */}
       <div className="grid grid-cols-3 gap-4 mb-4 w-full px-4">
+        {/* Model of the Week: Car 4 Thumbnail */}
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 3</h2>
-          <div className="bg-white p-2 h-32">Content 2</div>
+          <h2 className="text-lg font-semibold">Model of the Week</h2>
+          <img
+            src="/models/cars/cars-model4-thumbnail.png"
+            alt="Car 4 Thumbnail"
+            className="object-cover h-48 w-full"
+          />
         </div>
+
+        {/* Model of the Month: Animal 1 Thumbnail */}
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 4</h2>
-          <div className="bg-white p-2 h-32">Content 3</div>
+          <h2 className="text-lg font-semibold">Model of the Month</h2>
+          <img
+            src="/models/animals/animals-model1-thumbnail.png"
+            alt="Animal 1 Thumbnail"
+            className="object-cover h-48 w-full"
+          />
         </div>
+
+        {/* Top Model of All Time: Car 5 Thumbnail */}
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 5</h2>
-          <div className="bg-white p-2 h-32">Content 4</div>
+          <h2 className="text-lg font-semibold">Top Model of All Time</h2>
+          <img
+            src="/models/cars/cars-model5-thumbnail.png"
+            alt="Car 5 Thumbnail"
+            className="object-cover h-48 w-full"
+          />
         </div>
       </div>
 
-      {/* Third Row */}
-      <div className="grid grid-cols-3 gap-4 w-full px-4">
+      {/* Your Most Viewed Items (Horizontal Scroll) */}
+      <div className="w-full px-4 mb-4">
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 6</h2>
-          <div className="bg-white p-2 h-32">Content 5</div>
+          <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
+          <div className="flex overflow-x-auto space-x-8 mt-4 h-50">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="bg-white p-4 h-32 min-w-[200px]">
+                Item {index + 1}
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Recommendations (Horizontal Scroll) */}
+      <div className="w-full px-4 mb-4">
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 7</h2>
-          <div className="bg-white p-2 h-32">Content 6</div>
-        </div>
-        <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Category 8</h2>
-          <div className="bg-white p-2 h-32">Content 7</div>
+          <h2 className="text-lg font-semibold">Recommendations</h2>
+          <div className="flex overflow-x-auto space-x-8 mt-4">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="bg-white p-4 h-32 min-w-[200px]">
+                Recommended {index + 1}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </main>
