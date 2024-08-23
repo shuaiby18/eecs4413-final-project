@@ -39,8 +39,12 @@ export default function Navbar() {
     router.push('/searchResults'); // Navigate to searchResults without a query parameter
   };
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = (category: string) => {
     router.push(`/searchResults?category=${category}`);
+  };
+
+  const handleCartClick = () => {
+    router.push('/cart');
   };
 
   return (
@@ -68,7 +72,7 @@ export default function Navbar() {
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex flex-col items-center">
-            <button className="p-2 rounded">
+            <button className="p-2 rounded" onClick={handleCartClick}>
               <FontAwesomeIcon icon={faShoppingCart} className="text-gray-500 h-7 w-7" />
             </button>
             <span className="text-xs text-gray-600">Cart</span>

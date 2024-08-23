@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, Suspense } from "react"; // Added Suspense to the import
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import { useSearchParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
@@ -98,9 +100,17 @@ export default function Home() {
   // Filter models based on category and search query
   const filteredModels = models.length > 0 ? models.filter((model) => {
     const matchesCategory = category ? model.category.name.toLowerCase() === category?.toLowerCase() : true;
+  // Filter models duhhhhhhhhh based on category and search query
+  const filteredModels = models.filter((model) => {
+    const matchesCategory = category ? model.category?.toLowerCase() === category?.toLowerCase() : true;
     const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
     return matchesCategory && matchesQuery;
   }) : [];
+
+  const handleAddToCart = (model: Model) => {
+    setCartItems((prevItem) => [...prevItem, model]);
+    router.push("/cart");
+  };
 
   return (
     <main className="flex min-h-screen pt-32">
@@ -131,10 +141,15 @@ export default function Home() {
               <p className="text-lg font-bold mb-1">${model.price.toFixed(2)}</p>
             </div>
 
+
             {/* Add to Cart Button */}
             <div className="p-2 mt-auto">
               <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
                 Add to Cart
+            <div className="p-2">
+              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full"
+               onClick = {() => handleAddToCart(model)} >
+               Add to Cart 
               </button>
             </div>
           </div>

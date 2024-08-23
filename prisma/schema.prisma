@@ -6,6 +6,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum UserRole {
+  USER
+  ADMIN
+}
 
 model User {
   id                 String    @id @default(cuid())
@@ -40,7 +44,7 @@ model Account {
 model Category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
-  products Product[]
+  products Product[] 
 }
 
 model Product {
@@ -57,7 +61,19 @@ model Product {
   @@index([categoryId])
 }
 
-enum UserRole {
-  ADMIN
-  USER
+model Brand {
+  id    Int    @id @default(autoincrement())
+  name  String
+  products Product[]
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId]) 
 }
