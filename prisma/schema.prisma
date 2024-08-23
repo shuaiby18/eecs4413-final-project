@@ -17,7 +17,6 @@ model User {
   role               UserRole  @default(USER)
   isTwoFactorEnabled Boolean   @default(false)
   accounts           Account[]
-  Product            Product[]
 }
 
 model Account {
@@ -51,11 +50,9 @@ model Product {
   description String?
   author      String
   categoryId  Int
-  userId      String
   path        String
+  thumbnail   String
   category    Category @relation(fields: [categoryId], references: [id])
-  User        User     @relation(fields: [userId], references: [id])
-
   @@index([categoryId])
 }
 
