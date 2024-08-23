@@ -116,7 +116,7 @@ export default function Home() {
     { name: "Character 9", path: "/models/characters/character-model9.glb", thumbnail: "/models/characters/character-model9-thumbnail.png", price: 'N/A', user: { displayName: 'User9' }, category: "characters"},
   ];
 
-  // Filter models based on category and search query
+  // Filter models duhhhhhhhhh based on category and search query
   const filteredModels = models.filter((model) => {
     const matchesCategory = category ? model.category?.toLowerCase() === category?.toLowerCase() : true;
     const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
