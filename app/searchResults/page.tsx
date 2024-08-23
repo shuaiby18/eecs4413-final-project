@@ -102,8 +102,6 @@ export default function Home() {
     return matchesCategory && matchesQuery;
   }) : [];
 
-  if (loading) return <p>Loading...</p>;
-
   return (
     <main className="flex min-h-screen pt-32">
       {/* Navigation Bar */}
