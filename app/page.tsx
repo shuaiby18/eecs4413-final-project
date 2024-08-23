@@ -1,15 +1,43 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Navbar from "@/components/ui/Navbar";
 
 export default function HomePage() {
+  const banners = [
+    "/banners/dream_banner.png",
+    "/banners/design_banner.png",
+    "/banners/discover_banner.png",
+  ];
+
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBanner((prevBanner) => (prevBanner + 1) % banners.length);
+    }, 2000); // Change banner every 2 seconds
+
+    return () => clearInterval(interval); // Clear interval when component unmounts
+  }, [banners.length]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between pt-32">
+    <main className="flex min-h-screen flex-col items-center justify-between">
       {/* Navigation Bar */}
-      <Navbar />
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar />
+      </div>
+
+      {/* Banner at the Top */}
+      <div className="w-full mt-24">
+        <img
+          src={banners[currentBanner]}
+          alt="Rotating Banner"
+          className="w-full object-cover h-64"
+        />
+      </div>
 
       {/* Padding added below Navbar */}
-      <div className="mt-4 w-full"></div> {/* Adds margin-top of 1rem (4 * 0.25rem) */}
+      <div className="mt-4 w-full"></div>
 
       {/* First Row */}
       <div className="grid grid-cols-3 gap-4 mb-4 w-full px-4">
@@ -113,7 +141,7 @@ export default function HomePage() {
           <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
           <div className="flex overflow-x-auto space-x-8 mt-4 h-50">
             {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="bg-white p-4 h-32 min-w-[200px]">
+              <div key={index} className="bg-white p-4 h-40 min-w-[180px]">
                 Item {index + 1}
               </div>
             ))}
@@ -121,14 +149,13 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Recommendations (Horizontal Scroll) */}
       <div className="w-full px-4 mb-4">
         <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Recommendations</h2>
-          <div className="flex overflow-x-auto space-x-8 mt-4">
+          <h2 className="text-lg font-semibold">Recommended Items</h2>
+          <div className="flex overflow-x-auto space-x-8 mt-4 h-50">
             {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="bg-white p-4 h-32 min-w-[200px]">
-                Recommended {index + 1}
+              <div key={index} className="bg-white p-4 h-40 min-w-[180px]">
+                Item {index + 1}
               </div>
             ))}
           </div>
