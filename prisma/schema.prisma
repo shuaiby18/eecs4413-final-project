@@ -51,7 +51,7 @@ model Category {
 }
 
 model Product {
-  id          Int        @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   price       Float
   description String?
@@ -59,12 +59,12 @@ model Product {
   categoryId  Int
   path        String
   thumbnail   String
-  category    Category   @relation(fields: [categoryId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
   CartItem    CartItem[]
   OrderItem   OrderItem[]
+
   @@index([categoryId])
 }
-
 
 model CartItem {
   id        Int     @id @default(autoincrement())
@@ -78,16 +78,16 @@ model CartItem {
 }
 
 model Order {
-  id              String           @id @default(cuid())
-  userId          String
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingAddress ShippingAddress? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
   shippingAddressId String?
-  items           OrderItem[]
-  paymentInfoId   String?
-  paymentInfo     PaymentInfo?      @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
-  paymentMethod   PaymentMethod
-  createdAt       DateTime         @default(now())
+  items             OrderItem[]
+  paymentInfoId     String?
+  paymentInfo       PaymentInfo?     @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
+  paymentMethod     PaymentMethod
+  createdAt         DateTime         @default(now())
 }
 
 model OrderItem {
@@ -103,7 +103,7 @@ model OrderItem {
 }
 
 model ShippingAddress {
-  id         String   @id @default(cuid())
+  id         String  @id @default(cuid())
   street     String
   city       String
   state      String
@@ -113,20 +113,20 @@ model ShippingAddress {
 }
 
 model PaymentInfo {
-  id           String   @id @default(cuid())
-  orderId      String
-  order        Order[]
-  creditCard   CreditCardInfo?
-  paypalToken  String?
+  id          String          @id @default(cuid())
+  orderId     String
+  order       Order[]
+  creditCard  CreditCardInfo?
+  paypalToken String?
 }
 
 model CreditCardInfo {
-  id        String @id @default(cuid())
-  number    String
-  expiMonth Int
-  expiYear  Int
-  cvv       String
-  paymentInfoId String @unique
+  id            String      @id @default(cuid())
+  number        String
+  expiMonth     Int
+  expiYear      Int
+  cvv           String
+  paymentInfoId String      @unique
   paymentInfo   PaymentInfo @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
 }
 
