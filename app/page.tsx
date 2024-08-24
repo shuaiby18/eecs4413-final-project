@@ -110,7 +110,7 @@ export default function HomePage() {
   </div>
 
   {/* New Section for "Have you logged in?" */} 
-  <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", maxWidth: "400px", height: "130px" }}>
+  <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", height: "130px" }}>
     <h2 className="text-center font-semibold">Log-in to get the complete experience</h2>
     <div className="flex justify-center mt-2">
       <button className="bg-blue-500 text-white gap-4 py-2 px-4 rounded">
