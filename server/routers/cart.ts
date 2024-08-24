@@ -1,8 +1,8 @@
 import { router, publicProcedure } from '../trpc';
 import { getSession } from "next-auth/react";
 //import { auth } from "@/lib/auth";
-import { PrismaClient } from '@prisma/client';
-//import { prisma } from '@/lib/db'; 
+//import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db'; 
 import { z } from 'zod';
 
 // Define the types for your cart items and formatted cart items
@@ -24,7 +24,6 @@ type FormattedCartItem = {
   image: string;
 };
 
-const prisma = new PrismaClient();
 
 export const cartRouter = router({
   getCart: publicProcedure.query(async ({ctx}) => {
