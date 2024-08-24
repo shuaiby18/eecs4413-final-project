@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"; // Use next/navigation for the late
 import { useEffect, useState } from "react";
 
 type CartItem = {
-    id: string;
+    id: number; // Change from string to number
     name: string;
     price: number;
     quantity: number;
@@ -15,13 +15,14 @@ type CartItem = {
 export default function Cart() {
     const router = useRouter();
     const [cartItems, setItems] = useState<CartItem[]>([]);
-    const [loading, setLoading] =useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery();
 
     const addItemMutation = trpc.cart.addItem.useMutation({
         onSuccess: () => {
+            console.log("Item added successfully");
             refetch(); // Refetch the cart data after successful mutation
         },
         onError: (error) => {
@@ -32,6 +33,7 @@ export default function Cart() {
 
     const removeItemMutation = trpc.cart.removeItem.useMutation({
         onSuccess: () => {
+            console.log("Item removed successfully");
             refetch(); // Refetch the cart data after successful mutation
         },
         onError: (error) => {
@@ -41,22 +43,29 @@ export default function Cart() {
     });
 
     useEffect(() => {
-        if(isError){
+        console.log("useEffect called - Loading cart data...");
+        if (isError) {
+            console.error("Error fetching cart data:", isError);
             setError("Failed to fetch cart data");
             setLoading(false);
             return;
         }
         if (cartData) {
+            console.log("Cart data fetched successfully:", cartData);
             setItems(cartData.items);
+        } else {
+            console.log("No cart data available");
         }
         setLoading(false);
     }, [cartData, isError]);
 
     const addItem = async (itemId: string) => {
+        console.log(`Adding item with ID: ${itemId}`);
         await addItemMutation.mutateAsync({ itemId });
     };
 
     const removeItem = async (itemId: string) => {
+        console.log(`Removing item with ID: ${itemId}`);
         await removeItemMutation.mutateAsync({ itemId });
     };
 
@@ -64,15 +73,15 @@ export default function Cart() {
 
     return (
         <div className="min-h-screen p-6 bg-gray-100">
-        <h1 className="text-4xl font-bold text-center mb-6">Shopping Cart</h1>
-        {loading ? (
-            <p className="text-center text-gray-600">Loading...</p>
-        ) : error ? (
-            <p className="text-center text-red-600">{error}</p>
-        ) : cartItems.length === 0 ? (
-            <p className="text-center text-gray-600">Your cart is empty</p>
-        ) : (
-            <>
+            <h1 className="text-4xl font-bold text-center mb-6">Shopping Cart</h1>
+            {loading ? (
+                <p className="text-center text-gray-600">Loading...</p>
+            ) : error ? (
+                <p className="text-center text-red-600">{error}</p>
+            ) : cartItems.length === 0 ? (
+                <p className="text-center text-gray-600">Your cart is empty</p>
+            ) : (
+                <>
                     <div className="space-y-4">
                         {cartItems.map((item) => (
                             <div
@@ -91,13 +100,13 @@ export default function Cart() {
                                         <p className="text-gray-500">Price: ${item.price.toFixed(2)}</p>
                                         <div className="flex space-x-2 mt-2">
                                             <button
-                                                onClick={() => addItem(item.id)}
+                                                onClick={() => addItem(item.id.toString())} // Convert id to string here
                                                 className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
                                             >
                                                 Add
                                             </button>
                                             <button
-                                                onClick={() => removeItem(item.id)}
+                                                onClick={() => removeItem(item.id.toString())} // Convert id to string here
                                                 className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                             >
                                                 Remove
@@ -125,4 +134,3 @@ export default function Cart() {
         </div>
     );
 }
-

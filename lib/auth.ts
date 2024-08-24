@@ -8,10 +8,10 @@ import { getUserByEmail } from "./user";
 
 import { prisma } from "@/lib/db"
 import { UserRole } from "@prisma/client";
-declare module "next-auth"{
-  interface Session extends DefaultSession{
-    user:{
-      role:UserRole
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      role: UserRole
     } & DefaultSession["user"]
 
   }
@@ -19,26 +19,27 @@ declare module "next-auth"{
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
-    jwt({token,user}){
-      if(user){
-       token.role=user?.role
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = user?.role
       }
-      return token 
+      return token
     },
-    session(
-      { session, token }) {
-      
-       session.user.role = token.role;
+    session({session, token}) {
+      session.user.id = token.id
+      session.user.role = token.role;
       return session
     }
   },
+
 
   providers: [
     Credentials({
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);
 
-       
+
 
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
@@ -51,7 +52,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (passwordsMatch) {
             return {
-              id: user.id,
+              Id: "testingID",
+              image: true,
               name: user?.name,
               email: user?.email,
               role: user?.role

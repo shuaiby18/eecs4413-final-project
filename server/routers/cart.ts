@@ -1,6 +1,5 @@
 import { router, publicProcedure } from '../trpc';
-import { getSession } from "next-auth/react";
-//import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 //import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/db'; 
 import { z } from 'zod';
@@ -27,10 +26,12 @@ type FormattedCartItem = {
 
 export const cartRouter = router({
   getCart: publicProcedure.query(async ({ctx}) => {
-    const session = await getSession(ctx);
+    const session = await auth();
+    console.log ("Post await", session);
     const userId = session?.user?.id; // Replace with actual user ID retrieval
-
+    console.log("post user ID", session, userId);
     if(!userId){
+      console.log("ERROR 500 COMES FROM HERE");
       throw new Error("User is not authenticated");
     }
     // Fetch cart items for the current user
