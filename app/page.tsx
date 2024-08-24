@@ -4,18 +4,14 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/ui/Navbar";
 
 export default function HomePage() {
-  const banners = [
-    "/banners/dream_banner.png",
-    "/banners/design_banner.png",
-    "/banners/discover_banner.png",
-  ];
+  const banners = [{ type: "mp4", src: "/banners/banner_4.mp4" }];
 
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prevBanner) => (prevBanner + 1) % banners.length);
-    }, 2000); // Change banner every 2 seconds
+    }, 15000); // Change banner every 15 seconds
 
     return () => clearInterval(interval); // Clear interval when component unmounts
   }, [banners.length]);
@@ -28,12 +24,22 @@ export default function HomePage() {
       </div>
 
       {/* Banner at the Top */}
-      <div className="w-full mt-24">
-        <img
-          src={banners[currentBanner]}
-          alt="Rotating Banner"
-          className="w-full object-cover h-64"
-        />
+      <div className="w-full mt-32">
+        {banners[currentBanner].type === "gif" ? (
+          <img
+            src={banners[currentBanner].src}
+            alt="Rotating Banner"
+            className="w-full object-cover h-70"
+          />
+        ) : (
+          <video
+            src={banners[currentBanner].src}
+            className="w-full object-cover h-70"
+            autoPlay
+            loop
+            muted
+          />
+        )}
       </div>
 
       {/* Padding added below Navbar */}
@@ -92,14 +98,30 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Featured Artists Section */}
-        <div className="col-span-1 bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Featured Artists</h2>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <div className="bg-white p-2 h-32 pl-4">Item 1</div>
-            <div className="bg-white p-2 h-32 col-start-2 row-start-2 pr-4">Item 4</div>
-          </div>
-        </div>
+
+{/* Featured Artists Section */}
+<div>
+  <div className="col-span-1 bg-gray-100 p-4" style={{ height: "185px" }}>
+    <h2 className="text-lg font-semibold">Featured Artists</h2>
+    <div className="grid grid-cols-2 gap-4 mt-2 items-start">
+      <div className="bg-white p-2 h-28">Item 1</div>
+      <div className="bg-white p-2 h-28">Item 4</div>
+    </div>
+  </div>
+
+  {/* New Section for "Have you logged in?" */}
+  <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", maxWidth: "400px", height: "130px" }}>
+    <h2 className="text-center font-semibold">Log-in to get the complete experience</h2>
+    <div className="flex justify-center mt-2">
+      <button className="bg-blue-500 text-white gap-4 py-2 px-4 rounded">
+        Sign-In
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
       </div>
 
       {/* Second Row */}
