@@ -109,7 +109,7 @@ export default function HomePage() {
     </div>
   </div>
 
-  {/* New Section for "Have you logged in?" */}
+  {/* New Section for "Have you logged in?" */} 
   <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", maxWidth: "400px", height: "130px" }}>
     <h2 className="text-center font-semibold">Log-in to get the complete experience</h2>
     <div className="flex justify-center mt-2">
@@ -157,32 +157,33 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Your Most Viewed Items (Horizontal Scroll) */}
-      <div className="w-full px-4 mb-4">
-        <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
-          <div className="flex overflow-x-auto space-x-8 mt-4 h-50">
-            {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="bg-white p-4 h-40 min-w-[180px]">
-                Item {index + 1}
-              </div>
-            ))}
-          </div>
+{/* Your Most Viewed Items (Horizontal Scroll) */}
+<div className="w-full px-4 mb-4">
+  <div className="bg-gray-100 p-4">
+    <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
+    <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
+          Item {index + 1}
         </div>
-      </div>
+      ))}
+    </div>
+  </div>
+</div>
 
-      <div className="w-full px-4 mb-4">
-        <div className="bg-gray-100 p-4">
-          <h2 className="text-lg font-semibold">Recommended Items</h2>
-          <div className="flex overflow-x-auto space-x-8 mt-4 h-50">
-            {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="bg-white p-4 h-40 min-w-[180px]">
-                Item {index + 1}
-              </div>
-            ))}
-          </div>
+{/* Recommended Items */}
+<div className="w-full px-4 mb-4">
+  <div className="bg-gray-100 p-4">
+    <h2 className="text-lg font-semibold">Recommended Items</h2>
+    <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
+          Item {index + 1}
         </div>
-      </div>
+      ))}
+    </div>
+  </div>
+</div>
     </main>
   );
 }
