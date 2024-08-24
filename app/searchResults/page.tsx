@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer";
 import Link from 'next/link';
@@ -22,6 +22,10 @@ type Model = {
 
 function Filters() {
   const colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black"];
+
+  const handleColorClick = (selectedColor: string) => {
+    console.log("Selected color:", selectedColor);
+  };
 
   return (
     <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
@@ -67,10 +71,6 @@ function Filters() {
   );
 }
 
-function handleColorClick(selectedColor: string) {
-  console.log("Selected color:", selectedColor);
-}
-
 export default function Home() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
@@ -78,6 +78,7 @@ export default function Home() {
 
   const [models, setModels] = useState<Model[]>([]); // Initialize as an empty array
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -96,11 +97,16 @@ export default function Home() {
   }, []);
 
   // Filter models based on category and search query
-  const filteredModels = models.length > 0 ? models.filter((model) => {
-    const matchesCategory = category ? model.category.name.toLowerCase() === category?.toLowerCase() : true;
+  const filteredModels = models.filter((model) => {
+    const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
     const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
     return matchesCategory && matchesQuery;
-  }) : [];
+  });
+
+  const handleAddToCart = (model: Model) => {
+    // Example cart handling logic
+    router.push("/cart");
+  };
 
   return (
     <main className="flex min-h-screen pt-32">
@@ -132,8 +138,8 @@ export default function Home() {
             </div>
 
             {/* Add to Cart Button */}
-            <div className="p-2 mt-auto">
-              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full">
+            <div className="p-2">
+              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full" onClick={() => handleAddToCart(model)}>
                 Add to Cart
               </button>
             </div>
