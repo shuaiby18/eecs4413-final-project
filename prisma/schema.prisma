@@ -51,7 +51,7 @@ model Category {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   price       Float
   description String?
@@ -59,9 +59,8 @@ model Product {
   categoryId  Int
   path        String
   thumbnail   String
-  category    Category    @relation(fields: [categoryId], references: [id])
+  category    Category   @relation(fields: [categoryId], references: [id])
   CartItem    CartItem[]
-  OrderItem   OrderItem[]
 
   @@index([categoryId])
 }
@@ -74,6 +73,9 @@ model CartItem {
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
   @@unique([userId, productId])
 }
 
@@ -81,26 +83,28 @@ model Order {
   id                String           @id @default(cuid())
   userId            String
   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
   shippingAddressId String?
-  items             OrderItem[]
+  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
+  // items             OrderItem[]
+  items             CartItem[]
   paymentInfoId     String?
-  paymentInfo       PaymentInfo?     @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
-  paymentMethod     PaymentMethod
+  paymentInfo       CreditCardInfo?  @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
   createdAt         DateTime         @default(now())
+
+  checkouted Boolean @default(false)
 }
 
-model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   String
-  order     Order[]
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-  name      String
-  price     Float
-  quantity  Int
-  image     String
-}
+// model OrderItem {
+//   id        Int     @id @default(autoincrement())
+//   orderId   String
+//   order     Order[]
+//   productId Int
+//   product   Product @relation(fields: [productId], references: [id])
+//   name      String
+//   price     Float
+//   quantity  Int
+//   image     String
+// }
 
 model ShippingAddress {
   id         String  @id @default(cuid())
@@ -109,28 +113,14 @@ model ShippingAddress {
   state      String
   postalCode String
   country    String
-  orders     Order[]
-}
-
-model PaymentInfo {
-  id          String          @id @default(cuid())
-  orderId     String
-  order       Order[]
-  creditCard  CreditCardInfo?
-  paypalToken String?
+  Order      Order[]
 }
 
 model CreditCardInfo {
-  id            String      @id @default(cuid())
-  number        String
-  expiMonth     Int
-  expiYear      Int
-  cvv           String
-  paymentInfoId String      @unique
-  paymentInfo   PaymentInfo @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
-}
-
-enum PaymentMethod {
-  CREDIT_CARD
-  PAYPAL
+  id        String  @id @default(cuid())
+  number    String
+  expiMonth Int
+  expiYear  Int
+  cvv       Int
+  Order     Order[]
 }

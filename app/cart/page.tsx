@@ -18,7 +18,7 @@ export default function Cart() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery();
+    const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery({});
 
     const addItemMutation = trpc.cart.addItem.useMutation({
         onSuccess: () => {
@@ -41,6 +41,8 @@ export default function Cart() {
             setError("Failed to remove item");
         }
     });
+
+    const prepareOrder = trpc.checkout.prepareOrder.useMutation();
 
     useEffect(() => {
         console.log("useEffect called - Loading cart data...");
@@ -68,6 +70,12 @@ export default function Cart() {
         console.log(`Removing item with ID: ${productId}`);
         await removeItemMutation.mutateAsync({ productId });
     };
+
+    const goToCheckout = async () => {
+        console.log("Proceeding to checkout...");
+        let orderId = await prepareOrder.mutateAsync();
+        router.push(`/checkout/${orderId}`);
+    }
 
     return (
         <div className="min-h-screen p-6 bg-gray-100">
@@ -121,7 +129,7 @@ export default function Cart() {
                     <div className="mt-6 flex justify-between items-center">
                         <h2 className="text-2xl font-bold">Total: ${cartData?.total}</h2>
                         <button
-                            onClick={() => router.push("/checkout")}
+                            onClick={() => goToCheckout()}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                         >
                             Proceed to Checkout

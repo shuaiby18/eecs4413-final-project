@@ -24,7 +24,9 @@ type FormattedCartItem = {
 };
 
 export const cartRouter = router({
-  getCart: publicProcedure.query(async ({ ctx }) => {
+  getCart: publicProcedure
+  .input(z.object({ orderId: z.string().optional() }))
+  .query(async ({ input }) => {
     try {
       const session = await auth();
       console.log("cartRouter:getCart: session", session);
@@ -38,7 +40,10 @@ export const cartRouter = router({
 
       // Fetch cart items for the current user
       const cartItems = await prisma.cartItem.findMany({
-        where: { userId },
+        where: { 
+          userId,
+          orderId: input.orderId ?? null,
+        },
         include: {
           product: true, // Assuming `product` is a relation in your `cartItem` model
         },
@@ -103,7 +108,7 @@ export const cartRouter = router({
 
         console.log("cartRouter:addItem: cartItem added successfully");
 
-        const cartItems: CartItem[] = await prisma.cartItem.findMany({
+        const cartItems = await prisma.cartItem.findMany({
           where: { userId },
           include: {
             product: true, // Assuming `product` is a relation in your `cartItem` model
@@ -182,7 +187,7 @@ export const cartRouter = router({
 
         console.log("cartRouter:removeItem: cartItem removed successfully");
 
-        const cartItems: CartItem[] = await prisma.cartItem.findMany({
+        const cartItems = await prisma.cartItem.findMany({
           where: { userId },
           include: {
             product: true, // Assuming `product` is a relation in your `cartItem` model
