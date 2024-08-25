@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
 model User {
   id                 String     @id @default(cuid())
   name               String?
@@ -51,7 +46,7 @@ model Category {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   price       Float
   description String?
@@ -59,9 +54,8 @@ model Product {
   categoryId  Int
   path        String
   thumbnail   String
-  category    Category    @relation(fields: [categoryId], references: [id])
   CartItem    CartItem[]
-  OrderItem   OrderItem[]
+  category    Category   @relation(fields: [categoryId], references: [id])
 
   @@index([categoryId])
 }
@@ -70,36 +64,24 @@ model CartItem {
   id        Int     @id @default(autoincrement())
   quantity  Int
   userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId Int
+  orderId   String?
+  order     Order?  @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Order {
   id                String           @id @default(cuid())
   userId            String
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
   shippingAddressId String?
-  items             OrderItem[]
   paymentInfoId     String?
-  paymentInfo       PaymentInfo?     @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
-  paymentMethod     PaymentMethod
   createdAt         DateTime         @default(now())
-}
-
-model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   String
-  order     Order[]
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-  name      String
-  price     Float
-  quantity  Int
-  image     String
+  checkouted        Boolean          @default(false)
+  items             CartItem[]
+  paymentInfo       CreditCardInfo?  @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
+  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ShippingAddress {
@@ -109,28 +91,19 @@ model ShippingAddress {
   state      String
   postalCode String
   country    String
-  orders     Order[]
-}
-
-model PaymentInfo {
-  id          String          @id @default(cuid())
-  orderId     String
-  order       Order[]
-  creditCard  CreditCardInfo?
-  paypalToken String?
+  Order      Order[]
 }
 
 model CreditCardInfo {
-  id            String      @id @default(cuid())
-  number        String
-  expiMonth     Int
-  expiYear      Int
-  cvv           String
-  paymentInfoId String      @unique
-  paymentInfo   PaymentInfo @relation(fields: [paymentInfoId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  number    String
+  expiMonth Int
+  expiYear  Int
+  cvv       Int
+  Order     Order[]
 }
 
-enum PaymentMethod {
-  CREDIT_CARD
-  PAYPAL
+enum UserRole {
+  ADMIN
+  USER
 }

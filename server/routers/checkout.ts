@@ -1,84 +1,130 @@
-import { router, publicProcedure } from '../trpc';
-import { prisma } from '@/lib/db'; 
-import { z } from 'zod';
+import { router, publicProcedure } from "../trpc";
+import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { z } from "zod";
 
 export const checkoutRouter = router({
-    createOrder: publicProcedure
-    .input(z.object({
-        items: z.array(z.object({
-            id: z.string(),
-            name: z.string(),
-            price: z.number(),
-            quantity: z.number(),
-            image: z.string(),
-        })),
-        userId: z.string(),
-        shippingAddress: z.object({
-            street: z.string(),
-            city: z.string(),
-            state: z.string(),
-            postalCode: z.string(),
-            country: z.string(),
-        }),
-        paymentInfo: z.object({
-            method: z.enum(['credit_card', 'paypal']),
-            creditCard: z.object({
-                number: z.string().optional(),
-                expiMonth: z.number().optional(),
-                expiYear: z.number().optional(),
-                cvv: z.string().optional(),
-            }).optional(),
-            paypalToken: z.string().optional(),
-        }),
-    }))
-    .mutation(async ({ input }) => {
+  prepareOrder: publicProcedure
+    .output(z.string())
+    .mutation(async () => {
         try {
-            if (input.paymentInfo.method === 'credit_card') {
-                if (!input.paymentInfo.creditCard?.number) {
-                    throw new Error('Credit Card Information Required');
-                }
-                
-            } else if (input.paymentInfo.method === 'paypal') {
-                if (!input.paymentInfo.paypalToken) {
-                    throw new Error('PayPal token is required');
-                }
-            } else {
-                throw new Error('Invalid payment method');
-            }
+        const session = await auth();
+        console.log("checkoutRouter:prepareOrder: session", session);
+        const userId = session?.user?.id; // Replace with actual user ID retrieval
+        console.log("checkoutRouter:prepareOrder: userId", userId);
 
-            const order = await prisma.order.create({
-                data: {
-                    userId: input.userId,
-                    shippingAddress: {
-                        create: input.shippingAddress
-                    },
-                    items: {
-                        create: input.items.map(item => ({
-                            productId: item.id,
-                            name: item.name,
-                            price: item.price,
-                            quantity: item.quantity,
-                            image: item.image,
-                        })),
-                    },
-                    paymentMethod: input.paymentInfo.method,
-                    paymentInfo: input.paymentInfo.method === 'credit_card' ? {
-                        creditCard: {
-                            number: input.paymentInfo.creditCard?.number,
-                            expiMonth: input.paymentInfo.creditCard?.expiMonth,
-                            expiYear: input.paymentInfo.creditCard?.expiYear,
-                            cvv: input.paymentInfo.creditCard?.cvv,
-                        },
-                    } : input.paymentInfo.method === 'paypal' ? {
-                        paypalToken: input.paymentInfo.paypalToken,
-                    } : undefined,
-                },
-            });
-
-            return order;
-        } catch (error) {
-            console.error("Error creating order:", error);
-            throw new Error("Failed to create order");
+        if (!userId) {
+            console.log("checkoutRouter:prepareOrder: User is not authenticated");
+            throw new Error("User is not authenticated");
         }
+
+        console.log("checkoutRouter:prepareOrder: userId", userId);
+
+        let { id: orderId } = await prisma.order.create({
+            data: {
+            userId,
+            checkouted: true,
+            },
+            select: {
+            id: true,
+            },
+        });
+
+        console.log("checkoutRouter:prepareOrder: orderId", orderId);
+
+        await prisma.cartItem.updateMany({
+            where: {
+            userId,
+            orderId: null,
+            },
+            data: {
+            orderId,
+            },
+        });
+
+        console.log("checkoutRouter:prepareOrder: cartItems updated");
+
+        return orderId;
+        } catch (error) {
+        console.error("Failed to prepare order:", error);
+        throw new Error("Failed to prepare order");
+        }
+    }),
+  completeOrder: publicProcedure
+    .input(
+      z.object({
+        orderId: z.string(),
+        shippingAddress: z.object({
+          street: z.string(),
+          city: z.string(),
+          state: z.string(),
+          postalCode: z.string(),
+          country: z.string(),
+        }),
+        creditCardInfo: z.object({
+          number: z.number(),
+          expiMonth: z.number(),
+          expiYear: z.number(),
+          cvv: z.number(),
+        }),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const session = await auth();
+        console.log("checkoutRouter:prepareOrder: session", session);
+        const userId = session?.user?.id; // Replace with actual user ID retrieval
+        console.log("checkoutRouter:prepareOrder: userId", userId);
+
+        if (!userId) {
+          console.log("checkoutRouter:prepareOrder: User is not authenticated");
+          throw new Error("User is not authenticated");
+        }
+
+        console.log("checkoutRouter:prepareOrder: userId", userId);
+
+        let { id: shippingAddressId } = await prisma.shippingAddress.create({
+          data: {
+            street: input.shippingAddress.street,
+            city: input.shippingAddress.city,
+            state: input.shippingAddress.state,
+            postalCode: input.shippingAddress.postalCode,
+            country: input.shippingAddress.country,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        let { id: paymentInfoId } = await prisma.creditCardInfo.create({
+          data: {
+            number: input.creditCardInfo.number.toString(),
+            expiMonth: input.creditCardInfo.expiMonth,
+            expiYear: input.creditCardInfo.expiYear,
+            cvv: input.creditCardInfo.cvv,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        await prisma.order.update({
+          where: {
+            id: input.orderId.toString(),
+          },
+          data: {
+            shippingAddressId,
+            paymentInfoId,
+          },
+        });
+      } catch (error) {
+        console.error(
+          "checkoutRouter:prepareOrder: Error complete order:",
+          error
+        );
+        throw new Error(
+          "checkoutRouter:prepareOrder: Failed to complete order"
+        );
+      }
     }),
 });
