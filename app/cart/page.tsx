@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation"; // Use next/navigation for the late
 import { useEffect, useState } from "react";
 
 type CartItem = {
-    id: number; // Change from string to number
+    product_id: number; // Change from string to number
     name: string;
     price: number;
     quantity: number;
-    image: string;
+    thumbnail: string;
 };
 
 export default function Cart() {
@@ -32,8 +32,8 @@ export default function Cart() {
     });
 
     const removeItemMutation = trpc.cart.removeItem.useMutation({
-        onSuccess: () => {
-            console.log("Item removed successfully");
+        onSuccess: (data) => {
+            console.log("Item removed successfully", data);
             refetch(); // Refetch the cart data after successful mutation
         },
         onError: (error) => {
@@ -52,24 +52,22 @@ export default function Cart() {
         }
         if (cartData) {
             console.log("Cart data fetched successfully:", cartData);
-            setItems(cartData.items);
+            setItems(cartData?.items);
         } else {
             console.log("No cart data available");
         }
         setLoading(false);
     }, [cartData, isError]);
 
-    const addItem = async (itemId: string) => {
-        console.log(`Adding item with ID: ${itemId}`);
-        await addItemMutation.mutateAsync({ itemId });
+    const addItem = async (productId: number) => {
+        console.log(`Adding item with ID: ${productId}`);
+        await addItemMutation.mutateAsync({ productId });
     };
 
-    const removeItem = async (itemId: string) => {
-        console.log(`Removing item with ID: ${itemId}`);
-        await removeItemMutation.mutateAsync({ itemId });
+    const removeItem = async (productId: number) => {
+        console.log(`Removing item with ID: ${productId}`);
+        await removeItemMutation.mutateAsync({ productId });
     };
-
-    const totalCost = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
     return (
         <div className="min-h-screen p-6 bg-gray-100">
@@ -85,14 +83,14 @@ export default function Cart() {
                     <div className="space-y-4">
                         {cartItems.map((item) => (
                             <div
-                                key={item.id}
+                                key={item.product_id}
                                 className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md"
                             >
                                 <div className="flex items-center">
                                     <img
-                                        src={item.image}
+                                        src={item.thumbnail}
                                         alt={item.name}
-                                        className="w-16 h-16 object-cover rounded-lg"
+                                        className="w-20 h-20 object-cover rounded-lg"
                                     />
                                     <div className="ml-4">
                                         <h2 className="text-lg font-semibold">{item.name}</h2>
@@ -100,13 +98,13 @@ export default function Cart() {
                                         <p className="text-gray-500">Price: ${item.price.toFixed(2)}</p>
                                         <div className="flex space-x-2 mt-2">
                                             <button
-                                                onClick={() => addItem(item.id.toString())} // Convert id to string here
+                                                onClick={() => addItem(item.product_id)} // Convert id to string here
                                                 className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
                                             >
                                                 Add
                                             </button>
                                             <button
-                                                onClick={() => removeItem(item.id.toString())} // Convert id to string here
+                                                onClick={() => removeItem(item.product_id)} // Convert id to string here
                                                 className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                             >
                                                 Remove
@@ -121,7 +119,7 @@ export default function Cart() {
                         ))}
                     </div>
                     <div className="mt-6 flex justify-between items-center">
-                        <h2 className="text-2xl font-bold">Total: ${totalCost.toFixed(2)}</h2>
+                        <h2 className="text-2xl font-bold">Total: ${cartData?.total}</h2>
                         <button
                             onClick={() => router.push("/checkout")}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -130,7 +128,8 @@ export default function Cart() {
                         </button>
                     </div>
                 </>
-            )}
-        </div>
+            )
+        }
+        </div >
     );
 }

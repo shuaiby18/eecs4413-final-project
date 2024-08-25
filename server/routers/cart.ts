@@ -1,8 +1,8 @@
-import { router, publicProcedure } from '../trpc';
+import { router, publicProcedure } from "../trpc";
 import { auth } from "@/lib/auth";
 //import { PrismaClient } from '@prisma/client';
-import { prisma } from '@/lib/db'; 
-import { z } from 'zod';
+import { prisma } from "@/lib/db";
+import { z } from "zod";
 
 // Define the types for your cart items and formatted cart items
 type CartItem = {
@@ -11,130 +11,200 @@ type CartItem = {
   product: {
     name: string;
     price: number;
-    image: string;
+    thumbnail: string;
   };
 };
 
 type FormattedCartItem = {
-  id: number;
+  product_id: number;
   name: string;
   price: number;
   quantity: number;
-  image: string;
+  thumbnail: string;
 };
 
-
 export const cartRouter = router({
-  getCart: publicProcedure.query(async ({ctx}) => {
-    const session = await auth();
-    console.log ("Post await", session);
-    const userId = session?.user?.id; // Replace with actual user ID retrieval
-    console.log("post user ID", session, userId);
-    if(!userId){
-      console.log("ERROR 500 COMES FROM HERE");
-      throw new Error("User is not authenticated");
+  getCart: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const session = await auth();
+      console.log("cartRouter:getCart: session", session);
+      const userId = session?.user?.id; // Replace with actual user ID retrieval
+      console.log("cartRouter:getCart: userId", userId);
+
+      if (!userId) {
+        console.log("cartRouter:getCart: User is not authenticated");
+        throw new Error("User is not authenticated");
+      }
+
+      // Fetch cart items for the current user
+      const cartItems = await prisma.cartItem.findMany({
+        where: { userId },
+        include: {
+          product: true, // Assuming `product` is a relation in your `cartItem` model
+        },
+      });
+
+      console.log("cartRouter:getCart: cartItems length", cartItems.length);
+
+      // Format the response to match the expected FormattedCartItem type
+      const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
+        product_id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        thumbnail: item.product.thumbnail,
+      }));
+
+      console.log(
+        "cartRouter:getCart: formattedItems length",
+        formattedItems.length
+      );
+
+      // Calculate total cost
+      const total = formattedItems.reduce(
+        (added, item) => added + item.price * item.quantity,
+        0
+      );
+
+      console.log("cartRouter:getCart: total", total);
+
+      return {
+        items: formattedItems,
+        total,
+      };
+    } catch (error) {
+      console.log("cartRouter:getCart: error", error);
     }
-    // Fetch cart items for the current user
-    const cartItems = await prisma.cartItem.findMany({
-      where: { userId },
-      include: {
-        product: true, // Assuming `product` is a relation in your `cartItem` model
-      },
-    });
-
-    // Format the response to match the expected FormattedCartItem type
-    const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
-      id: item.id,
-      name: item.product.name,
-      price: item.product.price,
-      quantity: item.quantity,
-      image: item.product.image,
-    }));
-
-    // Calculate total cost
-    const total = formattedItems.reduce((added, item) => added + (item.price * item.quantity), 0);
-
-    return {
-      items: formattedItems,
-      total,
-    };
   }),
 
   addItem: publicProcedure
-    .input(z.object({ itemId: z.string() }))
+    .input(z.object({ productId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      const session = await getSession(ctx);
-      const userId = session?.user?.id; // Replace with actual user ID retrieval
+      try {
+        const session = await auth();
+        console.log("cartRouter:addItem: session", session);
+        const userId = session?.user?.id;
+        console.log("cartRouter:addItem: userId", userId);
 
-      if(!userId){
-        throw new Error("User is not authenticated");
+        if (!userId) {
+          console.log("cartRouter:addItem: User is not authenticated");
+          throw new Error("User is not authenticated");
+        }
+
+        console.log("cartRouter:addItem: input.itemId", input.productId);
+
+        await prisma.cartItem.upsert({
+          where: {
+            userId_productId: { userId, productId: input.productId },
+          },
+          create: { userId, productId: input.productId, quantity: 1 },
+          update: { quantity: { increment: 1 } },
+        });
+
+        console.log("cartRouter:addItem: cartItem added successfully");
+
+        const cartItems: CartItem[] = await prisma.cartItem.findMany({
+          where: { userId },
+          include: {
+            product: true, // Assuming `product` is a relation in your `cartItem` model
+          },
+        });
+
+        console.log(
+          `cartRouter:addItem: cartItems ${cartItems.length}`,
+          cartItems[0]
+        );
+
+        const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
+          product_id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          thumbnail: item.product.thumbnail,
+        }));
+
+        console.log(
+          `cartRouter:addItem: formattedItems ${formattedItems.length}`,
+          formattedItems[0]
+        );
+
+        return { success: true, items: formattedItems };
+      } catch (e) {
+        console.log("cartRouter:addItem: error", e);
       }
-      await prisma.cartItem.upsert({
-        where: { userId_productId: { userId, productId: input.itemId } },
-        create: { userId, productId: input.itemId, quantity: 1 },
-        update: { quantity: { increment: 1 } },
-      });
-
-      const cartItems: CartItem[] = await prisma.cartItem.findMany({
-        where: { userId },
-        include: {
-          product: true,
-        },
-      });
-
-      const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
-        id: item.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-        image: item.product.image,
-      }));
-
-      return { success: true, items: formattedItems };
     }),
 
   removeItem: publicProcedure
-    .input(z.object({ itemId: z.string() }))
+    .input(z.object({ productId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      const session = await getSession(ctx);
-      const userId = session?.user?.id; // Replace with actual user ID retrieval
+      try {
+        const session = await auth();
+        console.log("cartRouter:removeItem: session", session);
+        const userId = session?.user?.id;
+        console.log("cartRouter:removeItem: userId", userId);
 
-      if(!userId){
-        throw new Error("User is not authenticated");
-      }
-      const cartItem = await prisma.cartItem.findUnique({
-        where: { userId_productId: { userId, productId: input.itemId } },
-      });
+        if (!userId) {
+          console.log("cartRouter:removeItem: User is not authenticated");
+          throw new Error("User is not authenticated");
+        }
 
-      if (!cartItem) return { success: false };
+        console.log("cartRouter:removeItem: input.productId", input.productId);
 
-      if (cartItem.quantity > 1) {
-        await prisma.cartItem.update({
-          where: { userId_productId: { userId, productId: input.itemId } },
-          data: { quantity: { decrement: 1 } },
+        const cartItem = await prisma.cartItem.findUnique({
+          where: {
+            userId_productId: { userId, productId: input.productId },
+          },
         });
-      } else {
-        await prisma.cartItem.delete({
-          where: { userId_productId: { userId, productId: input.itemId } },
+
+        console.log("cartRouter:removeItem: cartItem", cartItem);
+
+        if (!cartItem) return { success: false };
+
+        console.log(
+          "cartRouter:removeItem: cartItem.quantity",
+          cartItem.quantity
+        );
+
+        if (cartItem.quantity > 1) {
+          await prisma.cartItem.update({
+            where: {
+              userId_productId: { userId, productId: input.productId },
+            },
+            data: { quantity: { decrement: 1 } },
+          });
+        } else {
+          await prisma.cartItem.delete({
+            where: {
+              userId_productId: { userId, productId: input.productId },
+            },
+          });
+        }
+
+        console.log("cartRouter:removeItem: cartItem removed successfully");
+
+        const cartItems: CartItem[] = await prisma.cartItem.findMany({
+          where: { userId },
+          include: {
+            product: true, // Assuming `product` is a relation in your `cartItem` model
+          },
         });
+
+        console.log(
+          `cartRouter:removeItem: cartItems ${cartItems.length}`,
+          cartItems[0]
+        );
+
+        const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
+          product_id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          thumbnail: item.product.thumbnail,
+        }));
+
+        return { success: true, items: formattedItems };
+      } catch (e) {
+        console.log("cartRouter:removeItem: error", e);
       }
-
-      const cartItems: CartItem[] = await prisma.cartItem.findMany({
-        where: { userId },
-        include: {
-          product: true,
-        },
-      });
-
-      const formattedItems: FormattedCartItem[] = cartItems.map((item) => ({
-        id: item.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-        image: item.product.image,
-      }));
-
-      return { success: true, items: formattedItems };
     }),
 });
-

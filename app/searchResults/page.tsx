@@ -1,5 +1,6 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
@@ -92,7 +93,7 @@ export default function Home() {
         setLoading(false);
       }
     };
-    
+
     fetchModels();
   }, []);
 
@@ -103,8 +104,23 @@ export default function Home() {
     return matchesCategory && matchesQuery;
   });
 
-  const handleAddToCart = (model: Model) => {
-    // Example cart handling logic
+  const addItemMutation = trpc.cart.addItem.useMutation({
+    onSuccess: () => {
+      console.log("Item added successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to add item", error);
+    }
+  });
+
+  const addItem = async (productId: number) => {
+    console.log(`Adding item with ID: ${productId}`);
+    await addItemMutation.mutateAsync({ productId });
+  };
+
+  const handleAddToCart = async (model: Model) => {
+    console.log(`Adding model with ID: ${model.id.toString()}`);
+    await addItem(model.id);
     router.push("/cart");
   };
 

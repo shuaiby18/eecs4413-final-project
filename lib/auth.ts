@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth";
 import bcrypt from "bcryptjs";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -6,40 +6,34 @@ import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./schemas/user";
 import { getUserByEmail } from "./user";
 
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      role: UserRole
-    } & DefaultSession["user"]
-
+      role: UserRole;
+    } & DefaultSession["user"];
   }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.role = user?.role
+        token.role = user?.role;
       }
-      return token
+      return token;
     },
-    session({session, token}) {
-      session.user.id = token.id
+    async session({ session, token }) {
+      session.user.id = (await getUserByEmail(token?.email))?.id;
       session.user.role = token.role;
-      return session
-    }
+      return session;
+    },
   },
-
-
   providers: [
     Credentials({
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);
-
-
 
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
@@ -52,13 +46,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (passwordsMatch) {
             return {
-              Id: "testingID",
-              image: true,
               name: user?.name,
               email: user?.email,
-              role: user?.role
-            }
-          };
+              role: user?.role,
+            };
+          }
         }
 
         return null;
@@ -67,4 +59,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
-}) 
+});
