@@ -100,7 +100,11 @@ export const cartRouter = router({
 
         await prisma.cartItem.upsert({
           where: {
-            userId_productId: { userId, productId: input.productId },
+            userId_productId_orderId: { 
+              userId, 
+              productId: input.productId, 
+              orderId: null
+            },
           },
           create: { userId, productId: input.productId, quantity: 1 },
           update: { quantity: { increment: 1 } },

@@ -76,7 +76,7 @@ model CartItem {
   orderId String?
   order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
-  @@unique([userId, productId])
+  @@unique([userId, productId, orderId])
 }
 
 model Order {
