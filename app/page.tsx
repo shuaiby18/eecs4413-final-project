@@ -47,6 +47,7 @@ export default function HomePage() {
 
       {/* First Row */}
       <div className="grid grid-cols-3 gap-4 mb-4 w-full px-4">
+        {/* On Sale Right Now Section */}
         <div className="col-span-1 bg-gray-100 p-4">
           <h2 className="text-lg font-semibold">On Sale Right Now</h2>
           <div className="grid grid-cols-2 gap-2 mt-2">
@@ -54,13 +55,13 @@ export default function HomePage() {
             <img
               src="/models/planes/planes-model4-thumbnail.png"
               alt="Plane 4 Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
             {/* Item 2: Car 9 Thumbnail */}
             <img
               src="/models/cars/cars-model9-thumbnail.png"
               alt="Car 9 Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
@@ -68,13 +69,13 @@ export default function HomePage() {
             <img
               src="/models/animals/animals-model5-thumbnail.png"
               alt="Animal 5 Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
             {/* Item 4: Environment 5 Thumbnail */}
             <img
               src="/models/environments/environment-model5-thumbnail.png"
               alt="Environment 5 Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
           </div>
         </div>
@@ -87,38 +88,39 @@ export default function HomePage() {
             <img
               src="/models/cars/cars-model10-thumbnail.png"
               alt="Car 10 Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
             {/* Item 2: Grey Rhino Thumbnail */}
             <img
               src="/models/animals/animals-model8-thumbnail.png"
               alt="Grey Rhino Thumbnail"
-              className="object-cover h-32 w-full"
+              className="object-cover h-40 w-full"  // Updated height
             />
           </div>
         </div>
 
 
-{/* Featured Artists Section */}
-<div>
-  <div className="col-span-1 bg-gray-100 p-4" style={{ height: "185px" }}>
-    <h2 className="text-lg font-semibold">Featured Artists</h2>
-    <div className="grid grid-cols-2 gap-4 mt-2 items-start">
-      <div className="bg-white p-2 h-28">Item 1</div>
-      <div className="bg-white p-2 h-28">Item 4</div>
-    </div>
-  </div>
 
-  {/* New Section for "Have you logged in?" */} 
-  <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", height: "130px" }}>
-    <h2 className="text-center font-semibold">Log-in to get the complete experience</h2>
-    <div className="flex justify-center mt-2">
-      <button className="bg-blue-500 text-white gap-4 py-2 px-4 rounded">
-        Sign-In
-      </button>
-    </div>
-  </div>
-</div>
+        {/* Featured Artists Section */}
+        <div>
+          <div className="col-span-1 bg-gray-100 p-4" style={{ height: "210px" }}>
+            <h2 className="text-lg font-semibold">Featured Artists</h2>
+            <div className="grid grid-cols-2 gap-4 mt-2 items-start">
+              <div className="bg-white p-2 h-32">Item 1</div>
+              <div className="bg-white p-2 h-32">Item 4</div>
+            </div>
+          </div>
+
+          {/* New Section for "Have you logged in?" */}
+          <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", height: "170px" }}>
+            <h2 className="text-center font-semibold text-lg text-gray-800">Make sure to log-in to get the complete experience!</h2>
+            <div className="flex justify-center mt-4">
+              <button className="bg-blue-500 text-white px-6 py-3 rounded-full shadow-md hover:shadow-lg transition transform hover:-translate-y-1 hover:bg-blue-600">
+                Sign-In
+              </button>
+            </div>
+          </div>
+        </div>
 
 
 
@@ -127,12 +129,13 @@ export default function HomePage() {
       {/* Second Row */}
       <div className="grid grid-cols-3 gap-4 mb-4 w-full px-4">
         {/* Model of the Week: Car 4 Thumbnail */}
+        {/* Model of the Week: Car 4 Thumbnail */}
         <div className="bg-gray-100 p-4">
           <h2 className="text-lg font-semibold">Model of the Week</h2>
           <img
             src="/models/cars/cars-model4-thumbnail.png"
             alt="Car 4 Thumbnail"
-            className="object-cover h-48 w-full"
+            className="object-cover h-64 w-full"  // Updated height
           />
         </div>
 
@@ -142,7 +145,7 @@ export default function HomePage() {
           <img
             src="/models/animals/animals-model1-thumbnail.png"
             alt="Animal 1 Thumbnail"
-            className="object-cover h-48 w-full"
+            className="object-cover h-64 w-full"  // Updated height
           />
         </div>
 
@@ -152,38 +155,39 @@ export default function HomePage() {
           <img
             src="/models/cars/cars-model5-thumbnail.png"
             alt="Car 5 Thumbnail"
-            className="object-cover h-48 w-full"
+            className="object-cover h-64 w-full"  // Updated height
           />
+        </div>
+
+      </div>
+
+      {/* Your Most Viewed Items (Horizontal Scroll) */}
+      <div className="w-full px-4 mb-4">
+        <div className="bg-gray-100 p-4">
+          <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
+          <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
+                Item {index + 1}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-{/* Your Most Viewed Items (Horizontal Scroll) */}
-<div className="w-full px-4 mb-4">
-  <div className="bg-gray-100 p-4">
-    <h2 className="text-lg font-semibold">Your Most Viewed Items</h2>
-    <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
-      {Array.from({ length: 5 }, (_, index) => (
-        <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
-          Item {index + 1}
+      {/* Recommended Items */}
+      <div className="w-full px-4 mb-4">
+        <div className="bg-gray-100 p-4">
+          <h2 className="text-lg font-semibold">Recommended Items</h2>
+          <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
+                Item {index + 1}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-{/* Recommended Items */}
-<div className="w-full px-4 mb-4">
-  <div className="bg-gray-100 p-4">
-    <h2 className="text-lg font-semibold">Recommended Items</h2>
-    <div className="flex justify-center overflow-x-auto space-x-8 mt-4 h-50">
-      {Array.from({ length: 5 }, (_, index) => (
-        <div key={index} className="bg-white p-4 h-40 min-w-[200px]">
-          Item {index + 1}
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
     </main>
   );
 }
