@@ -32,7 +32,7 @@ export default function ProductViewer({ params }: { params: { id: string } }) {
           <div className="grid grid-cols-2 gap-8">
             {/* Product Image / 3D Render */}
             <div ref={renderRef} style={{ position: "relative", width: "100%", height: "360px" }}>
-              <ThreeDModelViewer modelPath={model.path} isHovered={false} onModelLoad={() => {}} />
+              <ThreeDModelViewer modelPath={model.path} isHovered={false} onModelLoad={() => { }} />
 
               {/* Author */}
               <p className="text-md text-gray-500 mt-2">Model Created By: {model.author}</p>
@@ -44,16 +44,6 @@ export default function ProductViewer({ params }: { params: { id: string } }) {
                 <h2 className="text-3xl font-bold">{model.name}</h2>
                 <p className="text-2xl font-semibold text-green-600">${model.price}</p>
                 <p className="text-md text-gray-700">{model.description}</p>
-              </div>
-
-              {/* Buttons aligned at the bottom */}
-              <div className="mt-auto space-x-4">
-                <button className="bg-green-600 text-white px-6 py-3 rounded shadow">
-                  Buy Now
-                </button>
-                <button className="bg-blue-500 px-6 py-3 rounded shadow">
-                  Add to Cart
-                </button>
               </div>
             </div>
           </div>

@@ -174,10 +174,15 @@ function SearchResults() {
   };
 
   const handleAddToCart = async (model: Model) => {
-    console.log(`Adding model with ID: ${model.id.toString()}`);
-    await addItem(model.id);
-    alert(`${model.name} has been added to your cart!`);
-    // router.push("/cart");
+    console.log(`Attempting to add model with ID: ${model.id.toString()}`);
+    try {
+      await addItem(model.id);
+      console.log("Item successfully added to cart");
+      alert(`${model.name} has been added to your cart!`);
+      router.push("/cart");
+    } catch (error) {
+      console.error("Failed to add item to cart", error);
+    }
   };
 
   const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery()
