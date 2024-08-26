@@ -1,7 +1,7 @@
 "use client"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faShoppingCart, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faShoppingCart, faUserCircle, faList } from '@fortawesome/free-solid-svg-icons';
 import { useRouter, usePathname } from 'next/navigation';  // Import useRouter and usePathname
 import { useSession, signOut } from "next-auth/react";  // Import useSession and signOut
 import { useState, useEffect } from "react";  // Import useState
@@ -14,7 +14,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
 
-  useEffect(()=> {
+  useEffect(() => {
     console.log("Session data:", session);
   }, [session]);
 
@@ -25,9 +25,10 @@ export default function Navbar() {
       router.push(`/searchResults`);
     }
   };
+
   const handleSignIn = () => {
     if (!session) {
-      
+
       const callbackUrl = pathname;
       router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     } else {
@@ -48,12 +49,16 @@ export default function Navbar() {
     router.push(`/searchResults?category=${category}`);
   };
 
+  const handleOrdersClick = () => {
+    router.push('/orders');
+  }
+
   const handleCartClick = () => {
     router.push('/cart');
   };
 
   const handleProfileClick = () => {
-    router.push('/profile');
+    router.push('/orders');
   };
 
   return (
@@ -81,6 +86,12 @@ export default function Navbar() {
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex flex-col items-center">
+            <button className="p-2 rounded" onClick={handleOrdersClick}>
+              <FontAwesomeIcon icon={faList} className="text-gray-500 h-7 w-7" />
+            </button>
+            <span className="text-xs text-gray-600">Orders</span>
+          </div>
+          <div className="flex flex-col items-center">
             <button className="p-2 rounded" onClick={handleCartClick}>
               <FontAwesomeIcon icon={faShoppingCart} className="text-gray-500 h-7 w-7" />
             </button>
@@ -88,7 +99,7 @@ export default function Navbar() {
           </div>
           <div className="flex flex-col items-center">
             <button className="p-2 rounded" onClick={handleProfileClick}>
-              <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7"/>
+              <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
             </button>
             <span className="text-xs text-gray-600">Profile</span>
           </div>
