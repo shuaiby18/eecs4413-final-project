@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
 import bcrypt from "bcryptjs";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -7,26 +7,34 @@ import { LoginSchema } from "./schemas/user";
 import { getUserByEmail } from "./user";
 
 import { prisma } from "@/lib/db";
-import { UserRole } from "@prisma/client";
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      role: UserRole;
-    } & DefaultSession["user"];
-  }
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user?.role;
+        token.email = user.email as string;
+        token.role = user.role;
+        token.id = user.id as string;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = (await getUserByEmail(token?.email))?.id;
-      session.user.role = token.role;
+      if (session?.user) {
+        const userId = await getUserByEmail(token.email).then((user) => user?.id);
+
+        if (userId) {
+          return {
+            ...session,
+            user: {
+              ...session.user,
+              id: userId,
+              role: token.role, // role is expected to be a string
+            },
+          };
+        }        
+      }
+
+
       return session;
     },
   },
@@ -47,7 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (passwordsMatch) {
             return {
               name: user?.name,
-              email: user?.email,
+              email: user.email,
               role: user?.role,
             };
           }
