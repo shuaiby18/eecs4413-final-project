@@ -21,33 +21,54 @@ type Model = {
   description: string | null;
 };
 
-function Filters() {
+function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, priceFilter: (range: number[]) => void }) {
   const colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black"];
 
   const handleColorClick = (selectedColor: string) => {
     console.log("Selected color:", selectedColor);
   };
 
+  const handlepriceFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value, 10);
+    priceFilter([0, value]);
+  };
+
+  const handleSortImp = (value: string) => {
+    sortImp(value);
+  };
+
   return (
     <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
       <h2 className="text-lg font-semibold mb-4">Filters</h2>
 
+      {/* Sorting Option */}
+      <div className="mb-4">
+        <h3 className="text-md font-semibold">Sort By</h3>
+
+        {/* Hyperlinks for sorting */}
+        <div className="flex flex-wrap gap-2">
+          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('')}>
+            None
+          </a>
+          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-asc')}>
+            Price: Low to High
+          </a>
+          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-desc')}>
+            Price: High to Low
+          </a>
+          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-asc')}>
+            Name: A to Z
+          </a>
+          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-desc')}>
+            Name: Z to A
+          </a>
+        </div>
+      </div>
+
       {/* Price Range */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Price Range</h3>
-        <input type="range" min="0" max="1000" className="w-full" />
-      </div>
-
-      {/* File Size */}
-      <div className="mb-4">
-        <h3 className="text-md font-semibold">File Size (MB)</h3>
-        <input type="range" min="0" max="500" className="w-full" />
-      </div>
-
-      {/* Polygon Count */}
-      <div className="mb-4">
-        <h3 className="text-md font-semibold">Polygon Count</h3>
-        <input type="range" min="0" max="50000" className="w-full" />
+        <input type="range" min="0" max="1000" className="w-full" onChange={handlepriceFilter} />
       </div>
 
       {/* Color */}
@@ -134,6 +155,8 @@ function SearchResults() {
   const query = searchParams.get('query'); // Get the search query from the URL
 
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState<string>(''); // Define state for sort option
+  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]); // Define state for price filter
   const router = useRouter();
 
   const addItemMutation = trpc.cart.addItem.useMutation({
@@ -175,6 +198,25 @@ function SearchResults() {
     return matchesCategory && matchesQuery;
   });
 
+  // Sort function
+  const sortModels = (modelsToSort: Model[]) => {
+    return modelsToSort.sort((a, b) => {
+      if (sortOption === 'price-asc') {
+        return a.price - b.price;
+      } else if (sortOption === 'price-desc') {
+        return b.price - a.price;
+      } else if (sortOption === 'name-asc') {
+        return a.name.localeCompare(b.name);
+      } else if (sortOption === 'name-desc') {
+        return b.name.localeCompare(a.name);
+      }
+      return 0; // Default: no sorting
+    });
+  };
+
+  // Sort filtered models before rendering
+  const sortedAndFilteredModels = sortModels(filteredModels);
+
   return (
     <main className="flex min-h-screen pt-32">
       {/* Navigation Bar */}
@@ -182,12 +224,15 @@ function SearchResults() {
 
       {/* Left Sidebar for Filters */}
       <aside className="p-4" style={{ paddingTop: "0" }}>
-        <Filters />
+        <Filters
+          sortImp={(value) => setSortOption(value)}
+          priceFilter={(range) => setPriceFiltrate(range)}
+        />
       </aside>
 
       {/* Products Grid */}
       <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
-        {filteredModels.map((model, index) => (
+        {sortedAndFilteredModels.map((model, index) => (
           <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
             {/* Hoverable Model Card */}
             <HoverableModelCard model={model} />
