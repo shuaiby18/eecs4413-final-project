@@ -22,9 +22,11 @@ type Model = {
 };
 
 function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, priceFilter: (range: number[]) => void }) {
-  const handlepriceFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value, 10);
-    priceFilter([0, value]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(200);
+
+  const handlePriceRangeChange = () => {
+    priceFilter([minPrice, maxPrice]);
   };
 
   const handleSortImp = (value: string) => {
@@ -38,35 +40,61 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
       {/* Sorting Option */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Sort By</h3>
-
-        {/* Hyperlinks for sorting */}
-        <div className="flex flex-wrap gap-2">
-          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('')}>
-            None
-          </a>
-          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-asc')}>
-            Price: Low to High
-          </a>
-          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-desc')}>
-            Price: High to Low
-          </a>
-          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-asc')}>
-            Name: A to Z
-          </a>
-          <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-desc')}>
-            Name: Z to A
-          </a>
-        </div>
+        {/* Sorting Links */}
+      {/* Hyperlinks for sorting */}
+      <div className="flex flex-wrap gap-2">
+        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('')}>
+          Default
+        </a>
+        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-asc')}>
+          Price: Low to High
+        </a>
+        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-desc')}>
+          Price: High to Low
+        </a>
+        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-asc')}>
+          Name: A to Z
+        </a>
+        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-desc')}>
+          Name: Z to A
+        </a>
       </div>
-
-      {/* Price Range */}
+            </div>
+      {/* Price Range Filter */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Price Range</h3>
-        <input type="range" min="0" max="1000" className="w-full" onChange={handlepriceFilter} />
+        <div className="flex flex-col">
+          <label htmlFor="min-price">Min Price: ${minPrice}</label>
+          <input
+            type="range"
+            id="min-price"
+            min="0"
+            max="500"
+            value={minPrice}
+            onChange={(e) => setMinPrice(parseInt(e.target.value, 10))}
+          />
+          <label htmlFor="max-price">Max Price: ${maxPrice}</label>
+          <input
+            type="range"
+            id="max-price"
+            min="0"
+            max="500"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
+          />
+          <button onClick={handlePriceRangeChange} className="bg-blue-500 text-white py-2 px-3 rounded mt-2">
+            Apply
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
+
+
+
+
 
 function HoverableModelCard({ model }: { model: Model }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -170,12 +198,13 @@ function SearchResults() {
     )
   }
 
-  // Filter models based on category and search query
-  const filteredModels = models?.filter((model) => {
-    const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
-    const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
-    return matchesCategory && matchesQuery;
-  });
+// Filter models based on category, search query, and price range
+const filteredModels = models?.filter((model) => {
+  const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
+  const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
+  const matchesPrice = model.price >= priceFiltrate[0] && model.price <= priceFiltrate[1];
+  return matchesCategory && matchesQuery && matchesPrice;
+});
 
   // Sort function
   const sortModels = (modelsToSort: Model[]) => {
