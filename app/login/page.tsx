@@ -25,7 +25,7 @@ export default function Login() {
     const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to home page if no callbackUrl
 
     const [isPending, startTransition] = useTransition();
-    
+
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -36,18 +36,23 @@ export default function Login() {
     });
 
     async function onSubmit(values: z.infer<typeof LoginSchema>) {
-        signIn("credentials", {
+        const response = await signIn("credentials", {
             email: values.email,
             password: values.password,
             callbackUrl: values.callbackUrl,
             redirect: false, // Prevent automatic redirect
-        }).then(({ ok, error, url }) => {
+        });
+
+        if (response) {
+            const { ok, error, url } = response;
             if (ok) {
-                router.push(url || callbackUrl);
+                router.push(url || values.callbackUrl);
             } else {
                 // Handle errors (e.g., show error message)
             }
-        });
+        } else {
+            // Handle the case where response is undefined (e.g., network error)
+        }
     }
 
     return (
@@ -66,11 +71,11 @@ export default function Login() {
                                 <FormItem>
                                     <FormLabel className="font-semibold">E-mail address</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            placeholder="you@example.com" 
+                                        <Input
+                                            placeholder="you@example.com"
                                             type="email"
                                             disabled={isPending}
-                                            {...field} 
+                                            {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
@@ -85,11 +90,11 @@ export default function Login() {
                                 <FormItem>
                                     <FormLabel className="font-semibold">Password</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            type="password" 
+                                        <Input
+                                            type="password"
                                             disabled={isPending}
-                                            required 
-                                            {...field} 
+                                            required
+                                            {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
@@ -97,19 +102,19 @@ export default function Login() {
                                 </FormItem>
                             )}
                         />
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             className="w-full bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500"
                         >
                             Continue
                         </Button>
                     </form>
                 </Form>
-                <hr className="my-6"/>
+                <hr className="my-6" />
                 <div className="text-center">
                     <p className="text-sm text-gray-600">New customer?</p>
-                    <Button 
-                        onClick={() => router.push('/register')} 
+                    <Button
+                        onClick={() => router.push('/register')}
                         className="w-full mt-2 bg-gray-200 text-black py-2 rounded hover:bg-gray-300"
                     >
                         Create account
