@@ -22,12 +22,6 @@ type Model = {
 };
 
 function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, priceFilter: (range: number[]) => void }) {
-  const colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black"];
-
-  const handleColorClick = (selectedColor: string) => {
-    console.log("Selected color:", selectedColor);
-  };
-
   const handlepriceFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value, 10);
     priceFilter([0, value]);
@@ -69,25 +63,6 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
       <div className="mb-4">
         <h3 className="text-md font-semibold">Price Range</h3>
         <input type="range" min="0" max="1000" className="w-full" onChange={handlepriceFilter} />
-      </div>
-
-      {/* Color */}
-      <div className="mb-4">
-        <h3 className="text-md font-semibold">Color</h3>
-        <div className="grid grid-cols-3 gap-2">
-          {colors.map((color) => (
-            <div
-              key={color}
-              className="w-8 h-8 cursor-pointer"
-              style={{
-                backgroundColor: color,
-                border: "2px solid #e2e8f0", // light gray border
-                transition: "border-color 0.3s ease",
-              }}
-              onClick={() => handleColorClick(color)}
-            />
-          ))}
-        </div>
       </div>
     </div>
   );
