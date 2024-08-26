@@ -4,9 +4,24 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/ui/Navbar";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { trpc } from "@/server/client";
+
+interface Model {
+  path: string;
+  name: string;
+  id: number;
+  description: string | null;
+  category: {
+    name: string;
+    id: number;
+  };
+  price: number;
+  author: string;
+  categoryId: number;
+  thumbnail: string;
+}
 
 export default function HomePage() {
-  const [models, setModels] = useState([]);
   const router = useRouter();
 
   const handleSignInClick = () => {
@@ -24,23 +39,29 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [banners.length]);
 
-  // Fetch model data from the existing /api/models route
-  useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const response = await fetch('/api/models');
-        const data = await response.json();
-        setModels(data);
-      } catch (error) {
-        console.error("Failed to fetch models:", error);
-      }
-    };
-    fetchModels();
-  }, []);
+  const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery()
 
-  const getModel = (index) => models[index - 1]; // Adjust for zero-based array index
+  if (!isFetched) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <Navbar />
+        <h1 className="text-4xl">Loading...</h1>
+      </main>
+    );
+  }
 
-  const generateProductUrl = (model) => {
+  if (isError || !models) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <Navbar />
+        <h1 className="text-4xl">An error occurred while fetching the models.</h1>
+      </main>
+    );
+  }
+
+  const getModel = (index: number) => models[index - 1]; // Adjust for zero-based array index
+
+  const generateProductUrl = (model: Model) => {
     return `/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`;
   };
 
@@ -53,14 +74,14 @@ export default function HomePage() {
 
       {/* Banner at the Top */}
       <div className="w-full mt-32">
-  <video
-    src={banners[currentBanner]}
-    className="w-full object-cover h-70 fade-out"
-    autoPlay
-    loop
-    muted
-  />
-</div>
+        <video
+          src={banners[currentBanner]}
+          className="w-full object-cover h-70 fade-out"
+          autoPlay
+          loop
+          muted
+        />
+      </div>
 
 
       {/* Padding added below Navbar */}
@@ -161,7 +182,7 @@ export default function HomePage() {
 
               {/* Author 2: Kenchoo */}
               <div className="flex flex-col items-center">
-              <img
+                <img
                   src="/profile-pictures/author-2.jpg"
                   alt="Kevin (ケビン)"
                   className="object-cover h-32 w-32 rounded-full"
@@ -170,13 +191,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-
-
-
-
-
-
 
           {/* New Section for "Have you logged in?" */}
           <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", height: "170px" }}>

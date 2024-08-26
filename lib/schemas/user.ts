@@ -8,7 +8,7 @@ export const LoginSchema = z.object({
       message: "Please enter your password. Password is required.",
     }),
     code: z.optional(z.string()),
-    callbackUrl: z.optional(z.string()),
+    callbackUrl: z.string().default("/"),
   });
   
 export const RegisterSchema = z

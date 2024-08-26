@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type CartItem = {
-    product_id: string;
+    product_id: number;
     name: string;
     price: number;
     quantity: number;
