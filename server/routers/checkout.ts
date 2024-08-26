@@ -4,43 +4,41 @@ import { auth } from "@/lib/auth";
 import { z } from "zod";
 
 export const checkoutRouter = router({
-  prepareOrder: publicProcedure
-    .output(z.string())
-    .mutation(async () => {
-      try {
-        const session = await auth();
-        console.log("checkoutRouter:prepareOrder: session", session);
-        const userId = session?.user?.id; // Replace with actual user ID retrieval
-        console.log("checkoutRouter:prepareOrder: userId", userId);
+  prepareOrder: publicProcedure.output(z.string()).mutation(async () => {
+    try {
+      const session = await auth();
+      console.log("checkoutRouter:prepareOrder: session", session);
+      const userId = session?.user?.id; // Replace with actual user ID retrieval
+      console.log("checkoutRouter:prepareOrder: userId", userId);
 
-        if (!userId) {
-          console.log("checkoutRouter:prepareOrder: User is not authenticated");
-          throw new Error("User is not authenticated");
-        }
-
-        console.log("checkoutRouter:prepareOrder: userId", userId);
-
-        let { id: orderId } = await prisma.order.create({
-          data: {
-            userId,
-            checkouted: false, // Order is not completed yet
-          },
-          select: {
-            id: true,
-          },
-        });
-
-        console.log("checkoutRouter:prepareOrder: orderId", orderId);
-
-        // Do not associate cart items with the order yet
-        // They will remain linked to the cart until the order is completed
-
-        return orderId;
-      } catch (error) {
-        console.error("Failed to prepare order:", error);
-        throw new Error("Failed to prepare order");
+      if (!userId) {
+        console.log("checkoutRouter:prepareOrder: User is not authenticated");
+        throw new Error("User is not authenticated");
       }
-    }),
+
+      console.log("checkoutRouter:prepareOrder: userId", userId);
+
+      let { id: orderId } = await prisma.order.create({
+        data: {
+          userId,
+          checkouted: false, // Order is not completed yet
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      console.log("checkoutRouter:prepareOrder: orderId", orderId);
+
+      // Do not associate cart items with the order yet
+      // They will remain linked to the cart until the order is completed
+
+      return orderId;
+    } catch (error) {
+      console.error("Failed to prepare order:", error);
+      throw new Error("Failed to prepare order");
+    }
+  }),
 
   completeOrder: publicProcedure
     .input(
@@ -121,7 +119,6 @@ export const checkoutRouter = router({
             checkouted: true, // Mark the order as completed
           },
         });
-
       } catch (error) {
         console.error(
           "checkoutRouter:prepareOrder: Error complete order:",

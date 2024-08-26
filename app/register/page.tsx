@@ -22,8 +22,14 @@ import { trpc } from "@/server/client";
 export default function Register() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const register = trpc.user.register.useMutation();
-    
+
+    const register = trpc.user.register.useMutation({
+        onSuccess: (data) => {
+            console.log("User registered successfully", data);
+            router.push("/login");
+        },
+    });
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
@@ -35,16 +41,12 @@ export default function Register() {
 
     async function onSubmit(values: z.infer<typeof RegisterSchema>) {
         startTransition(async () => {
-           const result = await register.mutateAsync({
+            await register.mutateAsync({
                 email: values.email,
                 password: values.password,
                 passwordConfirmation: values.passwordConfirmation
             });
-
-            if (result.status === 201) {
-                router.push("/login");
-            }
-        });         
+        });
     }
 
     return (
@@ -66,11 +68,11 @@ export default function Register() {
                                 <FormItem>
                                     <FormLabel className="font-semibold">E-mail address</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            placeholder="you@example.com" 
-                                            type="email" 
+                                        <Input
+                                            placeholder="you@example.com"
+                                            type="email"
                                             disabled={isPending}
-                                            {...field} 
+                                            {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
@@ -85,11 +87,11 @@ export default function Register() {
                                 <FormItem>
                                     <FormLabel className="font-semibold">Password</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            type="password" 
+                                        <Input
+                                            type="password"
                                             disabled={isPending}
-                                            required 
-                                            {...field} 
+                                            required
+                                            {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
@@ -104,11 +106,11 @@ export default function Register() {
                                 <FormItem>
                                     <FormLabel className="font-semibold">Confirm Password</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            type="password" 
+                                        <Input
+                                            type="password"
                                             disabled={isPending}
-                                            required 
-                                            {...field} 
+                                            required
+                                            {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                         />
                                     </FormControl>
@@ -117,8 +119,8 @@ export default function Register() {
                             )}
                         />
                         <div className="space-y-4">
-                            <Button 
-                                type="submit" 
+                            <Button
+                                type="submit"
                                 className="w-full bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500"
                             >
                                 Sign Up
@@ -126,11 +128,11 @@ export default function Register() {
                         </div>
                     </form>
                 </Form>
-                <hr className="my-6"/>
+                <hr className="my-6" />
                 <div className="text-center">
                     <p className="text-sm text-gray-600">Already have an account?</p>
-                    <Button 
-                        onClick={() => router.push('/login')} 
+                    <Button
+                        onClick={() => router.push('/login')}
                         className="w-full mt-2 bg-gray-200 text-black py-2 rounded hover:bg-gray-300"
                     >
                         Sign in

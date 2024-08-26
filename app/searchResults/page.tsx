@@ -18,7 +18,7 @@ type Model = {
   category: {
     name: string;
   };
-  description: string;
+  description: string | null;
 };
 
 function Filters() {
@@ -72,91 +72,6 @@ function Filters() {
   );
 }
 
-export default function Home() {
-  const searchParams = useSearchParams();
-  const category = searchParams.get('category');
-  const query = searchParams.get('query'); // Get the search query from the URL
-
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  const addItemMutation = trpc.cart.addItem.useMutation({
-    onSuccess: () => {
-      console.log("Item added successfully");
-    },
-    onError: (error) => {
-      console.error("Failed to add item", error);
-    }
-  });
-
-  const addItem = async (productId: number) => {
-    console.log(`Adding item with ID: ${productId}`);
-    await addItemMutation.mutateAsync({ productId });
-  };
-
-  const handleAddToCart = async (model: Model) => {
-    console.log(`Adding model with ID: ${model.id.toString()}`);
-    await addItem(model.id);
-    alert(`${model.name} has been added to your cart!`);
-    // router.push("/cart");
-  };
-
-  const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery()
-
-  if (isFetched) {
-
-    // Filter models based on category and search query
-    const filteredModels = models?.filter((model) => {
-      const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
-      const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
-      return matchesCategory && matchesQuery;
-    });
-
-    return (
-      <main className="flex min-h-screen pt-32">
-        {/* Navigation Bar */}
-        <Navbar />
-
-        {/* Left Sidebar for Filters */}
-        <aside className="p-4" style={{ paddingTop: "0" }}>
-          <Filters />
-        </aside>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
-          {filteredModels.map((model, index) => (
-            <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
-              {/* Hoverable Model Card */}
-              <HoverableModelCard model={model} />
-
-              {/* Product Information */}
-              <div className="p-2 flex-grow">
-                {/* Make product name a link */}
-                <h3 className="text-lg font-semibold">
-                  <Link href={`/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`}>
-                    {model.name}
-                  </Link>
-                </h3>
-                <p className="text-gray-500">By {model.author}</p>
-                <p className="text-lg font-bold mb-1">${model.price.toFixed(2)}</p>
-              </div>
-
-              {/* Add to Cart Button */}
-              <div className="p-2">
-                <button className="bg-blue-500 text-white py-2 px-3 rounded w-full" onClick={() => handleAddToCart(model)}>
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-    );
-  }
-
-
-}
-
 function HoverableModelCard({ model }: { model: Model }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
@@ -202,5 +117,94 @@ function HoverableModelCard({ model }: { model: Model }) {
         }}
       />
     </div>
+  );
+}
+
+export default function Home() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
+  const query = searchParams.get('query'); // Get the search query from the URL
+
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const addItemMutation = trpc.cart.addItem.useMutation({
+    onSuccess: () => {
+      console.log("Item added successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to add item", error);
+    }
+  });
+
+  const addItem = async (productId: number) => {
+    console.log(`Adding item with ID: ${productId}`);
+    await addItemMutation.mutateAsync({ productId });
+  };
+
+  const handleAddToCart = async (model: Model) => {
+    console.log(`Adding model with ID: ${model.id.toString()}`);
+    await addItem(model.id);
+    alert(`${model.name} has been added to your cart!`);
+    // router.push("/cart");
+  };
+
+  const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery()
+
+  if (isError || !models) {
+    return (
+      <main className="flex min-h-screen flex-col w-full items-center">
+        <Navbar />
+        <h1 className="text-4xl">An error occurred while fetching your orders</h1>
+      </main>
+    )
+  }
+
+  // Filter models based on category and search query
+  const filteredModels = models?.filter((model) => {
+    const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
+    const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
+    return matchesCategory && matchesQuery;
+  });
+
+  return (
+    <main className="flex min-h-screen pt-32">
+      {/* Navigation Bar */}
+      <Navbar />
+
+      {/* Left Sidebar for Filters */}
+      <aside className="p-4" style={{ paddingTop: "0" }}>
+        <Filters />
+      </aside>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
+        {filteredModels.map((model, index) => (
+          <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
+            {/* Hoverable Model Card */}
+            <HoverableModelCard model={model} />
+
+            {/* Product Information */}
+            <div className="p-2 flex-grow">
+              {/* Make product name a link */}
+              <h3 className="text-lg font-semibold">
+                <Link href={`/productViewer/${model.id}`}>
+                  {model.name}
+                </Link>
+              </h3>
+              <p className="text-gray-500">By {model.author}</p>
+              <p className="text-lg font-bold mb-1">${model.price.toFixed(2)}</p>
+            </div>
+
+            {/* Add to Cart Button */}
+            <div className="p-2">
+              <button className="bg-blue-500 text-white py-2 px-3 rounded w-full" onClick={() => handleAddToCart(model)}>
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }
