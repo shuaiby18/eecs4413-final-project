@@ -1,7 +1,7 @@
 "use client";
 
 import { trpc } from "@/server/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer";
@@ -120,7 +120,15 @@ function HoverableModelCard({ model }: { model: Model }) {
   );
 }
 
-export default function Home() {
+export default function SearchResultsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchResults />
+    </Suspense>
+  );
+}
+
+function SearchResults() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
   const query = searchParams.get('query'); // Get the search query from the URL

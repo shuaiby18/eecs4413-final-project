@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState, useTransition } from "react";
+import { useState, useTransition, Suspense } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/lib/schemas/user";
 
@@ -19,7 +19,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
 
-export default function Login() {
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <Login />
+        </Suspense>
+    );
+}
+
+function Login() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to home page if no callbackUrl
