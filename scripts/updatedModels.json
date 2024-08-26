@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Messerschmitt Bf-109 - Chicken Gun Plane",
+    "path": "https://eecs4413-3dmodels.s3.ca-central-1.amazonaws.com/models/planes/planes-model1.glb",
+    "thumbnail": "https://eecs4413-3dmodels.s3.ca-central-1.amazonaws.com/models/planes/planes-model1-thumbnail.png",
+    "price": 25.99,
+    "author": "amogusstrikesback2",
+    "category": "planes",
+    "description": "..."
+  },
+  {
+    "name": "Chernovan Nemesis Plane",
+    "path": "https://eecs4413-3dmodels.s3.ca-central-1.amazonaws.com/models/planes/planes-model2.glb",
+    "thumbnail": "https://eecs4413-3dmodels.s3.ca-central-1.amazonaws.com/models/planes/planes-model2-thumbnail.png",
+    "price": 29.99,
+    "author": "Swiss_Fox",
+    "category": "planes",
+    "description": "..."
+  }
+]
