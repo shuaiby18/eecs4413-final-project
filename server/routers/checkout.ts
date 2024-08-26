@@ -7,49 +7,41 @@ export const checkoutRouter = router({
   prepareOrder: publicProcedure
     .output(z.string())
     .mutation(async () => {
-        try {
+      try {
         const session = await auth();
         console.log("checkoutRouter:prepareOrder: session", session);
         const userId = session?.user?.id; // Replace with actual user ID retrieval
         console.log("checkoutRouter:prepareOrder: userId", userId);
 
         if (!userId) {
-            console.log("checkoutRouter:prepareOrder: User is not authenticated");
-            throw new Error("User is not authenticated");
+          console.log("checkoutRouter:prepareOrder: User is not authenticated");
+          throw new Error("User is not authenticated");
         }
 
         console.log("checkoutRouter:prepareOrder: userId", userId);
 
         let { id: orderId } = await prisma.order.create({
-            data: {
+          data: {
             userId,
-            checkouted: true,
-            },
-            select: {
+            checkouted: false, // Order is not completed yet
+          },
+          select: {
             id: true,
-            },
+          },
         });
 
         console.log("checkoutRouter:prepareOrder: orderId", orderId);
 
-        await prisma.cartItem.updateMany({
-            where: {
-            userId,
-            orderId: null,
-            },
-            data: {
-            orderId,
-            },
-        });
-
-        console.log("checkoutRouter:prepareOrder: cartItems updated");
+        // Do not associate cart items with the order yet
+        // They will remain linked to the cart until the order is completed
 
         return orderId;
-        } catch (error) {
+      } catch (error) {
         console.error("Failed to prepare order:", error);
         throw new Error("Failed to prepare order");
-        }
+      }
     }),
+
   completeOrder: publicProcedure
     .input(
       z.object({
@@ -108,6 +100,17 @@ export const checkoutRouter = router({
           },
         });
 
+        // Now associate the cart items with the order
+        await prisma.cartItem.updateMany({
+          where: {
+            userId,
+            orderId: null, // Only update items that have not been ordered yet
+          },
+          data: {
+            orderId: input.orderId,
+          },
+        });
+
         await prisma.order.update({
           where: {
             id: input.orderId.toString(),
@@ -115,8 +118,10 @@ export const checkoutRouter = router({
           data: {
             shippingAddressId,
             paymentInfoId,
+            checkouted: true, // Mark the order as completed
           },
         });
+
       } catch (error) {
         console.error(
           "checkoutRouter:prepareOrder: Error complete order:",

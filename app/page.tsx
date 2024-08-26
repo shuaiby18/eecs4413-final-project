@@ -13,7 +13,7 @@ export default function HomePage() {
     router.push('/login');
   };
 
-  const banners = ["/banners/banner_4.mp4"];
+  const banners = ["/banners/banner_5.mp4"];
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
@@ -53,14 +53,15 @@ export default function HomePage() {
 
       {/* Banner at the Top */}
       <div className="w-full mt-32">
-        <video
-          src={banners[currentBanner]}
-          className="w-full object-cover h-70"
-          autoPlay
-          loop
-          muted
-        />
-      </div>
+  <video
+    src={banners[currentBanner]}
+    className="w-full object-cover h-70 fade-out"
+    autoPlay
+    loop
+    muted
+  />
+</div>
+
 
       {/* Padding added below Navbar */}
       <div className="mt-4 w-full"></div>

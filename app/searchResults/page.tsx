@@ -121,7 +121,8 @@ export default function Home() {
   const handleAddToCart = async (model: Model) => {
     console.log(`Adding model with ID: ${model.id.toString()}`);
     await addItem(model.id);
-    router.push("/cart");
+    alert(`${model.name} has been added to your cart!`);
+    // router.push("/cart");
   };
 
   return (
