@@ -62,7 +62,7 @@ export default function HomePage() {
   const getModel = (index: number) => models[index - 1]; // Adjust for zero-based array index
 
   const generateProductUrl = (model: Model) => {
-    return `/productViewer/${encodeURIComponent(model.name.toLowerCase().replace(/\s/g, '%20').replace(/-/g, '_'))}`;
+    return `/productViewer/${model.id}`;
   };
 
   return (
