@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "kill": "kill -9 $(lsof -ti:3000)",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
