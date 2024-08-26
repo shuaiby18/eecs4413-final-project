@@ -114,7 +114,7 @@ function Model({ path, setBackgroundColor, onModelLoad }, ref) {
 
 const ForwardedModel = forwardRef(Model);
 
-export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }: { modelPath: string, isHovered: boolean, onModelLoad?: () => void }) {
+export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }) {
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
 
   const { progress, active } = useProgress();
