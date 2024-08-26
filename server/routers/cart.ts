@@ -174,9 +174,10 @@ export const cartRouter = router({
 
         console.log("cartRouter:removeItem: input.productId", input.productId);
 
-        const cartItem = await prisma.cartItem.findUnique({
+        const cartItem = await prisma.cartItem.findFirst({
           where: {
-            userId_productId: { userId, productId: input.productId },
+            userId: userId,
+            productId: input.productId,
           },
         });
 
@@ -191,16 +192,12 @@ export const cartRouter = router({
 
         if (cartItem.quantity > 1) {
           await prisma.cartItem.update({
-            where: {
-              userId_productId: { userId, productId: input.productId },
-            },
+            where: { id: cartItem.id }, // Use the unique id to update the quantity
             data: { quantity: { decrement: 1 } },
           });
         } else {
           await prisma.cartItem.delete({
-            where: {
-              userId_productId: { userId, productId: input.productId },
-            },
+            where: { id: cartItem.id }, // Use the unique id to delete the cart item
           });
         }
 

@@ -8,9 +8,10 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-if(session?.user.role != "ADMIN"){
-  redirect("/")
-}
+  
+  if (session?.user.role != "ADMIN") {
+    redirect("/")
+  }
   return (
 
     <SessionProvider session={session}>
