@@ -1,5 +1,6 @@
 import { cartRouter } from "./routers/cart";
 import { checkoutRouter } from "./routers/checkout";
+import { modelsRouter } from "./routers/models";
 import { ordersRouter } from "./routers/orders";
 import { productRouter } from "./routers/products";
 import { userRouter } from "./routers/user";
@@ -11,6 +12,7 @@ export const appRouter = router({
   cart: cartRouter,
   checkout: checkoutRouter,
   orders: ordersRouter,
+  models: modelsRouter,
 });
 
 export type AppRouter = typeof appRouter;

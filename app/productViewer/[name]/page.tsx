@@ -1,5 +1,6 @@
 "use client";
 
+import { trpc } from "@/server/client";
 import { useParams } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
@@ -68,13 +69,11 @@ export default function ProductViewer() {
     .replace(/_/g, '-')  // Convert underscores back to dashes
     .replace(/%20/g, ' ');  // Convert '%20' back to spaces
 
-  // Fetch the selected model and suggested models from the API
+  const { data: models, refetch, isError, isFetched, isSuccess } = trpc.models.getAllModels.useQuery()
+
   useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const res = await fetch(`/api/models`);
-        const models = await res.json();
-        
+    try {
+      if (isSuccess) {
         // Find the model that matches the selected product
         const matchedModel = models.find((model) => model.name.toLowerCase() === normalizedRouteName.toLowerCase());
         setSelectedModel(matchedModel);
@@ -86,14 +85,12 @@ export default function ProductViewer() {
         setSuggestedModels(relatedModels);
 
         setLoading(false); // Set loading to false once data is fetched
-      } catch (error) {
-        console.error('Error fetching models:', error);
-        setLoading(false); // Stop loading even if there is an error
       }
-    };
-
-    fetchModels();
-  }, [normalizedRouteName]);
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      setLoading(false);
+    }
+  }, [models]);
 
   const toggleFullScreen = () => {
     if (renderRef.current) {
