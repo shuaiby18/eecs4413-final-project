@@ -73,7 +73,7 @@ export default function HomePage() {
       </div>
 
       {/* Banner at the Top */}
-      <div className="w-full mt-32">
+      <div className="w-full mt-28">
         <video
           src={banners[currentBanner]}
           className="w-full object-cover h-70 fade-out"
