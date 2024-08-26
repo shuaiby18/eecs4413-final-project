@@ -10,9 +10,20 @@ import { Package } from "lucide-react"
 export default function Orders() {
     const { data: session } = useSession();
 
-    const { data: ordersData, refetch, isError } = trpc.orders.getAllOrdersByUser.useQuery({
-        userId: session?.user?.id
-    })
+    if (!session?.user?.id) {
+        return (
+            <main className="flex min-h-screen flex-col w-full items-center">
+                <Navbar />
+                <h1 className="text-4xl">Please sign in to view your orders</h1>
+            </main>
+        );
+    }
+
+    const userId = session.user.id;
+
+    const { data: ordersData, isError } = trpc.orders.getAllOrdersByUser.useQuery(
+        { userId }
+    );
 
     if (!session) {
         return (
