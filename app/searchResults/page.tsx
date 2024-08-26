@@ -21,21 +21,41 @@ type Model = {
   description: string;
 };
 
-function Filters() {
+function Filters({sortImp, priceFilter} : { sortImp: (value: string) => void, priceFilter: (range: number[]) => void}) {
   const colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black"];
 
   const handleColorClick = (selectedColor: string) => {
     console.log("Selected color:", selectedColor);
   };
 
+  const handlepriceFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value, 10);
+    priceFilter([0, value]);
+  };
+
+  const handleSortImp = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    sortImp(event.target.value);
+  };
+
   return (
     <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
       <h2 className="text-lg font-semibold mb-4">Filters</h2>
 
+      {/*Sorting Option*/}
+      <div className="mb-4">
+        <h3 className="text-md font-semibold">Sort By</h3>
+        <select className="w-full" onChange={handleSortImp}>
+          <option value="">None</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z </option>
+          <option value="name-desc">Name: Z to A </option>
+        </select>
+      </div>
       {/* Price Range */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Price Range</h3>
-        <input type="range" min="0" max="1000" className="w-full" />
+        <input type="range" min="0" max="1000" className="w-full" onChange={handlepriceFilter} />
       </div>
 
       {/* File Size */}
@@ -72,6 +92,7 @@ function Filters() {
   );
 }
 
+
 export default function Home() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
@@ -79,6 +100,8 @@ export default function Home() {
 
   const [models, setModels] = useState<Model[]>([]); // Initialize as an empty array
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState<string>(''); // Define state for sort option
+  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 1000]); // Define state for price filter
   const router = useRouter();
 
   useEffect(() => {
@@ -97,12 +120,31 @@ export default function Home() {
     fetchModels();
   }, []);
 
+  // Sort function
+  const sortModels = (modelsToSort: Model[]) => {
+    return modelsToSort.sort((a, b) => {
+      if (sortOption === 'price-asc') {
+        return a.price - b.price;
+      } else if (sortOption === 'price-desc') {
+        return b.price - a.price;
+      } else if (sortOption === 'name-asc') {
+        return a.name.localeCompare(b.name);
+      } else if (sortOption === 'name-desc') {
+        return b.name.localeCompare(a.name);
+      }
+      return 0; // Default: no sorting
+    });
+  };
+
   // Filter models based on category and search query
   const filteredModels = models.filter((model) => {
     const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
     const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
     return matchesCategory && matchesQuery;
   });
+
+  // Sort filtered models before rendering
+  const sortedAndFilteredModels = sortModels(filteredModels);
 
   const addItemMutation = trpc.cart.addItem.useMutation({
     onSuccess: () => {
@@ -122,7 +164,6 @@ export default function Home() {
     console.log(`Adding model with ID: ${model.id.toString()}`);
     await addItem(model.id);
     alert(`${model.name} has been added to your cart!`);
-    // router.push("/cart");
   };
 
   return (
@@ -132,12 +173,15 @@ export default function Home() {
 
       {/* Left Sidebar for Filters */}
       <aside className="p-4" style={{ paddingTop: "0" }}>
-        <Filters />
+        <Filters 
+          sortImp={(value) => setSortOption(value)}
+          priceFilter={(range) => setPriceFiltrate(range)}
+        />
       </aside>
-
+      
       {/* Products Grid */}
       <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
-        {filteredModels.map((model, index) => (
+        {sortedAndFilteredModels.map((model, index) => (
           <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
             {/* Hoverable Model Card */}
             <HoverableModelCard model={model} />

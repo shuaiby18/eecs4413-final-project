@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer";
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
@@ -56,6 +56,7 @@ function HoverableModelCard({ model }) {
 
 export default function ProductViewer() {
   const { name } = useParams();
+  const router = useRouter(); // Initialize the router for navigation
   const renderRef = useRef(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [suggestedModels, setSuggestedModels] = useState([]);
@@ -75,6 +76,15 @@ export default function ProductViewer() {
       await addItemMutation.mutateAsync({ productId: modelId });
     } catch (error) {
       console.error('Error adding to cart:', error);
+    }
+  };
+
+  const handleBuyNow = async (modelId: number) => {
+    try {
+      await addItemMutation.mutateAsync({ productId: modelId });
+      router.push("/cart"); // Redirect to cart page after adding item
+    } catch (error) {
+      console.error('Error during Buy Now process:', error);
     }
   };
 
@@ -164,7 +174,10 @@ export default function ProductViewer() {
               </div>
 
               <div className="mt-auto space-x-4">
-                <button className="bg-green-600 text-white px-6 py-3 rounded shadow">
+                <button
+                  className="bg-green-600 text-white px-6 py-3 rounded shadow"
+                  onClick={() => handleBuyNow(selectedModel.id)} // Add to cart and go to cart
+                >
                   Buy Now
                 </button>
                 <button
