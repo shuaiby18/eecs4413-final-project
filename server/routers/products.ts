@@ -12,7 +12,6 @@ export const productRouter = router({
           let products = await prisma.product.findMany({
             include: {
               category: true,
-              brand: true
             },
             orderBy: {
               price: 'desc'
