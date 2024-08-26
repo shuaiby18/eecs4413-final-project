@@ -179,7 +179,6 @@ function SearchResults() {
       await addItem(model.id);
       console.log("Item successfully added to cart");
       alert(`${model.name} has been added to your cart!`);
-      router.push("/cart");
     } catch (error) {
       console.error("Failed to add item to cart", error);
     }
