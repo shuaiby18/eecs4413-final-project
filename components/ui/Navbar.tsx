@@ -27,11 +27,13 @@ export default function Navbar() {
   };
 
   const handleSignIn = () => {
+    console.log("handleSignIn Session data:", session);
     if (!session) {
-
+      console.log("handleSignIn 1 Session data:", session);
       const callbackUrl = pathname;
       router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     } else {
+      console.log("handleSignIn 2 Session data:", session);
       setIsMenuOpen(!isMenuOpen);
     }
   };
@@ -55,10 +57,6 @@ export default function Navbar() {
 
   const handleCartClick = () => {
     router.push('/cart');
-  };
-
-  const handleProfileClick = () => {
-    router.push('/orders');
   };
 
   return (
@@ -96,12 +94,6 @@ export default function Navbar() {
               <FontAwesomeIcon icon={faShoppingCart} className="text-gray-500 h-7 w-7" />
             </button>
             <span className="text-xs text-gray-600">Cart</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="p-2 rounded" onClick={handleProfileClick}>
-              <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
-            </button>
-            <span className="text-xs text-gray-600">Profile</span>
           </div>
           <div className="flex flex-col items-center relative">
             <button className="p-2 rounded" onClick={handleSignIn}>
