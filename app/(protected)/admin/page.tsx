@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/ui/Navbar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/server/client";
 import { useState } from "react";
 
