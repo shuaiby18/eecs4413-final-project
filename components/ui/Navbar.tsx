@@ -2,9 +2,9 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faShoppingCart, faUserCircle, faList } from '@fortawesome/free-solid-svg-icons';
-import { useRouter, usePathname } from 'next/navigation';  // Import useRouter and usePathname
-import { useSession, signOut } from "next-auth/react";  // Import useSession and signOut
-import { useState, useEffect } from "react";  // Import useState
+import { useRouter, usePathname } from 'next/navigation';  
+import { useSession, signOut } from "next-auth/react";  
+import { useState, useEffect } from "react";  
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -12,7 +12,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   useEffect(() => {
     console.log("Session data:", session);
@@ -28,7 +28,6 @@ export default function Navbar() {
 
   const handleSignIn = () => {
     if (!session) {
-
       const callbackUrl = pathname;
       router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     } else {
@@ -42,7 +41,7 @@ export default function Navbar() {
   };
 
   const handleViewAllProducts = () => {
-    router.push('/searchResults'); // Navigate to searchResults without a query parameter
+    router.push('/searchResults');
   };
 
   const handleCategoryClick = (category: string) => {
@@ -55,10 +54,6 @@ export default function Navbar() {
 
   const handleCartClick = () => {
     router.push('/cart');
-  };
-
-  const handleProfileClick = () => {
-    router.push('/orders');
   };
 
   return (
@@ -74,9 +69,9 @@ export default function Navbar() {
               placeholder="Search for your product"
               className="p-2 border border-gray-300 rounded w-3/4"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+              onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearch(); // Handle enter key
+                if (e.key === 'Enter') handleSearch(); 
               }}
             />
             <button className="p-2 rounded" onClick={handleSearch}>
@@ -97,12 +92,6 @@ export default function Navbar() {
             </button>
             <span className="text-xs text-gray-600">Cart</span>
           </div>
-          <div className="flex flex-col items-center">
-            <button className="p-2 rounded" onClick={handleProfileClick}>
-              <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
-            </button>
-            <span className="text-xs text-gray-600">Profile</span>
-          </div>
           <div className="flex flex-col items-center relative">
             <button className="p-2 rounded" onClick={handleSignIn}>
               <FontAwesomeIcon icon={faUserCircle} className="text-gray-500 h-7 w-7" />
@@ -110,9 +99,14 @@ export default function Navbar() {
             <span className="text-xs text-gray-600 cursor-pointer">
               {session ? "My Account" : "Sign-In"}
             </span>
-            {/* Dropdown menu for sign out */}
             {session && isMenuOpen && (
               <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2">
+                <button
+                  onClick={() => router.push('/orders')}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Profile
+                </button>
                 <button
                   onClick={handleSignOut}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"

@@ -13,7 +13,7 @@ export default function HomePage() {
     router.push('/login');
   };
 
-  const banners = ["/banners/banner_5.mp4"];
+  const banners = ["/banners/banner_6.mp4"];
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function HomePage() {
       </div>
 
       {/* Banner at the Top */}
-      <div className="w-full mt-32">
+      <div className="w-full mt-28">
   <video
     src={banners[currentBanner]}
     className="w-full object-cover h-70 fade-out"
@@ -140,12 +140,6 @@ export default function HomePage() {
 
         {/* Featured Artists Section */}
         <div>
-
-
-
-
-
-
           <div className="col-span-1 bg-gray-100 p-4" style={{ height: "210px" }}>
             <h2 className="text-lg font-semibold">Featured Artists</h2>
             <div className="grid grid-cols-2 gap-4 mt-2 items-start">
@@ -170,14 +164,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-
-
-
-
-
-
-
           {/* New Section for "Have you logged in?" */}
           <div className="col-span-1 bg-gray-100 mt-4 p-4" style={{ width: "100%", height: "170px" }}>
             <h2 className="text-center font-semibold text-lg text-gray-800">Make sure to log-in to get the complete experience!</h2>
