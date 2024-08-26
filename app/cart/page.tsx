@@ -60,12 +60,35 @@ export default function CartPage() {
     }, [cartData, isError]);
 
     const handleAddItem = async (productId: number) => {
+        // Optimistically update the cart items locally
+        setCartItems((prevItems) =>
+          prevItems.map((item) =>
+            item.product_id === productId
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        );
+      
+        // Perform the mutation on the server
         await addItemMutation.mutateAsync({ productId });
-    };
-
-    const handleRemoveItem = async (productId: number) => {
+      };
+      
+      const handleRemoveItem = async (productId: number) => {
+        // Optimistically update the cart items locally
+        setCartItems((prevItems) =>
+          prevItems.map((item) =>
+            item.product_id === productId && item.quantity > 1
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+        );
+      
+        // Perform the mutation on the server
         await removeItemMutation.mutateAsync({ productId });
-    };
+      };
+    
+
+    
 
     const goToCheckout = async () => {
         console.log("Proceeding to checkout...");

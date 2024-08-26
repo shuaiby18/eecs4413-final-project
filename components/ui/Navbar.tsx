@@ -100,7 +100,7 @@ export default function Navbar() {
               {session ? "My Account" : "Sign-In"}
             </span>
             {session && isMenuOpen && (
-              <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2">
+              <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2 w-48"> {/* Increased width to 12rem (w-48) */}
                 <button
                   onClick={() => router.push('/orders')}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
