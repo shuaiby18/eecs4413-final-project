@@ -32,7 +32,7 @@ export default function ProductViewer({ params }: { params: { id: string } }) {
           <div className="grid grid-cols-2 gap-8">
             {/* Product Image / 3D Render */}
             <div ref={renderRef} style={{ position: "relative", width: "100%", height: "360px" }}>
-              <ThreeDModelViewer modelPath={model.path} isHovered={false} />
+              <ThreeDModelViewer modelPath={model.path} isHovered={false} onModelLoad={() => {}} />
 
               {/* Author */}
               <p className="text-md text-gray-500 mt-2">Model Created By: {model.author}</p>
