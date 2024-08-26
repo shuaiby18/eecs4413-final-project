@@ -4,13 +4,55 @@ import { trpc } from "@/server/client";
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer"; // Import your 3D model viewer component
 import { useRef } from 'react'; // Import useRef
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function ProductViewer({ params }: { params: { id: string } }) {
   const renderRef = useRef<HTMLDivElement | null>(null); // Reference for the render container
+  const router = useRouter(); // Initialize the router for navigation
 
   const { data: model, refetch, isError, isLoading } = trpc.models.getModelById.useQuery({
     id: parseInt(params.id)
-  })
+  });
+
+  // Add to Cart mutation setup
+  const addItemMutation = trpc.cart.addItem.useMutation({
+    onSuccess: () => {
+      console.log("Item added successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to add item", error);
+    }
+  });
+
+  // Function to handle adding the item to the cart
+  const handleAddToCart = async () => {
+    if (!model) return; // Ensure the model is loaded
+
+    try {
+      console.log(`Attempting to add model with ID: ${model.id}`);
+      await addItemMutation.mutateAsync({ productId: model.id });
+      console.log("Item successfully added to cart");
+      alert(`${model.name} has been added to your cart!`);
+    } catch (error) {
+      console.error("Failed to add item to cart", error);
+    }
+  };
+
+  // Function to handle "Buy Now" functionality
+  const handleBuyNow = async () => {
+    if (!model) return; // Ensure the model is loaded
+
+    try {
+      console.log(`Attempting to add model with ID: ${model.id}`);
+      await addItemMutation.mutateAsync({ productId: model.id });
+      console.log("Item successfully added to cart");
+      alert(`${model.name} has been added to your cart!`);
+      router.push("/cart"); // Redirect to the shopping cart
+    } catch (error) {
+      console.error("Failed to add item to cart", error);
+    }
+  };
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -44,6 +86,22 @@ export default function ProductViewer({ params }: { params: { id: string } }) {
                 <h2 className="text-3xl font-bold">{model.name}</h2>
                 <p className="text-2xl font-semibold text-green-600">${model.price}</p>
                 <p className="text-md text-gray-700">{model.description}</p>
+              </div>
+
+              {/* Buttons Section */}
+              <div className="flex space-x-4 mt-6">
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded w-full hover:bg-blue-600"
+                  onClick={handleAddToCart}
+                > 
+                  Add to Cart
+                </button>
+                <button
+                  className="bg-green-500 text-white py-2 px-4 rounded w-full hover:bg-green-600"
+                  onClick={handleBuyNow}
+                >
+                  Buy Now
+                </button>
               </div>
             </div>
           </div>
