@@ -148,7 +148,7 @@ export default function Register() {
                                 </FormItem>
                             )}
                         />
-                        {/* Shipping Address Fields */}
+                        {/* Shipping Address Fields  */}
                         <FormField
                             control={form.control}
                             name="shippingAddress.street"
