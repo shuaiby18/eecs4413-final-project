@@ -50,13 +50,16 @@ export default function Register() {
     async function onSubmit(values: z.infer<typeof RegisterSchema>) {
         startTransition(async () => {
             await register.mutateAsync({
+                name: values.name, // Include the name field
                 email: values.email,
                 password: values.password,
                 passwordConfirmation: values.passwordConfirmation,
                 shippingAddress: values.shippingAddress,
+                creditCardInfo: values.creditCardInfo, // Include creditCardInfo
             });
         });
     }
+    
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
@@ -270,3 +273,4 @@ export default function Register() {
         </div>
     );
 }
+f
