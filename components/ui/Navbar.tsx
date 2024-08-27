@@ -105,9 +105,15 @@ export default function Navbar() {
             {/* Dropdown menu for sign out */}
             {session && isMenuOpen && (
               <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2">
+                <Link
+                  href = "/user_settings"
+                  className="block px-9 py-2 text-sm text-gray-600 hover:bg-gray-200"
+                  >
+                  User Profile
+                  </Link>
                 <button
                   onClick={handleSignOut}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                  className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-200"
                 >
                   Sign Out
                 </button>
