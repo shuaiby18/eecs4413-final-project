@@ -1,11 +1,12 @@
 "use client";
 
 import { trpc } from "@/server/client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer";
 import Link from 'next/link';
+import { Slider, TextField } from '@mui/material'; // Import MUI Slider and TextField
 
 // Define the type for a model
 type Model = {
@@ -14,7 +15,7 @@ type Model = {
   path: string;
   thumbnail: string;
   price: number;
-  author: string; // Updated to match string type
+  author: string;
   category: {
     name: string;
   };
@@ -22,67 +23,117 @@ type Model = {
 };
 
 function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, priceFilter: (range: number[]) => void }) {
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(200);
+  const [priceRange, setPriceRange] = useState([0, 50]); // Set initial state between 0 and 50
+  const [selectedSort, setSelectedSort] = useState(''); // Track selected sort option
 
-  const handlePriceRangeChange = () => {
-    priceFilter([minPrice, maxPrice]);
+  const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
+    setPriceRange(newValue as number[]);
+  };
+
+  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newMin = parseInt(e.target.value, 10);
+    if (!isNaN(newMin)) {
+      setPriceRange([newMin, priceRange[1]]);
+    }
+  };
+
+  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newMax = parseInt(e.target.value, 10);
+    if (!isNaN(newMax)) {
+      setPriceRange([priceRange[0], newMax]);
+    }
+  };
+
+  const applyPriceFilter = () => {
+    priceFilter(priceRange); // Apply the selected price range
   };
 
   const handleSortImp = (value: string) => {
+    setSelectedSort(value); // Update selected sort option
     sortImp(value);
   };
 
   return (
     <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
+      <h2 className="text-center font-semibold text-2xl mb-6">FILTERS</h2>
 
       {/* Sorting Option */}
       <div className="mb-4">
         <h3 className="text-md font-semibold">Sort By</h3>
-        {/* Sorting Links */}
-      {/* Hyperlinks for sorting */}
-      <div className="flex flex-wrap gap-2">
-        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('')}>
-          Default
-        </a>
-        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-asc')}>
-          Price: Low to High
-        </a>
-        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('price-desc')}>
-          Price: High to Low
-        </a>
-        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-asc')}>
-          Name: A to Z
-        </a>
-        <a href="#" className="text-blue-500 hover:underline" onClick={() => handleSortImp('name-desc')}>
-          Name: Z to A
-        </a>
+        <div className="flex flex-wrap gap-1">
+          <a
+            href="#"
+            className={`text-blue-500 hover:underline ${selectedSort === '' ? 'font-bold underline' : ''}`}
+            onClick={() => handleSortImp('')}
+          >
+            Default
+          </a>
+          <a
+            href="#"
+            className={`text-blue-500 hover:underline ${selectedSort === 'price-asc' ? 'font-bold underline' : ''}`}
+            onClick={() => handleSortImp('price-asc')}
+          >
+            Price: Low to High
+          </a>
+          <a
+            href="#"
+            className={`text-blue-500 hover:underline ${selectedSort === 'price-desc' ? 'font-bold underline' : ''}`}
+            onClick={() => handleSortImp('price-desc')}
+          >
+            Price: High to Low
+          </a>
+          <a
+            href="#"
+            className={`text-blue-500 hover:underline ${selectedSort === 'name-asc' ? 'font-bold underline' : ''}`}
+            onClick={() => handleSortImp('name-asc')}
+          >
+            Name: A to Z
+          </a>
+          <a
+            href="#"
+            className={`text-blue-500 hover:underline ${selectedSort === 'name-desc' ? 'font-bold underline' : ''}`}
+            onClick={() => handleSortImp('name-desc')}
+          >
+            Name: Z to A
+          </a>
+        </div>
       </div>
-            </div>
+
       {/* Price Range Filter */}
       <div className="mb-4">
-        <h3 className="text-md font-semibold">Price Range</h3>
-        <div className="flex flex-col">
-          <label htmlFor="min-price">Min Price: ${minPrice}</label>
-          <input
-            type="range"
-            id="min-price"
-            min="0"
-            max="500"
-            value={minPrice}
-            onChange={(e) => setMinPrice(parseInt(e.target.value, 10))}
+        <h3 className="text-md font-semibold mb-4">Price Range</h3> {/* Added margin-bottom for spacing */}
+        <div className="flex flex-col items-center">
+          <div className="flex gap-4 mb-4">
+            <TextField
+              label="Min"
+              type="number"
+              value={priceRange[0]}
+              onChange={handleMinPriceChange}
+              InputProps={{
+                inputProps: { min: 0, max: priceRange[1] },
+                sx: { height: 40 }, // Adjusted height for the text fields
+              }}
+            />
+            <TextField
+              label="Max"
+              type="number"
+              value={priceRange[1]}
+              onChange={handleMaxPriceChange}
+              InputProps={{
+                inputProps: { min: priceRange[0], max: 50 },
+                sx: { height: 40 }, // Adjusted height for the text fields
+              }}
+            />
+          </div>
+          <Slider
+            value={priceRange}
+            onChange={handlePriceRangeChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={50} // Limit the maximum price to 50
+            step={1}
           />
-          <label htmlFor="max-price">Max Price: ${maxPrice}</label>
-          <input
-            type="range"
-            id="max-price"
-            min="0"
-            max="500"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
-          />
-          <button onClick={handlePriceRangeChange} className="bg-blue-500 text-white py-2 px-3 rounded mt-2">
+          <button onClick={applyPriceFilter} className="bg-blue-500 text-white py-2 px-3 rounded mt-2">
             Apply
           </button>
         </div>
@@ -91,18 +142,13 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
   );
 }
 
-
-
-
-
-
 function HoverableModelCard({ model }: { model: Model }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    setIsModelLoaded(false); // Reset model load state on hover
+    setIsModelLoaded(false);
   };
 
   const handleMouseLeave = () => {
@@ -116,28 +162,25 @@ function HoverableModelCard({ model }: { model: Model }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Render 3D Model when hovered */}
       {isHovered && (
         <div className="absolute inset-0 w-full h-full">
           <ThreeDModelViewer
             modelPath={model.path}
             isHovered={isHovered}
-            onModelLoad={() => setIsModelLoaded(true)} // Set model as loaded
+            onModelLoad={() => setIsModelLoaded(true)}
           />
         </div>
       )}
-
-      {/* Always render the thumbnail */}
       <img
         src={model.thumbnail}
         alt={model.name + " thumbnail"}
         className="absolute inset-0 w-full h-full object-cover"
         style={{
           zIndex: 1,
-          pointerEvents: isModelLoaded ? 'none' : 'auto', // Disable pointer events when the model is loaded to allow interaction
-          opacity: !isModelLoaded || !isHovered ? 1 : 0, // Hide thumbnail when model is loaded and hovered
-          filter: isHovered && !isModelLoaded ? "brightness(70%)" : "brightness(100%)", // Darken thumbnail on hover until model loads
-          transition: "opacity 0.5s ease, filter 0.3s ease", // Smooth fade-out and darkening
+          pointerEvents: isModelLoaded ? 'none' : 'auto',
+          opacity: !isModelLoaded || !isHovered ? 1 : 0,
+          filter: isHovered && !isModelLoaded ? "brightness(70%)" : "brightness(100%)",
+          transition: "opacity 0.5s ease, filter 0.3s ease",
         }}
       />
     </div>
@@ -155,11 +198,11 @@ export default function SearchResultsPage() {
 function SearchResults() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
-  const query = searchParams.get('query'); // Get the search query from the URL
+  const query = searchParams.get('query');
 
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState<string>(''); // Define state for sort option
-  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]); // Define state for price filter
+  const [sortOption, setSortOption] = useState<string>(''); 
+  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]); 
   const router = useRouter();
 
   const addItemMutation = trpc.cart.addItem.useMutation({
@@ -177,17 +220,15 @@ function SearchResults() {
   };
 
   const handleAddToCart = async (model: Model) => {
-    console.log(`Attempting to add model with ID: ${model.id.toString()}`);
     try {
       await addItem(model.id);
-      console.log("Item successfully added to cart");
       alert(`${model.name} has been added to your cart!`);
     } catch (error) {
       console.error("Failed to add item to cart", error);
     }
   };
 
-  const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery()
+  const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery();
 
   if (isError || !models) {
     return (
@@ -195,18 +236,16 @@ function SearchResults() {
         <Navbar />
         <h1 className="text-4xl">An error occurred while fetching your orders</h1>
       </main>
-    )
+    );
   }
 
-// Filter models based on category, search query, and price range
-const filteredModels = models?.filter((model) => {
-  const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
-  const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
-  const matchesPrice = model.price >= priceFiltrate[0] && model.price <= priceFiltrate[1];
-  return matchesCategory && matchesQuery && matchesPrice;
-});
+  const filteredModels = models?.filter((model) => {
+    const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
+    const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
+    const matchesPrice = model.price >= priceFiltrate[0] && model.price <= priceFiltrate[1];
+    return matchesCategory && matchesQuery && matchesPrice;
+  });
 
-  // Sort function
   const sortModels = (modelsToSort: Model[]) => {
     return modelsToSort.sort((a, b) => {
       if (sortOption === 'price-asc') {
@@ -218,36 +257,26 @@ const filteredModels = models?.filter((model) => {
       } else if (sortOption === 'name-desc') {
         return b.name.localeCompare(a.name);
       }
-      return 0; // Default: no sorting
+      return 0; 
     });
   };
 
-  // Sort filtered models before rendering
   const sortedAndFilteredModels = sortModels(filteredModels);
 
   return (
     <main className="flex min-h-screen pt-32">
-      {/* Navigation Bar */}
       <Navbar />
-
-      {/* Left Sidebar for Filters */}
       <aside className="p-4" style={{ paddingTop: "0" }}>
         <Filters
           sortImp={(value) => setSortOption(value)}
           priceFilter={(range) => setPriceFiltrate(range)}
         />
       </aside>
-
-      {/* Products Grid */}
       <div className="grid grid-cols-3 gap-6 p-4 flex-grow" style={{ marginLeft: "14rem" }}>
         {sortedAndFilteredModels.map((model, index) => (
           <div key={index} className="bg-white shadow rounded-lg flex flex-col justify-between h-full overflow-hidden">
-            {/* Hoverable Model Card */}
             <HoverableModelCard model={model} />
-
-            {/* Product Information */}
             <div className="p-2 flex-grow">
-              {/* Make product name a link */}
               <h3 className="text-lg font-semibold">
                 <Link href={`/productViewer/${model.id}`}>
                   {model.name}
@@ -256,8 +285,6 @@ const filteredModels = models?.filter((model) => {
               <p className="text-gray-500">By {model.author}</p>
               <p className="text-lg font-bold mb-1">${model.price.toFixed(2)}</p>
             </div>
-
-            {/* Add to Cart Button */}
             <div className="p-2">
               <button className="bg-blue-500 text-white py-2 px-3 rounded w-full" onClick={() => handleAddToCart(model)}>
                 Add to Cart
