@@ -1,9 +1,16 @@
+//This will be used with client side 
 "use client";
 
+//Importing TRPC client for making requests
 import { trpc } from "@/server/client";
+
+//Importing the useRouter for navigation
 import { useRouter } from "next/navigation";
+
+//Importing hooks for managing states with logic 
 import { useEffect, useState } from "react";
 
+//A cart item should contain the following information
 type CartItem = {
     product_id: number;
     name: string;
@@ -13,12 +20,18 @@ type CartItem = {
 };
 
 export default function CartPage() {
+    //create a router to be used in this page
     const router = useRouter();
+
+    //State variables for cart, loading, and errors
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    //TRPC fetching query
     const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery({});
+
+    //Adding item using mutation and refetch cart   
     const addItemMutation = trpc.cart.addItem.useMutation({
         onSuccess: () => {
             refetch();
@@ -29,6 +42,7 @@ export default function CartPage() {
         }
     });
 
+    //Removing item using mutation refetching cart
     const removeItemMutation = trpc.cart.removeItem.useMutation({
         onSuccess: () => {
             refetch();
@@ -39,6 +53,7 @@ export default function CartPage() {
         }
     });
 
+    //Mutation for preparing order before proceeding to checkout screen
     const prepareOrder = trpc.checkout.prepareOrder.useMutation({
         onSuccess: (data) => {
             console.log("Order prepared successfully", data);
@@ -49,6 +64,7 @@ export default function CartPage() {
         }
     });
 
+    //Display error if cart data not able to be fetched
     useEffect(() => {
         if (isError) {
             setError("Failed to load cart data.");
@@ -59,14 +75,17 @@ export default function CartPage() {
         }
     }, [cartData, isError]);
 
+    // function call for adding item to cart
     const handleAddItem = async (productId: number) => {
         await addItemMutation.mutateAsync({ productId });
     };
 
+    //function cal lfor removing item from cart 
     const handleRemoveItem = async (productId: number) => {
         await removeItemMutation.mutateAsync({ productId });
     };
 
+    //function call for moving to checkout screen after order is made 
     const goToCheckout = async () => {
         console.log("Proceeding to checkout...");
         try {
@@ -87,6 +106,7 @@ export default function CartPage() {
         return <p>Loading...</p>;
     }
 
+    //html page for rendering cart screen
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-4">
