@@ -1,9 +1,12 @@
+//To be rendered on client side
 "use client";
 
+//imorting trpcs, state, and hooks for this page
 import { trpc } from "@/server/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+//Defining the cart item 
 type CartItem = {
     product_id: number;
     name: string;
@@ -12,8 +15,12 @@ type CartItem = {
     thumbnail: string;
 };
 
+
 export default function Checkout({ params }: { params: { order_id: string } }) {
+    //create router for navigation
     const router = useRouter();
+
+    //establish states for cart, loading, bill address,  and error
     const [cartItems, setItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,15 +31,17 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
         postalCode: '',
         country: '',
     });
+
     const [creditCardInfo, setCreditCardInfo] = useState({
         number: '',
         expiMonth: '',
         expiYear: '',
         cvv: ''
     });
-
+    //utilize trpc to fetch cart data based on order ID
     const { data: cartData, refetch, isError } = trpc.cart.getCart.useQuery({ orderId: params.order_id });
 
+    //fetch data and loading state
     useEffect(() => {
         if (isError) {
             setError("Failed to fetch cart data");
@@ -45,8 +54,10 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
         setLoading(false);
     }, [cartData, isError]);
 
+    // total cost of the cart is calculated
     const totalCost = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
+    //mutation call to complete the final order with TRPC
     const completeOrder = trpc.checkout.completeOrder.useMutation({
         onSuccess: (data) => {
             console.log("order complete successfully", data);
@@ -57,11 +68,14 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
         }
     });
 
+    //function call to handle checkout
     const handleCheckout = async () => {
         try {
             const orderInput = {
                 orderId: params.order_id,
-                shippingAddress: billingAddress,  // Use the user-provided billing address
+                //create billing address created by user at top
+                shippingAddress: billingAddress,  
+                //create credit card info based on what user used at the top
                 creditCardInfo: {
                     number: parseInt(creditCardInfo.number),
                     expiMonth: parseInt(creditCardInfo.expiMonth),
@@ -70,6 +84,7 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
                 }
             };
 
+            //submit order and go back to homepage
             await completeOrder.mutateAsync(orderInput);
             router.push("/");
         } catch (error) {
@@ -78,6 +93,7 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
         }
     };
 
+    //html for render page
     return (
         <div className="min-h-screen p-6 bg-gray-100 flex flex-col items-center">
             <h1 className="text-4xl font-bold text-center mb-8">Checkout</h1>
@@ -87,7 +103,7 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
                 <p className="text-center text-red-600">{error}</p>
             ) : (
                 <div className="w-full max-w-lg">
-                    {/* Billing/Shipping Address Form */}
+                    {/* Billing address section */}
                     <div className="bg-white p-4 rounded-lg shadow-md mb-6">
                         <h3 className="text-xl font-semibold mb-4">Billing Address</h3>
                         <div className="grid grid-cols-1 gap-4">
@@ -129,7 +145,7 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
                         </div>
                     </div>
 
-                    {/* Payment Section */}
+                    {/*Section for payment details*/}
                     <div className="bg-white p-4 rounded-lg shadow-md">
                         <div className="space-y-4">
                             <h3 className="text-xl font-semibold">Payment Method</h3>
@@ -169,12 +185,14 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
                     </div>
 
                     <button
+                        //call the function when checkout
                         onClick={handleCheckout}
                         className="mt-6 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                     >
                         Complete Purchase
                     </button>
-
+                    
+                    {/* hyperlink to go back to cart or search reults page */}
                     <div className="mt-6 flex justify-between space-x-4">
                         <a
                             href="/cart"
