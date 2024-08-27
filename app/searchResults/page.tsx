@@ -7,6 +7,7 @@ import Navbar from "@/components/ui/Navbar";
 import ThreeDModelViewer from "@/components/ThreeDModelViewer";
 import Link from 'next/link';
 import { Slider, TextField } from '@mui/material'; // Import MUI Slider and TextField
+import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 
 // Define the type for a model
 type Model = {
@@ -48,62 +49,67 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
     priceFilter(priceRange); // Apply the selected price range
   };
 
-  const handleSortImp = (value: string) => {
+  const handleSortImp = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
     setSelectedSort(value); // Update selected sort option
     sortImp(value);
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-4 w-48 fixed" style={{ top: '9rem' }}>
-      <h2 className="text-center font-semibold text-2xl mb-6">FILTERS</h2>
+    <div className="bg-white shadow rounded-lg p-4 w-52 fixed" style={{ top: '9rem' }}>
+<h2 className="text-center font-semibold text-lg mb-1">FILTERS</h2>
 
       {/* Sorting Option */}
       <div className="mb-4">
-        <h3 className="text-md font-semibold">Sort By</h3>
-        <div className="flex flex-wrap gap-1">
-          <a
-            href="#"
-            className={`text-blue-500 hover:underline ${selectedSort === '' ? 'font-bold underline' : ''}`}
-            onClick={() => handleSortImp('')}
-          >
-            Default
-          </a>
-          <a
-            href="#"
-            className={`text-blue-500 hover:underline ${selectedSort === 'price-asc' ? 'font-bold underline' : ''}`}
-            onClick={() => handleSortImp('price-asc')}
-          >
-            Price: Low to High
-          </a>
-          <a
-            href="#"
-            className={`text-blue-500 hover:underline ${selectedSort === 'price-desc' ? 'font-bold underline' : ''}`}
-            onClick={() => handleSortImp('price-desc')}
-          >
-            Price: High to Low
-          </a>
-          <a
-            href="#"
-            className={`text-blue-500 hover:underline ${selectedSort === 'name-asc' ? 'font-bold underline' : ''}`}
-            onClick={() => handleSortImp('name-asc')}
-          >
-            Name: A to Z
-          </a>
-          <a
-            href="#"
-            className={`text-blue-500 hover:underline ${selectedSort === 'name-desc' ? 'font-bold underline' : ''}`}
-            onClick={() => handleSortImp('name-desc')}
-          >
-            Name: Z to A
-          </a>
-        </div>
+        <FormControl component="fieldset">
+          <h3 className="text-md font-semibold mb-1">Price Range</h3> {/* Added margin-bottom for spacing */}
+          <RadioGroup
+  aria-label="sort"
+  name="sort"
+  value={selectedSort}
+  onChange={handleSortImp}
+  className="space-y-0" // Ensure no extra space between items
+>
+  <FormControlLabel 
+    value="" 
+    control={<Radio />} 
+    label={<span className="text-sm">Default</span>} 
+    className="mb-0 p-0" // Remove bottom margin and padding
+  />
+  <FormControlLabel 
+    value="price-asc" 
+    control={<Radio />} 
+    label={<span className="text-sm">Price: Low to High</span>} 
+    className="mb-0 p-0" // Remove bottom margin and padding
+  />
+  <FormControlLabel 
+    value="price-desc" 
+    control={<Radio />} 
+    label={<span className="text-sm">Price: High to Low</span>} 
+    className="mb-0 p-0" // Remove bottom margin and padding
+  />
+  <FormControlLabel 
+    value="name-asc" 
+    control={<Radio />} 
+    label={<span className="text-sm">Name: A to Z</span>} 
+    className="mb-0 p-0" // Remove bottom margin and padding
+  />
+  <FormControlLabel 
+    value="name-desc" 
+    control={<Radio />} 
+    label={<span className="text-sm">Name: Z to A</span>} 
+    className="mb-0 p-0" // Remove bottom margin and padding
+  />
+</RadioGroup>
+
+
+        </FormControl>
       </div>
 
       {/* Price Range Filter */}
-      <div className="mb-4">
-        <h3 className="text-md font-semibold mb-4">Price Range</h3> {/* Added margin-bottom for spacing */}
+      <div className="mb-2">
+        <h3 className="text-md font-semibold mb-2">Price Range</h3> {/* Added margin-bottom for spacing */}
         <div className="flex flex-col items-center">
-          <div className="flex gap-4 mb-4">
+          <div className="flex gap-4 mb-2">
             <TextField
               label="Min"
               type="number"
@@ -111,7 +117,7 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
               onChange={handleMinPriceChange}
               InputProps={{
                 inputProps: { min: 0, max: priceRange[1] },
-                sx: { height: 40 }, // Adjusted height for the text fields
+                sx: { height: 25 }, // Adjusted height for the text fields
               }}
             />
             <TextField
@@ -121,7 +127,7 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
               onChange={handleMaxPriceChange}
               InputProps={{
                 inputProps: { min: priceRange[0], max: 50 },
-                sx: { height: 40 }, // Adjusted height for the text fields
+                sx: { height: 25 }, // Adjusted height for the text fields
               }}
             />
           </div>
@@ -201,8 +207,8 @@ function SearchResults() {
   const query = searchParams.get('query');
 
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState<string>(''); 
-  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]); 
+  const [sortOption, setSortOption] = useState<string>('');
+  const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]);
   const router = useRouter();
 
   const addItemMutation = trpc.cart.addItem.useMutation({
@@ -257,7 +263,7 @@ function SearchResults() {
       } else if (sortOption === 'name-desc') {
         return b.name.localeCompare(a.name);
       }
-      return 0; 
+      return 0;
     });
   };
 
