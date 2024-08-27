@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { z } from "zod";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+
 export default function Profilepage() {
     const session = useSession();
     if (!session.data?.user?.email) {
@@ -35,19 +36,12 @@ function Profile({ session }: { session: any }) {
     const email = session?.user?.email ?? "";
     const update = trpc.user.update.useMutation();
 
-    const form = useForm<z.infer<typeof UpdateSchema>>({
+    const form = useForm({
         resolver: zodResolver(UpdateSchema),
         defaultValues: {
             name: session?.user?.name ?? "",
             email: session?.user?.email ?? "",
             password: "",
-            passwordConfirmation: "",
-            creditCardInfo: {
-                username: "",
-                number: "",
-                expDate: "",
-                cvv: "",
-            },
             shippingAddress: {
                 street: "",
                 city: "",
@@ -58,7 +52,7 @@ function Profile({ session }: { session: any }) {
         },
     });
 
-    async function onSubmit(values: z.infer<typeof UpdateSchema>) {
+    async function onSubmit(values: any) {
         startTransition(async () => {
             await update.mutateAsync(values);
             router.push("/");
@@ -68,14 +62,18 @@ function Profile({ session }: { session: any }) {
     return (
         <div>
             <Navbar />
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+
+            <h1 className="text-4xl font-bold text-center mt-12 mb-20">User Settings</h1> {/* Header */}
+
+            <div className="flex flex-col items-center justify-center min-h-screen">
                 <h1 className="text-3xl font-bold text-center mb-8">Profile</h1>
                 <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            {/* User Name */}
                             <FormField
                                 control={form.control}
-                                name="username"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="font-semibold">Name</FormLabel>
@@ -91,6 +89,7 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
+                            {/* Email (Disabled) */}
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -110,6 +109,7 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
+                            {/* Password */}
                             <FormField
                                 control={form.control}
                                 name="password"
@@ -128,36 +128,19 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
+                            {/* Shipping Address */}
                             <FormField
                                 control={form.control}
-                                name="passwordConfirmation"
+                                name="shippingAddress.street"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="font-semibold">Confirm Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                disabled={isPending}
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* Credit Card Information */}
-                            <FormField
-                                control={form.control}
-                                name="creditCardInfo.name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Name</FormLabel>
+                                        <FormLabel className="font-semibold">Street</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="John"
                                                 disabled={isPending}
+                                                placeholder="123 York University St"
+                                                required
                                                 {...field}
                                                 className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                             />
@@ -168,15 +151,16 @@ function Profile({ session }: { session: any }) {
                             />
                             <FormField
                                 control={form.control}
-                                name="creditCardInfo.number"
+                                name="shippingAddress.city"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="font-semibold">Credit Card Number</FormLabel>
+                                        <FormLabel className="font-semibold">City</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="0000 0000 0000 0000"
                                                 disabled={isPending}
+                                                placeholder="Vaughan"
+                                                required
                                                 {...field}
                                                 className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                             />
@@ -187,19 +171,18 @@ function Profile({ session }: { session: any }) {
                             />
                             <FormField
                                 control={form.control}
-                                name="creditCardInfo.expDate"
+                                name="shippingAddress.state"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="font-semibold">Expiry Date</FormLabel>
+                                        <FormLabel className="font-semibold">State</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="MM/YY"
-                                                maxLength={5}
-                                                pattern="\d{2}/\d{2}"
                                                 disabled={isPending}
+                                                placeholder="Ontario"
+                                                required
                                                 {...field}
-                                                className="w-20 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -208,19 +191,18 @@ function Profile({ session }: { session: any }) {
                             />
                             <FormField
                                 control={form.control}
-                                name="creditCardInfo.cvv"
+                                name="shippingAddress.postalCode"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="font-semibold">CVV</FormLabel>
+                                        <FormLabel className="font-semibold">Postal Code</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="123"
-                                                maxLength={3}
-                                                pattern="\d{3}"
                                                 disabled={isPending}
+                                                placeholder="M1C 21A"
+                                                required
                                                 {...field}
-                                                className="w-20 px-6 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -228,104 +210,24 @@ function Profile({ session }: { session: any }) {
                                 )}
                             />
                             <FormField
-                            control={form.control}
-                            name="shippingAddress.street"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold">Street</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            disabled={isPending}
-                                            placeholder="123 York University St"
-                                            required
-                                            {...field}
-                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shippingAddress.city"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold">City</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            disabled={isPending}
-                                            placeholder="Vaughan"
-                                            required
-                                            {...field}
-                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shippingAddress.state"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold">State</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            disabled={isPending}
-                                            placeholder="Ontario"
-                                            required
-                                            {...field}
-                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shippingAddress.postalCode"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold">Postal Code</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            disabled={isPending}
-                                            placeholder="M1C 21A"
-                                            required
-                                            {...field}
-                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shippingAddress.country"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-semibold">Country</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            disabled={isPending}
-                                            placeholder="Canada"
-                                            required
-                                            {...field}
-                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                                control={form.control}
+                                name="shippingAddress.country"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-semibold">Country</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                disabled={isPending}
+                                                placeholder="Canada"
+                                                required
+                                                {...field}
+                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
                             <Button
                                 type="submit"
