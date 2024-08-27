@@ -1,5 +1,7 @@
+//this page is to be used with client side
 "use client";
 
+//import the navbar, next authentication, trpc, session data
 import Navbar from "@/components/ui/Navbar";
 import { useSession } from "next-auth/react";
 import { trpc } from "@/server/client";
@@ -7,16 +9,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Package } from "lucide-react";
 
 export default function Orders() {
-    const { data: session, status } = useSession(); // status: "loading", "authenticated", "unauthenticated"
+    //session data will have three states, either loading, authenticated, or unauthenticated 
+    const { data: session, status } = useSession(); 
 
+    //establish user id from session data
     const userId = session?.user?.id;
 
-    // Hook is always present, but it will only fetch data when `userId` is defined
+    //fetch data only when the userId is defined and not anytime else
     const { data: ordersData, isError, isLoading } = trpc.orders.getAllOrdersByUser.useQuery(
-        { userId: userId || "" }, // Pass empty string if userId is undefined
-        { enabled: !!userId } // Hook only runs if userId is defined
+        // Temporarily pass an empty string if userId is currently undefied undefined
+        { userId: userId || "" }, 
+        // Run the hook if the user ID is defined 
+        { enabled: !!userId } 
     );
 
+    //Just display a loadin message if currently loading status 
     if (status === "loading") {
         return (
             <main className="flex min-h-screen flex-col w-full items-center">
@@ -26,6 +33,7 @@ export default function Orders() {
         );
     }
 
+    //if the user id doesnt exist then just display please sign in to view order
     if (!userId) {
         return (
             <main className="flex min-h-screen flex-col w-full items-center">
@@ -35,6 +43,7 @@ export default function Orders() {
         );
     }
 
+    //display an error state
     if (isError) {
         return (
             <main className="flex min-h-screen flex-col w-full items-center">
@@ -44,6 +53,7 @@ export default function Orders() {
         );
     }
 
+    //display loading state
     if (isLoading) {
         return (
             <main className="flex min-h-screen flex-col w-full items-center">
@@ -53,6 +63,7 @@ export default function Orders() {
         );
     }
 
+    //render side html code
     return (
         <>
             <Navbar />
