@@ -131,7 +131,6 @@ export default function Checkout({ params }: { params: { order_id: string } }) {
 
                     {/* Payment Section */}
                     <div className="bg-white p-4 rounded-lg shadow-md">
-                        <h2 className="text-2xl font-bold mb-4">Total: ${totalCost.toFixed(2)}</h2>
                         <div className="space-y-4">
                             <h3 className="text-xl font-semibold">Payment Method</h3>
                             <div className="grid grid-cols-1 gap-4">
