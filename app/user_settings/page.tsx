@@ -1,5 +1,7 @@
+//This is the section of the code that is responsible for the client accessing user settings
 "use client";
 
+// Import the routers, states, zod, trpc for queries, and navbar 
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -21,21 +23,34 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 
+//This is the section responsible for calling the profile page
 export default function Profilepage() {
+    //Utilize user session data using NextAuth
     const session = useSession();
+
+    //If use is not found then done do anything
     if (!session.data?.user?.email) {
         return null;
     }
-
+    //Create the profile utilizing the session data that was retrieved
     return <Profile session={session.data} />;
 }
 
+//This component will handle user profile settings
 function Profile({ session }: { session: any }) {
+    //Create the router that will be used for navigation
     const router = useRouter();
+
+    //This will create states for pending and starting transition
     const [isPending, startTransition] = useTransition();
+
+    //retreive user email from session
     const email = session?.user?.email ?? "";
+    
+    //this will set up trpc mutation call
     const update = trpc.user.update.useMutation();
 
+    //establish the form
     const form = useForm({
         resolver: zodResolver(UpdateSchema),
         defaultValues: {
@@ -52,6 +67,7 @@ function Profile({ session }: { session: any }) {
         },
     });
 
+    //this function will manage submitting a form
     async function onSubmit(values: any) {
         startTransition(async () => {
             await update.mutateAsync(values);
@@ -59,6 +75,7 @@ function Profile({ session }: { session: any }) {
         });
     }
 
+    //html code for rendering profile section
     return (
         <div>
             <Navbar />
@@ -69,8 +86,9 @@ function Profile({ session }: { session: any }) {
                 <h1 className="text-3xl font-bold text-center mb-8">Profile</h1>
                 <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
                     <Form {...form}>
+                        {/* call the onSubmit function */}
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            {/* User Name */}
+                            {/*Section for User Name */}
                             <FormField
                                 control={form.control}
                                 name="name"
@@ -89,7 +107,7 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
-                            {/* Email (Disabled) */}
+                            {/*Section for Email (Disabled) */}
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -109,7 +127,7 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
-                            {/* Password */}
+                            {/*Section for Password */}
                             <FormField
                                 control={form.control}
                                 name="password"
@@ -128,7 +146,7 @@ function Profile({ session }: { session: any }) {
                                     </FormItem>
                                 )}
                             />
-                            {/* Shipping Address */}
+                            {/*Section for Shipping Address */}
                             <FormField
                                 control={form.control}
                                 name="shippingAddress.street"
