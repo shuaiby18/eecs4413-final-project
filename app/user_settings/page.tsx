@@ -34,9 +34,6 @@ function Profile({ session }: { session: any }) {
     const [isPending, startTransition] = useTransition();
     const email = session?.user?.email ?? "";
     const update = trpc.user.update.useMutation();
-    const { data: purchaseHistory, isLoading, error } = trpc.user.getPurchaseHistory.useQuery({
-        email: email,
-    });
 
     const form = useForm<z.infer<typeof UpdateSchema>>({
         resolver: zodResolver(UpdateSchema),
