@@ -33,9 +33,17 @@ export default function Register() {
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
+            name: "",
             email: "",
             password: "",
             passwordConfirmation: "",
+            shippingAddress: {
+                street: "",
+                city: "",
+                state: "",
+                postalCode: "",
+                country: "",
+            },
         },
     });
 
@@ -44,23 +52,40 @@ export default function Register() {
             await register.mutateAsync({
                 email: values.email,
                 password: values.password,
-                passwordConfirmation: values.passwordConfirmation
+                passwordConfirmation: values.passwordConfirmation,
+                shippingAddress: values.shippingAddress,
             });
         });
     }
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-            {/* Title */}
-            <h1 className="text-4xl font-bold text-center mb-10">
-                EECS 4413 Project
-            </h1>
-
             {/* Signup Card */}
             <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
                 <h1 className="text-3xl font-semibold text-center mb-6">Sign up</h1>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {/* Name Field */}
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">Name</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="John"
+                                            type="text"
+                                            disabled={isPending}
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* Email Field */}
                         <FormField
                             control={form.control}
                             name="email"
@@ -80,6 +105,7 @@ export default function Register() {
                                 </FormItem>
                             )}
                         />
+                        {/* Password Field */}
                         <FormField
                             control={form.control}
                             name="password"
@@ -99,6 +125,7 @@ export default function Register() {
                                 </FormItem>
                             )}
                         />
+                        {/* Confirm Password Field */}
                         <FormField
                             control={form.control}
                             name="passwordConfirmation"
@@ -109,6 +136,107 @@ export default function Register() {
                                         <Input
                                             type="password"
                                             disabled={isPending}
+                                            required
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* Shipping Address Fields */}
+                        <FormField
+                            control={form.control}
+                            name="shippingAddress.street"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">Street</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isPending}
+                                            placeholder="123 York University St"
+                                            required
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="shippingAddress.city"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">City</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isPending}
+                                            placeholder="Vaughan"
+                                            required
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="shippingAddress.state"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">State</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isPending}
+                                            placeholder="Ontario"
+                                            required
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="shippingAddress.postalCode"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">Postal Code</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isPending}
+                                            placeholder="M1C 21A"
+                                            required
+                                            {...field}
+                                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="shippingAddress.country"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">Country</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            disabled={isPending}
+                                            placeholder="Canada"
                                             required
                                             {...field}
                                             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
