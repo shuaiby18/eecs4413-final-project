@@ -34,10 +34,9 @@ function getDominantColor(texture) {
   canvas.height = img.height;
   //Place the image onto the canvas itself
   ctx.drawImage(img, 0, 0);
-
   //Retrive the pixel data based on the canvas
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
+  
   //initialize the red,green, and blue values to zero  
   let r = 0, g = 0, b = 0;
   //This total value will represent the total value of the the red green and blue values
@@ -67,7 +66,7 @@ function Model({ path, setBackgroundColor, onModelLoad }, ref) {
 
   //Access the animations and scene by creating an action
   const { actions } = useAnimations(animations, scene);
-
+  
   //Create a custom camera utilizing three JS
   const { camera } = useThree();
 
@@ -75,7 +74,6 @@ function Model({ path, setBackgroundColor, onModelLoad }, ref) {
     //Crate a slightly diagonal model that is looking to the left and down by rotating it
     //Rotate the scene by the y axis by 30 degrees
     scene.rotation.y = THREE.MathUtils.degToRad(-30);
-    //Rotate the scene by the x axis by 30 degrees
     scene.rotation.x = THREE.MathUtils.degToRad(10);
 
     //All models have their own bounding box based on their height and width,
@@ -150,37 +148,33 @@ function Model({ path, setBackgroundColor, onModelLoad }, ref) {
 //This is the forwarded model holding the reference
 const ForwardedModel = forwardRef(Model);
 
-
 //This is the component that will render the 3d model, utilizing features such as dynamic background color and such
 export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }) {
   //Background color is initalized to a default grey as its neutral, else will use a customer gradient background if the model has a texture
-  const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); 
-
+  const [backgroundColor, setBackgroundColor] = useState('#e0e0e0'); // Default background color
+  
   //This is responsible for getting the models loading progress
   const { progress, active } = useProgress();
-
   //This will smooth out the loading bar progress state so that it doesnt look jarring 
   const [smoothProgress, setSmoothProgress] = useState(0); 
-
   //Used to control visibility of the loading bar
   const [isLoading, setIsLoading] = useState(false); 
-
 
   //Effect to animate the background
   useEffect(() => {
     const intervalId = setInterval(() => {
       // Slightly adjust the background color so that it takes five seconds, simply move the degree of the gradient
-      setBackgroundColor(prev => prev.includes('deg') ? prev : prev + 'deg'); 
-    }, 5000); 
+      setBackgroundColor(prev => prev.includes('deg') ? prev : prev + 'deg'); // You can add more complex animation logic here
+    }, 5000);
 
     //Clean up the interval timing for the animation
-    return () => clearInterval(intervalId); // Clean up on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   // Reset  loading state every time the model is hovered on (this will ensure swapping out between thumbnail and model)
   useEffect(() => {
-    //When a model is hovered, show the loading bar
     if (isHovered) {
+      //When a model is hovered, show the loading bar
       setIsLoading(true);  
     }
   }, [isHovered]);
@@ -192,14 +186,13 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad })
       setSmoothProgress((prev) => {
         const diff = progress - prev;
         //Difference will be accounted for 10% of changes, so the loading bar doesnt snap its progress but goes more gradually
-        return prev + diff * 0.1;
+        return prev + diff * 0.1; 
       });
       rafId = requestAnimationFrame(animateProgress);
     };
     animateProgress();
-
     //After animation is loaded, then you can cancel out the animation
-    return () => cancelAnimationFrame(rafId); 
+    return () => cancelAnimationFrame(rafId);
   }, [progress]);
 
   // Hide loading bar when model is fully loaded
@@ -214,41 +207,41 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad })
     <div style={{ height: '100%', zIndex: 2 }}>
       {/* create canvas component */}
       <Canvas
-      // enable shadow rendering
-        shadows 
+        // enable shadow rendering
+        shadows
         style={{
           //Allow the height and width of the container convas to be full
-          height: '100%', 
+          height: '100%',
           width: '100%',
           //Set the background based on the backgroundColor
-          //background: backgroundColor, 
+          background: backgroundColor, 
           //Simple background transition effect 
-          transition: 'background 2s ease-in-out',
+          transition: 'background 2s ease-in-out', 
         }}
       >
         {/* This will create an ambient light in the setting so that everything is lit by itself  */}
-        <ambientLight color={0xffffff} intensity={0.6} />
+        <ambientLight color={0xffffff} intensity={0.6} /> {/* Lowered slightly to make shadows more noticeable */}
 
         {/* SpotLight for strong shadow casting on the scene, not visible to the user */}
         <spotLight
           color={0xffffff}
           intensity={6} // Stronger spotlight for sharper shadows
-          position={[10, 15, 10]} // Positioned at an angle to cast visible shadows based on all models in the website
-          angle={Math.PI / 6} //This will create a cone shape for the spotlight making it more like sunlight
+          position={[10, 15, 10]}  // Positioned at an angle to cast visible shadows based on all models in the website
+          angle={Math.PI / 6}//This will create a cone shape for the spotlight making it more like sunlight
           penumbra={0.3} // Reduced penumbra of the shadows for sharper shadows, less distrbuted
-          castShadow //enabes this light source to cast shadows
+          castShadow//enabes this light source to cast shadows
           shadow-bias={-0.001} //reduce the artificats that the shadows will cause
           shadow-camera-near={8} //this will make the shadows not clip when the camera is near
           shadow-camera-far={50} //this will make the shadows not clip when the camera is far
           shadow-mapSize-width={4096} //Because models are only singular, make the shadows 4k 
-          shadow-mapSize-height={4096} 
+          shadow-mapSize-height={4096}
         />
 
         {/* Directional Light similar to how sunlight works on a model */}
         <directionalLight
           color={0xffffff}
           intensity={5} // Stronger directional light to make shadows even more visible
-          position={[-10, 20, 10]} //Positioned from another angle to cast different shadows
+          position={[-10, 20, 10]}  //Positioned from another angle to cast different shadows
           castShadow //allow this light source to cast shadows
           shadow-bias={-0.001} //reduce the artificats that the shadows will cause
           shadow-camera-near={1} //shadow clipping for when camera is near
@@ -256,8 +249,8 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad })
           shadow-camera-right={10} //shadow clipping for when the camera is more towards the right
           shadow-camera-left={-10} //shadow clipping for when the camera is more towards the left
           shadow-camera-top={10} //shadow clipping for whe nthe camera is on the top
-          shadow-camera-bottom={-10} //shadow clipping for when the camera is on the bottom
-          shadow-mapSize-width={4096} //Because models are only singular, make the shadows 4k 
+          shadow-camera-bottom={-10}  //shadow clipping for when the camera is on the bottom
+          shadow-mapSize-width={4096} // Higher resolution shadows for stronger definition
           shadow-mapSize-height={4096}
         />
 
@@ -269,13 +262,13 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad })
           //set its background color
           setBackgroundColor={setBackgroundColor} 
           //call the onModelLoaded function 
-          onModelLoad={onModelLoad} /> 
+          onModelLoad={onModelLoad} />
         </Suspense>
-        
+
         {/* allow for orbital controls on the model itself to allow the user to interact with the models */}
         <OrbitControls />
       </Canvas>
-
+      
       {/* display the loading bar when the user hovers over a model or when the model is loading, progress is measured from zero to 100 */}
       {(isLoading || (progress < 100 && active)) && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '5px', backgroundColor: '#ccc', zIndex: 10 }}>
@@ -283,6 +276,7 @@ export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad })
           <div style={{ width: `${smoothProgress}%`, height: '100%', backgroundColor: '#e81a0c', transition: 'width 0.1s ease' }} />
         </div>
       )}
+
     </div>
   );
 }
