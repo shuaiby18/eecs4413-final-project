@@ -282,7 +282,7 @@ export default function HomePage() {
                 <img
                   src={model.thumbnail}
                   alt={model.name}
-                  className="object-cover h-40 w-auto cursor-pointer"
+                  className="object-cover h-50 w-auto cursor-pointer"
                 />
               </Link>
             ))}
@@ -300,7 +300,7 @@ export default function HomePage() {
                 <img
                   src={model.thumbnail}
                   alt={model.name}
-                  className="object-cover h-40 w-auto cursor-pointer"
+                  className="object-cover h-50 w-auto cursor-pointer"
                 />
               </Link>
             ))}
