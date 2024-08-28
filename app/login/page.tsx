@@ -48,26 +48,33 @@ function Login() {
         },
     });
 
-    //on submit funtion for creating credentials
+
+    // on submit function for creating credentials
     async function onSubmit(values: z.infer<typeof LoginSchema>) {
+        console.log("Attempting to sign in with values:", values);
+
         const response = await signIn("credentials", {
             email: values.email,
             password: values.password,
-            callbackUrl: values.callbackUrl,
-            redirect: false, // Prevent automatic redirect
+            redirect: false, 
         });
 
-        //error state management for creatings the credss
+        console.log("Sign in response:", response);
+
         if (response) {
             const { ok, error, url } = response;
-            if (ok) {
-                router.push(url || values.callbackUrl);
+
+            // Check if there is an error or the sign-in was not successful
+            if (ok && !error) {
+                router.push(url || "/"); //
             } else {
+                console.error("Login failed:", error); 
+                alert("Invalid credentials. Please try again."); 
             }
         } else {
+            console.error("No response from signIn");
         }
     }
-
 
     //returns render side for the html for login
     return (
