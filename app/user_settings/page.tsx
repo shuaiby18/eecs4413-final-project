@@ -24,17 +24,21 @@ export default function Profilepage() {
 
     // Function to handle form submission
     const onSubmit = async (data: { name: string }) => {
-        try {
-            // Update the user's name in the database
-            await updateUser.mutateAsync({
-                name: data.name,
-                email: session.data.user.email 
-            });
+        if (session.data?.user?.email) {
+            try {
+                // Update the user's name in the database
+                await updateUser.mutateAsync({
+                    name: data.name,
+                    email: session.data.user.email 
+                });
 
-            // Sign the user out after updating the name
-            await signOut({ callbackUrl: "/login" });
-        } catch (error) {
-            console.error("Error updating name:", error);
+                // Sign the user out after updating the name
+                await signOut({ callbackUrl: "/login" });
+            } catch (error) {
+                console.error("Error updating name:", error);
+            }
+        } else {
+            console.error("Session data is null or undefined.");
         }
     };
 
