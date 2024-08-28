@@ -49,32 +49,44 @@ function Login() {
     });
 
 
-    // on submit function for creating credentials
-    async function onSubmit(values: z.infer<typeof LoginSchema>) {
-        console.log("Attempting to sign in with values:", values);
+// on submit function for creating credentials
+async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    console.log("Attempting to sign in with values:", values);
 
-        const response = await signIn("credentials", {
-            email: values.email,
-            password: values.password,
-            redirect: false, 
-        });
+    const response = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false, // Prevent automatic redirect
+    });
 
-        console.log("Sign in response:", response);
+    console.log("Sign in response:", response);
 
-        if (response) {
-            const { ok, error, url } = response;
+    if (response) {
+        const { ok, error, url } = response;
 
-            // Check if there is an error or the sign-in was not successful
-            if (ok && !error) {
-                router.push(url || "/"); //
+        // Check if there is an error or the sign-in was not successful
+        if (ok && !error) {
+            // Wait to see session established
+            await new Promise((resolve) => setTimeout(resolve, 500)); 
+
+            // Handle the callback URL explicitly
+            if (url && url.includes("login")) {
+                console.log("Overriding redirect URL to home page");
+                router.push("/"); // Redirect to home page if the URL points back to login
             } else {
-                console.error("Login failed:", error); 
-                alert("Invalid credentials. Please try again."); 
+                console.log("Session should be established, redirecting to:", url || "/");
+                router.push(url || "/"); 
             }
         } else {
-            console.error("No response from signIn");
+            console.error("Login failed:", error); 
+            alert("Invalid credentials. Please try again."); // Show an alert
         }
+    } else {
+        console.error("No response from signIn");
     }
+}
+
+
 
     //returns render side for the html for login
     return (
