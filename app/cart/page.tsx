@@ -70,10 +70,12 @@ export default function CartPage() {
             setError("Failed to load cart data.");
             setLoading(false);
         } else if (cartData) {
-            setCartItems(cartData.items);
+            const sortedItems = [...cartData.items].sort((a, b) => a.product_id - b.product_id);
+            setCartItems(sortedItems);
             setLoading(false);
         }
     }, [cartData, isError]);
+    
 
     // function call for adding item to cart
     const handleAddItem = async (productId: number) => {
