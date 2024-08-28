@@ -1,11 +1,13 @@
 "use client"
 
+//import TRPC router, states, and route for navigation
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useState, useTransition, Suspense } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/lib/schemas/user";
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +29,13 @@ export default function LoginPage() {
     );
 }
 
+//function call for logging in 
 function Login() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl") || "/"; // Default to home page if no callbackUrl
+
+    //stay in login page if we cant login
+    const callbackUrl = searchParams.get("callbackUrl") || "/login"; 
 
     const [isPending, startTransition] = useTransition();
 
@@ -43,6 +48,7 @@ function Login() {
         },
     });
 
+    //on submit funtion for creating credentials
     async function onSubmit(values: z.infer<typeof LoginSchema>) {
         const response = await signIn("credentials", {
             email: values.email,
@@ -51,18 +57,19 @@ function Login() {
             redirect: false, // Prevent automatic redirect
         });
 
+        //error state management for creatings the credss
         if (response) {
             const { ok, error, url } = response;
             if (ok) {
                 router.push(url || values.callbackUrl);
             } else {
-                // Handle errors (e.g., show error message)
             }
         } else {
-            // Handle the case where response is undefined (e.g., network error)
         }
     }
 
+
+    //returns render side for the html for login
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
             <h1 className="text-4xl font-bold text-center mb-10">
@@ -71,6 +78,7 @@ function Login() {
             <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
                 <h1 className="text-3xl font-semibold text-center mb-6">Sign in</h1>
                 <Form {...form}>
+                    {/* call the onsubmit button */}
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}

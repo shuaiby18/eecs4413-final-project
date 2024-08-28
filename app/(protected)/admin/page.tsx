@@ -1,5 +1,7 @@
+//page is to be used by client
 "use client"
 
+//importing states, trpcs, and navbar component
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/ui/Navbar";
 import { trpc } from "@/server/client";
@@ -9,35 +11,46 @@ import { Card, CardContent } from "@/components/ui/card"
 import { DollarSign, Package, UserCog, Trash2 } from "lucide-react"
 
 export default function Page() {
+    //state management variables
     const [confirm, setconfirm] = useState(false)
 
+    //TRPC fetching user and orders 
     const { data: users, refetch, isLoading: isLoadingUsers, error: errorUsers } = trpc.user.getUsers.useQuery()
     const { data: orders, isLoading: isLoadingOrders, error: errorOrders } = trpc.orders.getAllOrders.useQuery()
 
+    //a utility function for trpc calls 
     const utils = trpc.useUtils()
 
+    //mutatation calls for deleeeeting 
     const { mutate: mutateDelete } = trpc.user.deleteUsers.useMutation({
         onSuccess() {
             utils.user.getUsers.invalidate()
         }
     })
+
+    //mutations call for poromotting users
     const { mutate: mutatePromote } = trpc.user.promoteUsers.useMutation({
         onSuccess() {
             utils.user.getUsers.invalidate()
         }
     })
 
+    //function call for changing the role of users
     const handleRoleChange = async (userId: string) => {
         await mutatePromote({ id: userId, admin: users?.find(user => user.id === userId)?.role === "USER" })
     }
 
+    //function call for handling deleting of user
     const handleDeleteUser = async (userId: string) => {
         await mutateDelete({ id: userId })
     }
 
+    //state error message when fetching data
     if (isLoadingUsers || isLoadingOrders) return "Loading...";
     if (errorUsers || errorOrders) return "An error has occurred";
 
+
+    //render side of the html
     return (<main className="flex min-h-screen flex-col w-full items-center">
         {/* Navigation Bar */}
         <Navbar />

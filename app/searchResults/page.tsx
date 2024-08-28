@@ -1,5 +1,6 @@
-"use client";
+//This page is used for the client side and will be used in order to search products
 
+"use client";
 import { trpc } from "@/server/client";
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -9,7 +10,7 @@ import Link from 'next/link';
 import { Slider, TextField } from '@mui/material'; // Import MUI Slider and TextField
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 
-// Define the type for a model
+//Define structure for a model
 type Model = {
   id: number;
   name: string;
@@ -23,14 +24,19 @@ type Model = {
   description: string | null;
 };
 
+//This function is responsible for filter logic 
 function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, priceFilter: (range: number[]) => void }) {
-  const [priceRange, setPriceRange] = useState([0, 50]); // Set initial state between 0 and 50
-  const [selectedSort, setSelectedSort] = useState(''); // Track selected sort option
+  //The inital price range should be between 0 and 50
+  const [priceRange, setPriceRange] = useState([0, 50]);
+  //This will be responsible for checking which radio button we are on
+  const [selectedSort, setSelectedSort] = useState('');
 
+  //This  will determine the new value that we are setting for the price filter
   const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
   };
 
+  //this willl workk on minimum price range textt field
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMin = parseInt(e.target.value, 10);
     if (!isNaN(newMin)) {
@@ -38,6 +44,7 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
     }
   };
 
+  //this willl workk on max price range textt field
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMax = parseInt(e.target.value, 10);
     if (!isNaN(newMax)) {
@@ -45,71 +52,74 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
     }
   };
 
+  //this will apply the values that we selected for max and min
   const applyPriceFilter = () => {
-    priceFilter(priceRange); // Apply the selected price range
+    priceFilter(priceRange);
   };
 
+  // Update the selected sort option
   const handleSortImp = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
-    setSelectedSort(value); // Update selected sort option
+    setSelectedSort(value);
     sortImp(value);
   };
 
+  //Render for Filters
   return (
     <div className="bg-white shadow rounded-lg p-4 w-52 fixed" style={{ top: '9rem' }}>
-<h2 className="text-center font-semibold text-lg mb-1">FILTERS</h2>
+      <h2 className="text-center font-semibold text-lg mb-1">FILTERS</h2>
 
-      {/* Sorting Option */}
+      {/*Sort By Options and their arrangement through radio buttons*/}
       <div className="mb-4">
         <FormControl component="fieldset">
           <h3 className="text-md font-semibold mb-1">Price Range</h3> {/* Added margin-bottom for spacing */}
           <RadioGroup
-  aria-label="sort"
-  name="sort"
-  value={selectedSort}
-  onChange={handleSortImp}
-  className="space-y-0" // Ensure no extra space between items
->
-  <FormControlLabel 
-    value="" 
-    control={<Radio />} 
-    label={<span className="text-sm">Default</span>} 
-    className="mb-0 p-0" // Remove bottom margin and padding
-  />
-  <FormControlLabel 
-    value="price-asc" 
-    control={<Radio />} 
-    label={<span className="text-sm">Price: Low to High</span>} 
-    className="mb-0 p-0" // Remove bottom margin and padding
-  />
-  <FormControlLabel 
-    value="price-desc" 
-    control={<Radio />} 
-    label={<span className="text-sm">Price: High to Low</span>} 
-    className="mb-0 p-0" // Remove bottom margin and padding
-  />
-  <FormControlLabel 
-    value="name-asc" 
-    control={<Radio />} 
-    label={<span className="text-sm">Name: A to Z</span>} 
-    className="mb-0 p-0" // Remove bottom margin and padding
-  />
-  <FormControlLabel 
-    value="name-desc" 
-    control={<Radio />} 
-    label={<span className="text-sm">Name: Z to A</span>} 
-    className="mb-0 p-0" // Remove bottom margin and padding
-  />
-</RadioGroup>
+            aria-label="sort"
+            name="sort"
+            value={selectedSort}
+            onChange={handleSortImp}
+            className="space-y-0" 
+          >
+            <FormControlLabel
+              value=""
+              control={<Radio />}
+              label={<span className="text-sm">Default</span>}
+              className="mb-0 p-0" 
+            />
+            <FormControlLabel
+              value="price-asc"
+              control={<Radio />}
+              label={<span className="text-sm">Price: Low to High</span>}
+              className="mb-0 p-0" 
+            />
+            <FormControlLabel
+              value="price-desc"
+              control={<Radio />}
+              label={<span className="text-sm">Price: High to Low</span>}
+              className="mb-0 p-0" 
+            />
+            <FormControlLabel
+              value="name-asc"
+              control={<Radio />}
+              label={<span className="text-sm">Name: A to Z</span>}
+              className="mb-0 p-0" 
+            />
+            <FormControlLabel
+              value="name-desc"
+              control={<Radio />}
+              label={<span className="text-sm">Name: Z to A</span>}
+              className="mb-0 p-0" 
+            />
+          </RadioGroup>
 
 
         </FormControl>
       </div>
-
-      {/* Price Range Filter */}
+      {/*Layout for range filter*/}
       <div className="mb-2">
-        <h3 className="text-md font-semibold mb-2">Price Range</h3> {/* Added margin-bottom for spacing */}
+        <h3 className="text-md font-semibold mb-2">Price Range</h3> 
         <div className="flex flex-col items-center">
           <div className="flex gap-4 mb-2">
+            {/* minimum text field */}
             <TextField
               label="Min"
               type="number"
@@ -117,7 +127,7 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
               onChange={handleMinPriceChange}
               InputProps={{
                 inputProps: { min: 0, max: priceRange[1] },
-                sx: { height: 25 }, // Adjusted height for the text fields
+                sx: { height: 25 }, 
               }}
             />
             <TextField
@@ -127,7 +137,7 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
               onChange={handleMaxPriceChange}
               InputProps={{
                 inputProps: { min: priceRange[0], max: 50 },
-                sx: { height: 25 }, // Adjusted height for the text fields
+                sx: { height: 25 }, 
               }}
             />
           </div>
@@ -148,35 +158,53 @@ function Filters({ sortImp, priceFilter }: { sortImp: (value: string) => void, p
   );
 }
 
+/* This is the component card that is responsible for displaying thumbnails for models and then 
+   switching to a 3d model after hovering
+*/
+
 function HoverableModelCard({ model }: { model: Model }) {
+  //Create a state to determine if the user is hovering over a model or not hovering
   const [isHovered, setIsHovered] = useState(false);
+  //Create a state to determine if a model is loding or not 
   const [isModelLoaded, setIsModelLoaded] = useState(false);
 
+  //This is a function that is responsbile for determining if a user has entered the model card area
   const handleMouseEnter = () => {
+    //If someone hovers then set this state to true to render the 3d model
     setIsHovered(true);
     setIsModelLoaded(false);
   };
-
+  //This funtion determine if a user has stopped hoverring over a model
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
 
+  //This code is responsbile for the rendering of the thumbnail
   return (
     <div
+      //Set positioning of this secction to be releative
       className="relative"
+      //Define its height
       style={{ height: "250px" }}
+      //handlee the mouse enter and mouse leavee functions
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* if the user is hovering on the thumbnail area, then render the 3d object that is associated with it */}
       {isHovered && (
+        //set the positioning of the 3d frame to be inside of the model card
         <div className="absolute inset-0 w-full h-full">
+          {/* Call the 3d model viewer component */}
           <ThreeDModelViewer
+            //access the models path, set the state of hover to be true, and finally load the model
             modelPath={model.path}
             isHovered={isHovered}
             onModelLoad={() => setIsModelLoaded(true)}
           />
         </div>
       )}
+      
+      {/* Render the thumbnail when we are not hovering, same dimensions are the 3d model frame */}
       <img
         src={model.thumbnail}
         alt={model.name + " thumbnail"}
@@ -193,6 +221,7 @@ function HoverableModelCard({ model }: { model: Model }) {
   );
 }
 
+//export the searchResultsPage
 export default function SearchResultsPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -201,6 +230,7 @@ export default function SearchResultsPage() {
   );
 }
 
+//function to handle fetching and displaying
 function SearchResults() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
@@ -211,6 +241,7 @@ function SearchResults() {
   const [priceFiltrate, setPriceFiltrate] = useState<number[]>([0, 200]);
   const router = useRouter();
 
+  //Mutation for adding items to the cart
   const addItemMutation = trpc.cart.addItem.useMutation({
     onSuccess: () => {
       console.log("Item added successfully");
@@ -220,11 +251,13 @@ function SearchResults() {
     }
   });
 
+  // Function to add the cart
   const addItem = async (productId: number) => {
     console.log(`Adding item with ID: ${productId}`);
     await addItemMutation.mutateAsync({ productId });
   };
 
+  // Function to handle adding an item to the cart
   const handleAddToCart = async (model: Model) => {
     try {
       await addItem(model.id);
@@ -234,8 +267,10 @@ function SearchResults() {
     }
   };
 
+  //Fetch the models using TRPC
   const { data: models, refetch, isError, isFetched } = trpc.models.getAllModels.useQuery();
 
+  //Responsible for handling the error state 
   if (isError || !models) {
     return (
       <main className="flex min-h-screen flex-col w-full items-center">
@@ -245,6 +280,7 @@ function SearchResults() {
     );
   }
 
+  // Filter the models based on the trpc query, based on category and the price range
   const filteredModels = models?.filter((model) => {
     const matchesCategory = category ? model.category.name.toLowerCase() === category.toLowerCase() : true;
     const matchesQuery = query ? model.name.toLowerCase().includes(query.toLowerCase()) : true;
@@ -252,6 +288,7 @@ function SearchResults() {
     return matchesCategory && matchesQuery && matchesPrice;
   });
 
+  //Sort the models based on the selected sorting option 
   const sortModels = (modelsToSort: Model[]) => {
     return modelsToSort.sort((a, b) => {
       if (sortOption === 'price-asc') {
@@ -267,12 +304,15 @@ function SearchResults() {
     });
   };
 
+  //Holds models that are both sorted and filtered
   const sortedAndFilteredModels = sortModels(filteredModels);
 
+  // Render the search results page with filters and models
   return (
     <main className="flex min-h-screen pt-32">
       <Navbar />
       <aside className="p-4" style={{ paddingTop: "0" }}>
+        {/* Set up the filters */}
         <Filters
           sortImp={(value) => setSortOption(value)}
           priceFilter={(range) => setPriceFiltrate(range)}
@@ -292,6 +332,7 @@ function SearchResults() {
               <p className="text-lg font-bold mb-1">${model.price.toFixed(2)}</p>
             </div>
             <div className="p-2">
+              {/* call the add to cart function */}
               <button className="bg-blue-500 text-white py-2 px-3 rounded w-full" onClick={() => handleAddToCart(model)}>
                 Add to Cart
               </button>
