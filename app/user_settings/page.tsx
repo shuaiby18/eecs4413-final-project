@@ -1,4 +1,3 @@
-//This is the section of the code that is responsible for the client accessing user settings
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -13,15 +12,10 @@ export default function Profilepage() {
     const session = useSession();
     const router = useRouter();
 
-    // If user is not found then do not render anything
-    if (!session.data?.user?.email) {
-        return null;
-    }
-
     // Setup the form using react-hook-form
     const { register, handleSubmit, formState: { isSubmitting } } = useForm({
         defaultValues: {
-            name: session.data.user.name ?? "",
+            name: session.data?.user?.name ?? "",
         },
     });
 
@@ -31,18 +25,23 @@ export default function Profilepage() {
     // Function to handle form submission
     const onSubmit = async (data: { name: string }) => {
         try {
-          // Update the user's name in the database
-          await updateUser.mutateAsync({
-            name: data.name,
-            email: session.data.user.email
-          });
-      
-          // Sign the user out
-          await signOut({ callbackUrl: "/login" });
+            // Update the user's name in the database
+            await updateUser.mutateAsync({
+                name: data.name,
+                email: session.data.user.email 
+            });
+
+            // Sign the user out after updating the name
+            await signOut({ callbackUrl: "/login" });
         } catch (error) {
-          console.error("Error updating name:", error);
+            console.error("Error updating name:", error);
         }
-      };
+    };
+
+    // If user is not found then do not render anything
+    if (!session.data?.user?.email) {
+        return null;
+    }
 
     return (
         <div>
