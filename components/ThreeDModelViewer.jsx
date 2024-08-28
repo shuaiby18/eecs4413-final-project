@@ -1,6 +1,10 @@
+//Import react to use its suspense, useeffect, use state, useRef,and forward ref 
 import React, { Suspense, useEffect, useState, useRef, forwardRef } from 'react';
+//@react-three/fiber for rendering the 3D scenes in React
 import { Canvas, useThree } from '@react-three/fiber';
+//Allows for OrbitControls, parsing for GLTF files, use animations, and handle progress bars
 import { OrbitControls, useGLTF, useAnimations, useProgress } from '@react-three/drei';
+//Core libraries for rendering 3d objects
 import * as THREE from 'three';
 
 //This function is responsible for creating a gradient background color with multiple colors
