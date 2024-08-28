@@ -12,7 +12,7 @@ export const userRouter = router({
     return "pong";
   }),
   register: publicProcedure.input(RegisterSchema).mutation(async (opts) => {
-    const { email, password } = opts.input;
+    const {name, email, password } = opts.input;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,6 +24,7 @@ export const userRouter = router({
 
     await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
       },
