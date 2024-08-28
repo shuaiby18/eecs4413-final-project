@@ -71,18 +71,18 @@ async function onSubmit(values: z.infer<typeof LoginSchema>) {
 
             // Handle the callback URL explicitly
             if (url && url.includes("login")) {
-                console.log("Overriding redirect URL to home page");
-                router.push("/"); // Redirect to home page if the URL points back to login
+                console.log("redirect home page");
+                router.push("/"); // Redirect to home page 
             } else {
-                console.log("Session should be established, redirecting to:", url || "/");
+                console.log("Session establihed and going to home page", url || "/");
                 router.push(url || "/"); 
             }
         } else {
             console.error("Login failed:", error); 
-            alert("Invalid credentials. Please try again."); // Show an alert
+            alert("Invalid credentials. Please try again."); 
         }
     } else {
-        console.error("No response from signIn");
+        console.error("signing in shows blank");
     }
 }
 
