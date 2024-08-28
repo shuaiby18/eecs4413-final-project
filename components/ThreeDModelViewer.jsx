@@ -3,37 +3,43 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations, useProgress } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Generate a multi-stop gradient with color interpolation
+//This function is responsible for creating a gradient background color with multiple colors
 function createMultiStopGradient(dominantColor) {
+  //Determine all the dominant colors in the scene first
   const colorArray = dominantColor.match(/\d+/g).map(Number);
 
-  // Generate complementary and analogous colors for a more dynamic gradient
+  //Based on the dominant color, we can simply find a color that is lighter than it
   const lighterColor = `rgba(${Math.min(colorArray[0] + 50, 255)}, ${Math.min(colorArray[1] + 50, 255)}, ${Math.min(colorArray[2] + 50, 255)}, 0.8)`;
+  //Based on the dominant color, we can simply find a color that is darker than it
   const darkerColor = `rgba(${Math.max(colorArray[0] - 50, 0)}, ${Math.max(colorArray[1] - 50, 0)}, ${Math.max(colorArray[2] - 50, 0)}, 0.8)`;
-
-  // Create a more dynamic multi-stop gradient
+  //Simply utilize the lighter color and the darker color in order to create a gradient, angle the gradient diagonally, each color will have different presentation percentage valuess
   return `linear-gradient(135deg, ${lighterColor} 0%, ${dominantColor} 50%, ${darkerColor} 100%)`;
 }
 
-// Extract the dominant color from the texture
+//This function is responsbile for determining what is the dominant color in the model 
 function getDominantColor(texture) {
+  //Create a canvas element
   const canvas = document.createElement('canvas');
+  //get the context of the canvas for 2d rendering
   const ctx = canvas.getContext('2d');
+  //convert the texure into a 2d image
   const img = texture.image;
-
+  //determine the width of the image
   canvas.width = img.width;
+  //determine the height of the image
   canvas.height = img.height;
-
-  // Draw the texture to the canvas
+  //Place the image onto the canvas itself
   ctx.drawImage(img, 0, 0);
 
-  // Get pixel data
+  //Retrive the pixel data based on the canvas
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
+  //initialize the red,green, and blue values to zero  
   let r = 0, g = 0, b = 0;
+  //This total value will represent the total value of the the red green and blue values
   let total = 0;
 
-  // Average the color of all pixels
+  //Calculate the total value using a simple for loop
   for (let i = 0; i < data.length; i += 4) {
     r += data[i];
     g += data[i + 1];
@@ -41,78 +47,105 @@ function getDominantColor(texture) {
     total++;
   }
 
-  // Calculate the average color
+  //Take the total value, and divide each individual color by the total value to see its ratio, take its floor value to avoid inconsistences
   r = Math.floor(r / total);
   g = Math.floor(g / total);
   b = Math.floor(b / total);
 
+  //return the dominant color
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+//This is the key functio nthat is responsbile for rendering the 3d model using GLTF format, all models are in GLTF for simplicity
 function Model({ path, setBackgroundColor, onModelLoad }, ref) {
+  //Determine the scene and the animations if they exist in the model
   const { scene, animations } = useGLTF(path);
+
+  //Access the animations and scene by creating an action
   const { actions } = useAnimations(animations, scene);
+
+  //Create a custom camera utilizing three JS
   const { camera } = useThree();
 
   useEffect(() => {
-    // Apply the rotation first
+    //Crate a slightly diagonal model that is looking to the left and down by rotating it
+    //Rotate the scene by the y axis by 30 degrees
     scene.rotation.y = THREE.MathUtils.degToRad(-30);
+    //Rotate the scene by the x axis by 30 degrees
     scene.rotation.x = THREE.MathUtils.degToRad(10);
 
-    // Now compute the bounding box after the rotation
+    //All models have their own bounding box based on their height and width,
     const box = new THREE.Box3().setFromObject(scene);
+    //Determine the size of the bouding box
     const size = box.getSize(new THREE.Vector3());
+    //Determine the center of the bounding box
     const center = box.getCenter(new THREE.Vector3());
 
-    // Re-center the scene
+    //Place the model in the center of the screen
     scene.position.sub(center);
 
-    // Calculate the new camera position
+    /*Responsible for calculating the position of the camera in relation to the model to make 
+    sure all models look the same in terms of size when rendered */
+
+    //Find the largest dimension of the bounding box size by using its x and y value
     const maxDim = Math.max(size.x, size.y, size.z);
+    //This code will convert the fov to utilize radians 
     const fov = camera.fov * (Math.PI / 180);
+    //Calculate the distance of the model to the camera itself utilizing the fov
     const dist = maxDim / (2 * Math.tan(fov / 2));
 
+    //Responsible for moving the camera back from the model based on its distance by multipling it by a ratio
     camera.position.set(0, 0, dist * 1.3);
+    //Move the camera so that it looks at the center of the model
     camera.lookAt(center);
 
-    // Adjust the camera's near and far clipping planes
+    //Set the cameras near clipping plane based on its distance to the model by dividing it by a specific ratio
     camera.near = dist / 100;
+    //Set the cameras far clipping plane based on its distance to the model by dividing it by a specific ratio
     camera.far = dist * 100;
+    //Finally update the projection matrix of the camera based on its near and far settings as well as all the other settings above
     camera.updateProjectionMatrix();
 
-    // Play the first animation if it exists
+    //If the model comes with an animation, then retrive its action and play the first animation (might make it to allow for multiple animation selections later)
     if (actions && animations.length > 0) {
       const firstAction = actions[Object.keys(actions)[0]];
       if (firstAction) {
         firstAction.play();
       }
     }
+    //If the model loads successfully, then call the onModelLoad function with all the custom variables for the render
     if (onModelLoad) {
       onModelLoad();
     }
   }, [scene, camera, actions, animations, onModelLoad]);
 
-  // Ensure all meshes in the model cast and receive shadows
+  //This part of the code is responsible for applying shadows and updating the background of the render based on the models texture
   useEffect(() => {
+    //Go through all the elements/children in the scene
     scene.traverse((child) => {
+      //Make sure the mesh of the objet casts shadows in the scene and also is able to receive shadows
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
 
-        // Check if the mesh has a texture, and calculate the dominant color if it does
+        //Check if the model has a texture (models that do not have texture wont have background color (will fix later))
         if (child.material && child.material.map) {
+          //Retrive the dominant color in the model
           const dominantColor = getDominantColor(child.material.map);
+          //Retrieve the gradient color based on the dominant color
           const gradient = createMultiStopGradient(dominantColor);
+          //Set the background color to the gradient
           setBackgroundColor(gradient);
         }
       }
     });
   }, [scene, setBackgroundColor]);
-
+  //This will return the scene as a reference so that it can be used for rendering
   return <primitive ref={ref} object={scene} />;
 }
-
+//This is the forwarded model holding the reference
 const ForwardedModel = forwardRef(Model);
+
 
 //This is the component that will render the 3d model, utilizing features such as dynamic background color and such
 export default function ThreeDModelViewer({ modelPath, isHovered, onModelLoad }) {
