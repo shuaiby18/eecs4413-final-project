@@ -38,9 +38,8 @@ export const RegisterSchema = z
     path: ["passwordConfirmation"],
   });
 
-export const UpdateSchema = z
-  .object({
-    name: z.string().min(3, {
+  export const UpdateSchema = z.object({
+    name: z.string().min(1, {
       message: "Please enter name, required",
     }),
     email: z.string().email({
@@ -51,15 +50,17 @@ export const UpdateSchema = z
       .min(6, {
         message: "Please enter a password with at least 6 characters, required",
       })
+      .optional()
       .or(z.literal("")),
     passwordConfirmation: z
       .string()
       .min(6, {
         message: "Please confirm your password, required.",
       })
+      .optional()
       .or(z.literal("")),
-  })
-  .refine((data) => data.password === data.passwordConfirmation, {
+  }).refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords do not match.",
     path: ["passwordConfirmation"],
   });
+  

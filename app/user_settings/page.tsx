@@ -1,260 +1,132 @@
-//This is the section of the code that is responsible for the client accessing user settings
 "use client";
 
-// Import the routers, states, zod, trpc for queries, and navbar 
-import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState, useTransition } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateSchema } from "@/lib/schemas/user";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { trpc } from "@/server/client";
 import { useSession } from "next-auth/react";
+import { trpc } from "@/server/client";
 import Navbar from "@/components/ui/Navbar";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import { signOut } from "next-auth/react";
 
-//This is the section responsible for calling the profile page
-export default function Profilepage() {
-    //Utilize user session data using NextAuth
-    const session = useSession();
-
-    //If use is not found then done do anything
-    if (!session.data?.user?.email) {
-        return null;
-    }
-    //Create the profile utilizing the session data that was retrieved
-    return <Profile session={session.data} />;
+// Define the form data type to include password fields
+interface FormData {
+    name: string;
+    password?: string;
+    passwordConfirmation?: string;
 }
 
-//This component will handle user profile settings
-function Profile({ session }: { session: any }) {
-    //Create the router that will be used for navigation
+// This component will handle user profile settings
+export default function Profilepage() {
+    const session = useSession();
     const router = useRouter();
 
-    //This will create states for pending and starting transition
-    const [isPending, startTransition] = useTransition();
-
-    //retreive user email from session
-    const email = session?.user?.email ?? "";
-    
-    //this will set up trpc mutation call
-    const update = trpc.user.update.useMutation();
-
-    //establish the form
-    const form = useForm({
-        resolver: zodResolver(UpdateSchema),
+    // Setup the form using react-hook-form
+    const { register, handleSubmit, formState: { isSubmitting } } = useForm<FormData>({
         defaultValues: {
-            name: session?.user?.name ?? "",
-            email: session?.user?.email ?? "",
-            password: "",
-            shippingAddress: {
-                street: "",
-                city: "",
-                state: "",
-                postalCode: "",
-                country: "",
-            },
+            name: session.data?.user?.name ?? "",
         },
     });
 
-    //this function will manage submitting a form
-    async function onSubmit(values: any) {
-        startTransition(async () => {
-            await update.mutateAsync(values);
-            router.push("/");
-        });
+    // Setup the TRPC mutation for updating the user's data
+    const updateUser = trpc.user.update.useMutation();
+
+    // Function to handle form submission
+    const onSubmit = async (data: FormData) => {
+        if (session.data?.user?.email) {
+            try {
+                // Ensure the password and password confirmation match before proceeding
+                if (data.password && data.password !== data.passwordConfirmation) {
+                    alert("Passwords do not match.");
+                    return;
+                }
+
+                // Update the user's data in the database
+                await updateUser.mutateAsync({
+                    name: data.name,
+                    email: session.data.user.email,
+                    password: data.password || "", // Send password if provided
+                    passwordConfirmation: data.passwordConfirmation || "", // Send password confirmation if provided
+                });
+
+                // Sign the user out after updating the name or password
+                await signOut({ callbackUrl: "/login" });
+            } catch (error) {
+                console.error("Error updating user data:", error);
+            }
+        } else {
+            console.error("Session data is null or undefined.");
+        }
+    };
+
+    // If user is not found then do not render anything
+    if (!session.data?.user?.email) {
+        return null;
     }
 
-    //html code for rendering profile section
     return (
         <div>
             <Navbar />
-
-            <h1 className="text-4xl font-bold text-center mt-12 mb-20">User Settings</h1> {/* Header */}
-
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="text-3xl font-bold text-center mb-8">Profile</h1>
+                <h1 className="text-4xl font-bold text-center mt-12 mb-20">User Settings</h1>
                 <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-                    <Form {...form}>
-                        {/* call the onSubmit function */}
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            {/*Section for User Name */}
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                disabled={isPending}
-                                                placeholder="Josh"
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <div>
+                            <label className="font-semibold">Name</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your new name"
+                                {...register("name")}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                disabled={isSubmitting}
                             />
-                            {/*Section for Email (Disabled) */}
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">E-mail</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="email"
-                                                placeholder="example@email.com"
-                                                disabled
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                        </div>
+                        <div>
+                            <label className="font-semibold">Email</label>
+                            <input
+                                type="email"
+                                value={session.data.user.email}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
+                                disabled
+                                readOnly
                             />
-                            {/*Section for Password */}
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                disabled={isPending}
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                        </div>
+                        <div>
+                            <label className="font-semibold">Current Password</label>
+                            <input
+                                type="password"
+                                value="********" // Masked for security, typically you don't show the actual password
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
+                                disabled
+                                readOnly
                             />
-                            {/*Section for Shipping Address */}
-                            <FormField
-                                control={form.control}
-                                name="shippingAddress.street"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Street</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                disabled={isPending}
-                                                placeholder="123 York University St"
-                                                required
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                        </div>
+                        <div>
+                            <label className="font-semibold">New Password</label>
+                            <input
+                                type="password"
+                                placeholder="Enter your new password"
+                                {...register("password")}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                disabled={isSubmitting}
                             />
-                            <FormField
-                                control={form.control}
-                                name="shippingAddress.city"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">City</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                disabled={isPending}
-                                                placeholder="Vaughan"
-                                                required
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                        </div>
+                        <div>
+                            <label className="font-semibold">Confirm New Password</label>
+                            <input
+                                type="password"
+                                placeholder="Confirm your new password"
+                                {...register("passwordConfirmation")}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                disabled={isSubmitting}
                             />
-                            <FormField
-                                control={form.control}
-                                name="shippingAddress.state"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">State</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                disabled={isPending}
-                                                placeholder="Ontario"
-                                                required
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="shippingAddress.postalCode"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Postal Code</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                disabled={isPending}
-                                                placeholder="M1C 21A"
-                                                required
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="shippingAddress.country"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">Country</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="text"
-                                                disabled={isPending}
-                                                placeholder="Canada"
-                                                required
-                                                {...field}
-                                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button
-                                type="submit"
-                                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                            >
-                                Update
-                            </Button>
-                        </form>
-                    </Form>
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                            disabled={isSubmitting}
+                        >
+                            Update
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

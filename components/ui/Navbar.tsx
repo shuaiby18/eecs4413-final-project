@@ -129,21 +129,22 @@ export default function Navbar() {
             </span>
             {/* Dropdown menu for signing in and signing out, including the profile section */}
             {session && isMenuOpen && (
-              <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2">
-                <Link
-                  href = "/user_settings"
-                  className="block px-9 py-2 text-sm text-gray-600 hover:bg-gray-200"
-                  >
-                  User Profile
-                  </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="block px-8 py-2 text-sm text-gray-600 hover:bg-gray-200"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
+            <div className="absolute right-0 mt-8 bg-white shadow-lg rounded-lg p-2 w-48">
+              <Link
+                href="/user_settings"
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200 w-full text-center"
+              >
+                User Settings
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200 w-full text-center"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+
           </div>
         </div>
       </div>
